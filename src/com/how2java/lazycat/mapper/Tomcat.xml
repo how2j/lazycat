@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    <mapper namespace="com.how2java.lazycat.mapper.TomcatMapper">
+        <insert id="add" parameterType="Tomcat" >
+            insert into tomcat_ ( name,port ) values (#{name},#{port})  
+        </insert>
+         
+        <delete id="delete" parameterType="Tomcat" >
+            delete from tomcat_ where id= #{id}   
+        </delete>
+         
+        <select id="get" parameterType="_int" resultType="Tomcat">
+            select * from   tomcat_  where id= #{id}    
+        </select>
+        
+        <select id="getByPort" parameterType="_int" resultType="Tomcat">
+            select * from   tomcat_  where port= #{port}    
+        </select>        
+ 
+        <update id="update" parameterType="Tomcat" >
+            update tomcat_ set port=#{port} where id=#{id}    
+        </update>
+        <select id="list" resultType="Tomcat">
+            select * from   tomcat_      
+        </select>     
+    </mapper>
