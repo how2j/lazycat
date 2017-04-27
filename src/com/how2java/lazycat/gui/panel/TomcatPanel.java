@@ -1,6 +1,7 @@
 package com.how2java.lazycat.gui.panel;
  
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -57,14 +58,19 @@ public class TomcatPanel extends WorkingPanel {
         
         
         JScrollPane sp = new JScrollPane(t);
+        JPanel pLifecycle = new JPanel();
         JPanel pSubmit = new JPanel();
         pSubmit.add(bAdd);
         pSubmit.add(bEdit);
         pSubmit.add(bDelete);
-        pSubmit.add(bStart);
-        pSubmit.add(bStop);
+        pLifecycle.add(bStart);
+        pLifecycle.add(bStop);
+        
+        bStart.setPreferredSize(new Dimension(60, 40));
+        bStop.setPreferredSize(new Dimension(60, 40));
  
         this.setLayout(new BorderLayout());
+        this.add(pLifecycle, BorderLayout.NORTH);
         this.add(sp, BorderLayout.CENTER);
         this.add(pSubmit, BorderLayout.SOUTH);
          
@@ -171,8 +177,8 @@ public class TomcatPanel extends WorkingPanel {
     	
     	MainPanel.instance.bTomcat.setEnabled(false);
     	MainPanel.instance.bWebApp.setEnabled(false);
-    	MainPanel.instance.bConsole.setEnabled(false);
-    	MainPanel.instance.bErrorLog.setEnabled(false);
+//    	MainPanel.instance.bConsole.setEnabled(false);
+//    	MainPanel.instance.bErrorLog.setEnabled(false);
     	t.setEnabled(false);
 
     }

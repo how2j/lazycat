@@ -1,6 +1,7 @@
 package com.how2java.lazycat.gui.panel;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Enumeration;
 
 import javax.swing.JButton;
@@ -33,7 +34,7 @@ public class WebAppPanel extends WorkingPanel implements Runnable {
 	public JButton bDelete = new JButton("…æ≥˝");
 	public JButton bStart = new JButton("∆Ù∂Ø");
 	public JButton bStop = new JButton("–∂‘ÿ");
-	public JButton bRestart = new JButton("÷ÿ∆Ù");
+	public JButton bRestart = new JButton("÷ÿ∆Ùctrl+alt+k");
 	
 	public JButton buttons[] = new JButton[]{bAdd,bEdit,bDelete,bStart,bStop,bRestart};
 
@@ -49,15 +50,23 @@ public class WebAppPanel extends WorkingPanel implements Runnable {
 		
 		GUIUtil.setColor(ColorUtil.blueColor, buttons);
 		JScrollPane sp = new JScrollPane(t);
+		JPanel pLife = new JPanel();
+		
+		
 		JPanel pSubmit = new JPanel();
 		pSubmit.add(bAdd);
 		pSubmit.add(bEdit);
 		pSubmit.add(bDelete);
-		pSubmit.add(bStart);
-		pSubmit.add(bStop);
-		pSubmit.add(bRestart);
+		pLife.add(bStart);
+		pLife.add(bStop);
+		pLife.add(bRestart);
+		
+		bStart.setPreferredSize(new Dimension(60, 40));
+		bStop.setPreferredSize(new Dimension(60, 40));
+		bRestart.setPreferredSize(new Dimension(160, 40));
 
 		this.setLayout(new BorderLayout());
+		this.add(pLife, BorderLayout.NORTH);
 		this.add(sp, BorderLayout.CENTER);
 		this.add(pSubmit, BorderLayout.SOUTH);
 
@@ -81,7 +90,7 @@ public class WebAppPanel extends WorkingPanel implements Runnable {
 
 	}
 
-	public static void main1(String[] args) {
+	public static void main(String[] args) {
 		GUIUtil.showPanel(WebAppPanel.instance);
 	}
 

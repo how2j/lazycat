@@ -1,6 +1,11 @@
 package com.how2java.lazycat.gui.frame;
  
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 
 import com.how2java.lazycat.gui.panel.MainPanel;
  
@@ -13,11 +18,25 @@ public class MainFrame extends JFrame{
         this.setContentPane(MainPanel.instance);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if(JOptionPane.OK_OPTION== JOptionPane.showConfirmDialog(MainFrame.instance, "ÒªÍË³öÂð£¿"))
+					System.exit(1);
+				else
+					MainFrame.this.setState(JFrame.ICONIFIED);
+			}
+		});
+
+        
+        
     }
      
     public static void main(String[] args) {
         instance.setVisible(true);
     }
+    
+    
      
 }

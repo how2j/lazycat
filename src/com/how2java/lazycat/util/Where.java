@@ -15,6 +15,7 @@ public class Where {
 		}
 	}
 	
+	
 	public static void log(Object o){
 		try{
 			throw new Exception();	
@@ -23,7 +24,7 @@ public class Where {
 			String msg = "(%s:%d)-%s%n";
 			StackTraceElement s= e.getStackTrace()[1];
 			System.out.printf(msg,s.getFileName(),s.getLineNumber(),o.toString());
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 	}

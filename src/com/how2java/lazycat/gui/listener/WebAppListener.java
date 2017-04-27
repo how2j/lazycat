@@ -21,8 +21,11 @@ public class WebAppListener implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	       WebAppPanel p = WebAppPanel.instance;
-	       
 	        JButton b = (JButton) e.getSource();
+	        System.out.println(b.getText());
+	        System.out.println(b.isEnabled());
+	        if(!b.isEnabled())
+	        	return ;
 	        
 	        if(b==p.bAdd){
 	        	
@@ -97,6 +100,8 @@ public class WebAppListener implements ActionListener{
 	        
 	        if(b==p.bRestart){
 	        	WebApp w = p.getSelectedWebApp();
+	        	if(null==w)
+	        		return;
 	        	w.stopConext();
 	    		int port = w.getTomcat().getPort();
 	    		Bootstrap b2 = BootstrapManager.getBoostrap(port);

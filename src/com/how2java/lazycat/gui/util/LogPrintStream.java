@@ -2,23 +2,28 @@ package com.how2java.lazycat.gui.util;
 
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.how2java.lazycat.gui.panel.ConsolePanel;
 
 public class LogPrintStream extends PrintStream{
 
+	File f = new File("error.txt");
+	
 	public static boolean log = true;
 	public LogPrintStream(OutputStream out) {
 		super(out);
 	}
 	public LogPrintStream() {
+		
 		this(System.out);
+		
+		
 	}
 	
 	public static void closeLog(){
@@ -30,7 +35,7 @@ public class LogPrintStream extends PrintStream{
 			super.print(line);
 			ConsolePanel.instance.ta.append(line+"\n");
 			GUIUtil.setCaretPosition(ConsolePanel.instance.ta);
-	
+			
 	}
 	
 	public void println(String line){
@@ -51,6 +56,7 @@ public class LogPrintStream extends PrintStream{
 //			
 //			super.println(time+" "+StringUtils.substringBetween(e.getStackTrace()[1].toString(), "(", ")")+"\t"+line);
 		}
+		
 		ConsolePanel.instance.ta.append(line+"\r\n");
 		GUIUtil.setCaretPosition(ConsolePanel.instance.ta);
 		

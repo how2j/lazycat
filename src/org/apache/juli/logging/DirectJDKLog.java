@@ -172,6 +172,7 @@ class DirectJDKLog implements Log {
     // worse than the unfriendly and uncommon default format for logs. 
     
     private void log(Level level, String msg, Throwable ex) {
+    	
         if (logger.isLoggable(level)) {
             // Hack (?) to get the stack trace.
             Throwable dummyException=new Throwable();
@@ -191,7 +192,7 @@ class DirectJDKLog implements Log {
 //            }
             if(null!=ex){
 //            	Where.amI();
-            	System.out.println("wrong reason:" + ex.getMessage());
+            	System.out.println(ex.getMessage());
 //                System.err.println(ex);
             	//put into error textarea
 //            	System.out.println("111111");
@@ -199,8 +200,11 @@ class DirectJDKLog implements Log {
             	ErrorLogPanel.instance.ta.append(ex.getMessage()+"\n");
 //            	System.out.println("222222");
             	GUIUtil.setCaretPosition(ErrorLogPanel.instance.ta);
-        		
-            	
+            }
+            else{
+            	System.out.println(msg);
+            	ErrorLogPanel.instance.ta.append(msg+"\n");
+            	GUIUtil.setCaretPosition(ErrorLogPanel.instance.ta);
             }
         }
     }        

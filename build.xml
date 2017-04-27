@@ -1,0 +1,10 @@
+<?xml version= "1.0"?>
+<project name= "TEST_Android" default="main" basedir="." >
+    <target name="main">
+
+    		
+    	<jar jarfile="E:\project\lazycat\build\lib\lazycat.jar"  
+    	            basedir="E:\project\lazycat\bin"/>      	
+          
+    </target >
+</project>

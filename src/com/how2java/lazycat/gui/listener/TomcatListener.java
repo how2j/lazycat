@@ -113,8 +113,9 @@ public class TomcatListener implements ActionListener{
 	        	SwingWorker worker = new SwingWorker() {
 	        		protected Object doInBackground() throws Exception {
 	        			//长耗时任务
+	        			System.out.println("1111");
 	        			BootstrapManager.startTomcat(p.getSelectedTomcat());
-	        			  
+	        			System.out.println("22222");
 	        			p.unfreeze();
 	        			p.syncStatus();
 	        			return null;

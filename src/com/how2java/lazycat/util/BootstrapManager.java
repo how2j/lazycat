@@ -36,11 +36,17 @@ public class BootstrapManager implements Runnable{
 		Bootstrap b = bs.get(t.getPort());
 		
 		if(null==b){
+			
 			b =new Bootstrap();
+			
 			b.port=t.getPort();
+			
 			bs.put(t.getPort(), b);
+			
 			b.setStatus(Bootstrap.status_starting);
+			
 		}
+		
 		try {
 			List<WebApp> ws= MapperUtil.webAppMapper.listByTomcat(t);
 			for (WebApp w : ws) {
@@ -48,19 +54,15 @@ public class BootstrapManager implements Runnable{
 					w.createXML();
 			}
 			
+			
 			startBootstrap(b);
 			b.setStatus(Bootstrap.status_started);
-
-			
-			
-
-			
-			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			b.setStatus(e.toString());
 		}
+		
 		
 	}
 	
@@ -125,11 +127,15 @@ public class BootstrapManager implements Runnable{
 
 	public static void startBootstrap(Bootstrap b) throws Exception  {
 		try {
+			
 			PortUtil.check(b.port);
 			
 			ServerXMLGenerator.generate(b.port);
+			
 			try {
+				
 			    b.init();
+			    
 			} catch (Throwable t) {
 
 			    t.printStackTrace();
@@ -138,7 +144,9 @@ public class BootstrapManager implements Runnable{
 			
 //        Desktop.getDesktop().browse(new URI(String.format( "http://127.0.0.1:%d/j2ee/hello",b.port)));
 //			b.setAwait(true);
+			
 			b.start();
+			
 		} catch (Exception e) {
 			if(e instanceof PortException)
 				throw e;

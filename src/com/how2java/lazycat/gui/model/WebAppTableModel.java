@@ -13,7 +13,7 @@ public class WebAppTableModel extends AbstractTableModel {
 	
 	WebAppMapper webAppMapper = MapperUtil.webAppMapper;
 	
-    String[] columnNames = new String[] { "id","名称", "硬盘位置", "启动地址","是否自启动","是否自动部署","状态"};
+    String[] columnNames = new String[] { "id","名称", "硬盘位置", "启动地址","自动访问测试页面","自动部署","状态"};
   
     // 使用从Service返回的List作为TableModel的数据
   

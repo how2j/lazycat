@@ -4,25 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/ant.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/catalina.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/catalina-ant.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/catalina-ha.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/catalina-tribes.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/ecj-4.4.2.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/el-api.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/jasper.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/jasper-el.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/jsp-api.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat7-websocket.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-api.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-coyote.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-dbcp.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-i18n-es.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-i18n-fr.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-i18n-ja.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-jdbc.jar"/>
-	<classpathentry kind="lib" path="E:/project/lazycat/lib/tomcat-util.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/websocket-api.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/commons-io-2.2.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/commons-lang3-3.2.jar"/>
@@ -53,5 +40,6 @@
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/spring-webmvc-3.2.16.RELEASE.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/liquidlnf.jar"/>
 	<classpathentry kind="lib" path="E:/project/lazycat/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="E:/project/lazycat/lib/jintellitype-1.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

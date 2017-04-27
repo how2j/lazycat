@@ -36,6 +36,7 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
 import com.how2java.lazycat.gui.panel.TomcatPanel;
+import com.how2java.lazycat.util.Where;
 
 /**
  * Bootstrap loader for Catalina.  This application constructs a class loader
@@ -54,6 +55,8 @@ public final class Bootstrap {
     private static final Log log = LogFactory.getLog(Bootstrap.class);
 
 
+    
+    
     // ------------------------------------------------------- Static Variables
 
     
@@ -339,12 +342,17 @@ public final class Bootstrap {
      */
     public void start()
         throws Exception {
-        if( catalinaDaemon==null ) init();
-
+    	
+        if( catalinaDaemon==null ) 
+        	init();
+        
         
         Catalina c = (Catalina)catalinaDaemon;
+        
         c.setBootstrap(this);
+        
         c.start();
+        
         
 //        Method method = catalinaDaemon.getClass().getMethod("start", (Class [] )null);
 //        method.invoke(catalinaDaemon, (Object [])null);

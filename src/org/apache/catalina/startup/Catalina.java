@@ -35,13 +35,13 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
+import org.apache.catalina.ha.ClusterRuleSet;
 import org.apache.catalina.security.SecurityConfig;
 import org.apache.juli.ClassLoaderLogManager;
 import org.apache.tomcat.util.ExceptionUtils;
 import org.apache.tomcat.util.digester.Digester;
 import org.apache.tomcat.util.digester.Rule;
 import org.apache.tomcat.util.digester.RuleSet;
-import org.apache.tomcat.util.log.SystemLogHandler;
 import org.apache.tomcat.util.res.StringManager;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -315,9 +315,12 @@ public class Catalina {
      * Create and configure the Digester we will be using for startup.
      */
     protected Digester createStartDigester() {
+    	
         long t1=System.currentTimeMillis();
         // Initialize the digester
+        
         Digester digester = new Digester();
+        
         digester.setValidating(false);
         digester.setRulesValidation(true);
         HashMap<Class<?>, List<String>> fakeAttributes =
@@ -325,6 +328,7 @@ public class Catalina {
         ArrayList<String> attrs = new ArrayList<String>();
         attrs.add("className");
         fakeAttributes.put(Object.class, attrs);
+        
         digester.setFakeAttributes(fakeAttributes);
         digester.setUseContextClassLoader(true);
 
@@ -401,18 +405,25 @@ public class Catalina {
         digester.addRuleSet(new EngineRuleSet("Server/Service/"));
         digester.addRuleSet(new HostRuleSet("Server/Service/Engine/"));
         digester.addRuleSet(new ContextRuleSet("Server/Service/Engine/Host/"));
+        
         addClusterRuleSet(digester, "Server/Service/Engine/Host/Cluster/");
+        
         digester.addRuleSet(new NamingRuleSet("Server/Service/Engine/Host/Context/"));
+        
 
         // When the 'engine' is found, set the parentClassLoader.
         digester.addRule("Server/Service/Engine",
                          new SetParentClassLoaderRule(parentClassLoader));
+        
         addClusterRuleSet(digester, "Server/Service/Engine/Cluster/");
-
+        
         long t2=System.currentTimeMillis();
+        
         if (log.isDebugEnabled()) {
+        	
             log.debug("Digester for server.xml created " + ( t2-t1 ));
         }
+        
         return (digester);
 
     }
@@ -421,14 +432,24 @@ public class Catalina {
      * Cluster support is optional. The JARs may have been removed.
      */
     private void addClusterRuleSet(Digester digester, String prefix) {
+    	
         Class<?> clazz = null;
+        
         Constructor<?> constructor = null;
+        
         try {
+        	
+        	
             clazz = Class.forName("org.apache.catalina.ha.ClusterRuleSet");
+            
             constructor = clazz.getConstructor(String.class);
+            
             RuleSet ruleSet = (RuleSet) constructor.newInstance(prefix);
+            
             digester.addRuleSet(ruleSet);
+            
         } catch (Exception e) {
+        	
             if (log.isDebugEnabled()) {
                 log.debug(sm.getString("catalina.noCluster",
                         e.getClass().getName() + ": " +  e.getMessage()), e);
@@ -436,7 +457,9 @@ public class Catalina {
                 log.info(sm.getString("catalina.noCluster",
                         e.getClass().getName() + ": " +  e.getMessage()));
             }
+            
         }
+        
     }
 
     /**
@@ -556,21 +579,22 @@ public class Catalina {
      * Start a new server instance.
      */
     public void load() {
-
+    	
         long t1 = System.nanoTime();
 
         initDirs();
-
+        
         // Before digester - it may be needed
 
         initNaming();
-
+        
         // Create and execute our Digester
         Digester digester = createStartDigester();
-
+        
         InputSource inputSource = null;
         InputStream inputStream = null;
         File file = null;
+        
         try {
             try {
                 file = configFile();
@@ -650,6 +674,7 @@ public class Catalina {
             }
         }
 
+        
         getServer().setCatalina(this);
 
         // Stream redirection
@@ -666,12 +691,12 @@ public class Catalina {
             }
 
         }
-
+        
         long t2 = System.nanoTime();
         if(log.isInfoEnabled()) {
             log.info("Initialization processed in " + ((t2 - t1) / 1000000) + " ms");
         }
-
+        
     }
 
 
@@ -695,21 +720,31 @@ public class Catalina {
      */
     public void start() {
 
+    	
+    	System.out.println(log);
     	configFile  = String.format(this.configFile, this.getBootstrap().port);
         if (getServer() == null) {
+        	
             load();
         }
+        
+        
 
         if (getServer() == null) {
+        	
             log.fatal("Cannot start server. Server instance is not configured.");
             return;
         }
+        
 
         long t1 = System.nanoTime();
 
+        
         // Start the new server
         try {
+        	
             getServer().start();
+            
         } catch (LifecycleException e) {
             log.fatal(sm.getString("catalina.serverStartFail"), e);
             try {
@@ -719,6 +754,7 @@ public class Catalina {
             }
             return;
         }
+        
 
         long t2 = System.nanoTime();
         if(log.isInfoEnabled()) {
@@ -742,10 +778,12 @@ public class Catalina {
             }
         }
 
+        
         if (await) {
             await();
             stop();
         }
+        
     }
 
 

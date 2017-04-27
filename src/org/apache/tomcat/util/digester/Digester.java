@@ -56,6 +56,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.AttributesImpl;
 
+import com.how2java.lazycat.util.Where;
+
 
 /**
  * <p>A <strong>Digester</strong> processes an XML input stream by matching a
@@ -110,11 +112,15 @@ public class Digester extends DefaultHandler2 {
      */
     public Digester() {
 
+    	
         super();
-
+        
+        
         if (propertySource != null) {
+        	
             source = new IntrospectionUtils.PropertySource[] { propertySource, source[0] };
         }
+        
 
     }
 
