@@ -27,38 +27,39 @@ import java.io.OutputStream;
  * @version 1.0
  */
 public class DirectByteArrayOutputStream extends OutputStream {
-    
-    private XByteBuffer buffer;
-    
-    public DirectByteArrayOutputStream(int size) {
-        buffer = new XByteBuffer(size,false);
-    }
 
-    /**
-     * Writes the specified byte to this output stream.
-     *
-     * @param b the <code>byte</code>.
-     * @throws IOException if an I/O error occurs. In particular, an
-     *   <code>IOException</code> may be thrown if the output stream has
-     *   been closed.
-     * TODO Implement this java.io.OutputStream method
-     */
-    @Override
-    public void write(int b) throws IOException {
-        buffer.append((byte)b);
-    }
-    
-    public int size() {
-        return buffer.getLength();
-    }
-    
-    public byte[] getArrayDirect() {
-        return buffer.getBytesDirect();
-    }
-    
-    public byte[] getArray() {
-        return buffer.getBytes();
-    }
+	private XByteBuffer buffer;
 
+	public DirectByteArrayOutputStream(int size) {
+		buffer = new XByteBuffer(size, false);
+	}
+
+	/**
+	 * Writes the specified byte to this output stream.
+	 *
+	 * @param b
+	 *            the <code>byte</code>.
+	 * @throws IOException
+	 *             if an I/O error occurs. In particular, an
+	 *             <code>IOException</code> may be thrown if the output stream
+	 *             has been closed. TODO Implement this java.io.OutputStream
+	 *             method
+	 */
+	@Override
+	public void write(int b) throws IOException {
+		buffer.append((byte) b);
+	}
+
+	public int size() {
+		return buffer.getLength();
+	}
+
+	public byte[] getArrayDirect() {
+		return buffer.getBytesDirect();
+	}
+
+	public byte[] getArray() {
+		return buffer.getBytes();
+	}
 
 }

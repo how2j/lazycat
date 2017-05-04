@@ -27,98 +27,95 @@ import org.apache.juli.logging.LogFactory;
 
 /**
  * Receive replicated SessionMessage form other cluster node.
+ * 
  * @author Filip Hanik
  * @author Peter Rossbach
  */
 public class ClusterSessionListener extends ClusterListener {
 
-    private static final Log log =
-        LogFactory.getLog(ClusterSessionListener.class);
-    
-    /**
-     * The descriptive information about this implementation.
-     */
-    protected static final String info = "org.apache.catalina.ha.session.ClusterSessionListener/1.1";
+	private static final Log log = LogFactory.getLog(ClusterSessionListener.class);
 
-    //--Constructor---------------------------------------------
+	/**
+	 * The descriptive information about this implementation.
+	 */
+	protected static final String info = "org.apache.catalina.ha.session.ClusterSessionListener/1.1";
 
-    public ClusterSessionListener() {
-        // NO-OP
-    }
+	// --Constructor---------------------------------------------
 
-    //--Logic---------------------------------------------------
+	public ClusterSessionListener() {
+		// NO-OP
+	}
 
-    /**
-     * Return descriptive information about this implementation.
-     */
-    public String getInfo() {
+	// --Logic---------------------------------------------------
 
-        return (info);
+	/**
+	 * Return descriptive information about this implementation.
+	 */
+	public String getInfo() {
 
-    }
+		return (info);
 
-    /**
-     * Callback from the cluster, when a message is received, The cluster will
-     * broadcast it invoking the messageReceived on the receiver.
-     * 
-     * @param myobj
-     *            ClusterMessage - the message received from the cluster
-     */
-    @Override
-    public void messageReceived(ClusterMessage myobj) {
-        if (myobj != null && myobj instanceof SessionMessage) {
-            SessionMessage msg = (SessionMessage) myobj;
-            String ctxname = msg.getContextName();
-            //check if the message is a EVT_GET_ALL_SESSIONS,
-            //if so, wait until we are fully started up
-            Map<String,ClusterManager> managers = cluster.getManagers() ;
-            if (ctxname == null) {
-                for (Map.Entry<String, ClusterManager> entry :
-                        managers.entrySet()) {
-                    if (entry.getValue() != null)
-                        entry.getValue().messageDataReceived(msg);
-                    else {
-                        //this happens a lot before the system has started
-                        // up
-                        if (log.isDebugEnabled())
-                            log.debug("Context manager doesn't exist:"
-                                    + entry.getKey());
-                    }
-                }
-            } else {
-                ClusterManager mgr = managers.get(ctxname);
-                if (mgr != null) {
-                    mgr.messageDataReceived(msg);
-                } else {
-                    if (log.isWarnEnabled())
-                        log.warn("Context manager doesn't exist:" + ctxname);
+	}
 
-                    // A no context manager message is replied in order to avoid
-                    // timeout of GET_ALL_SESSIONS sync phase.
-                    if (msg.getEventType() == SessionMessage.EVT_GET_ALL_SESSIONS) {
-                        SessionMessage replymsg = new SessionMessageImpl(ctxname,
-                                SessionMessage.EVT_ALL_SESSION_NOCONTEXTMANAGER,
-                                null, "NO-CONTEXT-MANAGER","NO-CONTEXT-MANAGER-" + ctxname);
-                        cluster.send(replymsg, msg.getAddress());
-                    }
-                }
-            }
-        }
-        return;
-    }
+	/**
+	 * Callback from the cluster, when a message is received, The cluster will
+	 * broadcast it invoking the messageReceived on the receiver.
+	 * 
+	 * @param myobj
+	 *            ClusterMessage - the message received from the cluster
+	 */
+	@Override
+	public void messageReceived(ClusterMessage myobj) {
+		if (myobj != null && myobj instanceof SessionMessage) {
+			SessionMessage msg = (SessionMessage) myobj;
+			String ctxname = msg.getContextName();
+			// check if the message is a EVT_GET_ALL_SESSIONS,
+			// if so, wait until we are fully started up
+			Map<String, ClusterManager> managers = cluster.getManagers();
+			if (ctxname == null) {
+				for (Map.Entry<String, ClusterManager> entry : managers.entrySet()) {
+					if (entry.getValue() != null)
+						entry.getValue().messageDataReceived(msg);
+					else {
+						// this happens a lot before the system has started
+						// up
+						if (log.isDebugEnabled())
+							log.debug("Context manager doesn't exist:" + entry.getKey());
+					}
+				}
+			} else {
+				ClusterManager mgr = managers.get(ctxname);
+				if (mgr != null) {
+					mgr.messageDataReceived(msg);
+				} else {
+					if (log.isWarnEnabled())
+						log.warn("Context manager doesn't exist:" + ctxname);
 
-    /**
-     * Accept only SessionMessage
-     * 
-     * @param msg
-     *            ClusterMessage
-     * @return boolean - returns true to indicate that messageReceived should be
-     *         invoked. If false is returned, the messageReceived method will
-     *         not be invoked.
-     */
-    @Override
-    public boolean accept(ClusterMessage msg) {
-        return (msg instanceof SessionMessage);
-    }
+					// A no context manager message is replied in order to avoid
+					// timeout of GET_ALL_SESSIONS sync phase.
+					if (msg.getEventType() == SessionMessage.EVT_GET_ALL_SESSIONS) {
+						SessionMessage replymsg = new SessionMessageImpl(ctxname,
+								SessionMessage.EVT_ALL_SESSION_NOCONTEXTMANAGER, null, "NO-CONTEXT-MANAGER",
+								"NO-CONTEXT-MANAGER-" + ctxname);
+						cluster.send(replymsg, msg.getAddress());
+					}
+				}
+			}
+		}
+		return;
+	}
+
+	/**
+	 * Accept only SessionMessage
+	 * 
+	 * @param msg
+	 *            ClusterMessage
+	 * @return boolean - returns true to indicate that messageReceived should be
+	 *         invoked. If false is returned, the messageReceived method will
+	 *         not be invoked.
+	 */
+	@Override
+	public boolean accept(ClusterMessage msg) {
+		return (msg instanceof SessionMessage);
+	}
 }
-

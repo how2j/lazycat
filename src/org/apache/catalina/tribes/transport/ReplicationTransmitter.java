@@ -26,123 +26,123 @@ import org.apache.catalina.tribes.transport.nio.PooledParallelSender;
 import org.apache.catalina.tribes.util.StringManager;
 
 /**
- * Transmit message to other cluster members
- * Actual senders are created based on the replicationMode
- * type 
+ * Transmit message to other cluster members Actual senders are created based on
+ * the replicationMode type
  * 
  * @author Filip Hanik
  */
 public class ReplicationTransmitter implements ChannelSender {
 
-    private Channel channel;
+	private Channel channel;
 
-    /**
-     * The descriptive information about this implementation.
-     */
-    private static final String info = "ReplicationTransmitter/3.0";
+	/**
+	 * The descriptive information about this implementation.
+	 */
+	private static final String info = "ReplicationTransmitter/3.0";
 
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm = StringManager.getManager(Constants.Package);
+	/**
+	 * The string manager for this package.
+	 */
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
+	public ReplicationTransmitter() {
+	}
 
-    public ReplicationTransmitter() {
-    }
+	private MultiPointSender transport = new PooledParallelSender();
 
-    private MultiPointSender transport = new PooledParallelSender();
+	/**
+	 * Return descriptive information about this implementation and the
+	 * corresponding version number, in the format
+	 * <code>&lt;description&gt;/&lt;version&gt;</code>.
+	 */
+	public String getInfo() {
+		return (info);
+	}
 
-    /**
-     * Return descriptive information about this implementation and the
-     * corresponding version number, in the format
-     * <code>&lt;description&gt;/&lt;version&gt;</code>.
-     */
-    public String getInfo() {
-        return (info);
-    }
+	public MultiPointSender getTransport() {
+		return transport;
+	}
 
-    public MultiPointSender getTransport() {
-        return transport;
-    }
+	public void setTransport(MultiPointSender transport) {
+		this.transport = transport;
+	}
 
-    public void setTransport(MultiPointSender transport) {
-        this.transport = transport;
-    }
-    
-    // ------------------------------------------------------------- public
-    
-    /**
-     * Send data to one member
-     * @see org.apache.catalina.tribes.ChannelSender#sendMessage(org.apache.catalina.tribes.ChannelMessage, org.apache.catalina.tribes.Member[])
-     */
-    @Override
-    public void sendMessage(ChannelMessage message, Member[] destination) throws ChannelException {
-        MultiPointSender sender = getTransport();
-        sender.sendMessage(destination,message);
-    }
-    
-    
-    /**
-     * start the sender and register transmitter mbean
-     * 
-     * @see org.apache.catalina.tribes.ChannelSender#start()
-     */
-    @Override
-    public void start() throws java.io.IOException {
-        getTransport().connect();
-    }
+	// ------------------------------------------------------------- public
 
-    /**
-     * stop the sender and deregister mbeans (transmitter, senders)
-     * 
-     * @see org.apache.catalina.tribes.ChannelSender#stop()
-     */
-    @Override
-    public synchronized void stop() {
-        getTransport().disconnect();
-        channel = null;
-    }
+	/**
+	 * Send data to one member
+	 * 
+	 * @see org.apache.catalina.tribes.ChannelSender#sendMessage(org.apache.catalina.tribes.ChannelMessage,
+	 *      org.apache.catalina.tribes.Member[])
+	 */
+	@Override
+	public void sendMessage(ChannelMessage message, Member[] destination) throws ChannelException {
+		MultiPointSender sender = getTransport();
+		sender.sendMessage(destination, message);
+	}
 
-    /**
-     * Call transmitter to check for sender socket status
-     * 
-     * @see org.apache.catalina.ha.tcp.SimpleTcpCluster#backgroundProcess()
-     */
-    @Override
-    public void heartbeat() {
-        if (getTransport()!=null) getTransport().keepalive();
-    }
+	/**
+	 * start the sender and register transmitter mbean
+	 * 
+	 * @see org.apache.catalina.tribes.ChannelSender#start()
+	 */
+	@Override
+	public void start() throws java.io.IOException {
+		getTransport().connect();
+	}
 
-    /**
-     * add new cluster member and create sender ( s. replicationMode) transfer
-     * current properties to sender
-     * 
-     * @see org.apache.catalina.tribes.ChannelSender#add(org.apache.catalina.tribes.Member)
-     */
-    @Override
-    public synchronized void add(Member member) {
-        getTransport().add(member);
-    }
+	/**
+	 * stop the sender and deregister mbeans (transmitter, senders)
+	 * 
+	 * @see org.apache.catalina.tribes.ChannelSender#stop()
+	 */
+	@Override
+	public synchronized void stop() {
+		getTransport().disconnect();
+		channel = null;
+	}
 
-    /**
-     * remove sender from transmitter. ( deregister mbean and disconnect sender )
-     * 
-     * @see org.apache.catalina.tribes.ChannelSender#remove(org.apache.catalina.tribes.Member)
-     */
-    @Override
-    public synchronized void remove(Member member) {
-        getTransport().remove(member);
-    }
+	/**
+	 * Call transmitter to check for sender socket status
+	 * 
+	 * @see org.apache.catalina.ha.tcp.SimpleTcpCluster#backgroundProcess()
+	 */
+	@Override
+	public void heartbeat() {
+		if (getTransport() != null)
+			getTransport().keepalive();
+	}
 
-    public Channel getChannel() {
-        return channel;
-    }
+	/**
+	 * add new cluster member and create sender ( s. replicationMode) transfer
+	 * current properties to sender
+	 * 
+	 * @see org.apache.catalina.tribes.ChannelSender#add(org.apache.catalina.tribes.Member)
+	 */
+	@Override
+	public synchronized void add(Member member) {
+		getTransport().add(member);
+	}
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
+	/**
+	 * remove sender from transmitter. ( deregister mbean and disconnect sender
+	 * )
+	 * 
+	 * @see org.apache.catalina.tribes.ChannelSender#remove(org.apache.catalina.tribes.Member)
+	 */
+	@Override
+	public synchronized void remove(Member member) {
+		getTransport().remove(member);
+	}
 
-    // ------------------------------------------------------------- protected
+	public Channel getChannel() {
+		return channel;
+	}
 
+	public void setChannel(Channel channel) {
+		this.channel = channel;
+	}
+
+	// ------------------------------------------------------------- protected
 
 }

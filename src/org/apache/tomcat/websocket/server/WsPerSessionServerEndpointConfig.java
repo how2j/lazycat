@@ -27,58 +27,57 @@ import javax.websocket.server.ServerEndpointConfig;
 
 /**
  * Wraps the provided {@link ServerEndpointConfig} and provides a per session
- * view - the difference being that the map returned by {@link
- * #getUserProperties()} is unique to this instance rather than shared with the
- * wrapped {@link ServerEndpointConfig}.
+ * view - the difference being that the map returned by
+ * {@link #getUserProperties()} is unique to this instance rather than shared
+ * with the wrapped {@link ServerEndpointConfig}.
  */
 class WsPerSessionServerEndpointConfig implements ServerEndpointConfig {
 
-    private final ServerEndpointConfig perEndpointConfig;
-    private final Map<String,Object> perSessionUserProperties =
-            new ConcurrentHashMap<String,Object>();
+	private final ServerEndpointConfig perEndpointConfig;
+	private final Map<String, Object> perSessionUserProperties = new ConcurrentHashMap<String, Object>();
 
-    WsPerSessionServerEndpointConfig(ServerEndpointConfig perEndpointConfig) {
-        this.perEndpointConfig = perEndpointConfig;
-        perSessionUserProperties.putAll(perEndpointConfig.getUserProperties());
-    }
+	WsPerSessionServerEndpointConfig(ServerEndpointConfig perEndpointConfig) {
+		this.perEndpointConfig = perEndpointConfig;
+		perSessionUserProperties.putAll(perEndpointConfig.getUserProperties());
+	}
 
-    @Override
-    public List<Class<? extends Encoder>> getEncoders() {
-        return perEndpointConfig.getEncoders();
-    }
+	@Override
+	public List<Class<? extends Encoder>> getEncoders() {
+		return perEndpointConfig.getEncoders();
+	}
 
-    @Override
-    public List<Class<? extends Decoder>> getDecoders() {
-        return perEndpointConfig.getDecoders();
-    }
+	@Override
+	public List<Class<? extends Decoder>> getDecoders() {
+		return perEndpointConfig.getDecoders();
+	}
 
-    @Override
-    public Map<String,Object> getUserProperties() {
-        return perSessionUserProperties;
-    }
+	@Override
+	public Map<String, Object> getUserProperties() {
+		return perSessionUserProperties;
+	}
 
-    @Override
-    public Class<?> getEndpointClass() {
-        return perEndpointConfig.getEndpointClass();
-    }
+	@Override
+	public Class<?> getEndpointClass() {
+		return perEndpointConfig.getEndpointClass();
+	}
 
-    @Override
-    public String getPath() {
-        return perEndpointConfig.getPath();
-    }
+	@Override
+	public String getPath() {
+		return perEndpointConfig.getPath();
+	}
 
-    @Override
-    public List<String> getSubprotocols() {
-        return perEndpointConfig.getSubprotocols();
-    }
+	@Override
+	public List<String> getSubprotocols() {
+		return perEndpointConfig.getSubprotocols();
+	}
 
-    @Override
-    public List<Extension> getExtensions() {
-        return perEndpointConfig.getExtensions();
-    }
+	@Override
+	public List<Extension> getExtensions() {
+		return perEndpointConfig.getExtensions();
+	}
 
-    @Override
-    public Configurator getConfigurator() {
-        return perEndpointConfig.getConfigurator();
-    }
+	@Override
+	public Configurator getConfigurator() {
+		return perEndpointConfig.getConfigurator();
+	}
 }

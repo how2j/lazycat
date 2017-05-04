@@ -26,25 +26,23 @@ import org.apache.naming.StringManager;
 
 public class ClasspathURLStreamHandler extends URLStreamHandler {
 
-    private static final StringManager sm =
-            StringManager.getManager(Constants.Package);
+	private static final StringManager sm = StringManager.getManager(Constants.Package);
 
+	@Override
+	protected URLConnection openConnection(URL u) throws IOException {
+		String path = u.getPath();
 
-    @Override
-    protected URLConnection openConnection(URL u) throws IOException {
-        String path = u.getPath();
+		// Thread context class loader first
+		URL classpathUrl = Thread.currentThread().getContextClassLoader().getResource(path);
+		if (classpathUrl == null) {
+			// This class's class loader if no joy with the tccl
+			classpathUrl = ClasspathURLStreamHandler.class.getResource(path);
+		}
 
-        // Thread context class loader first
-        URL classpathUrl = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (classpathUrl == null) {
-            // This class's class loader if no joy with the tccl
-            classpathUrl = ClasspathURLStreamHandler.class.getResource(path);
-        }
+		if (classpathUrl == null) {
+			throw new FileNotFoundException(sm.getString("classpathUrlStreamHandler.notFound", u));
+		}
 
-        if (classpathUrl == null) {
-            throw new FileNotFoundException(sm.getString("classpathUrlStreamHandler.notFound", u));
-        }
-
-        return classpathUrl.openConnection();
-    }
+		return classpathUrl.openConnection();
+	}
 }

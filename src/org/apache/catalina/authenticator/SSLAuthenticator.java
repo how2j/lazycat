@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.authenticator;
-
 
 import java.io.IOException;
 import java.security.Principal;
@@ -29,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.deploy.LoginConfig;
 
-
-
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of authentication
  * that utilizes SSL certificates to identify client users.
@@ -38,98 +34,88 @@ import org.apache.catalina.deploy.LoginConfig;
  * @author Craig R. McClanahan
  */
 
-public class SSLAuthenticator
-    extends AuthenticatorBase {
+public class SSLAuthenticator extends AuthenticatorBase {
 
+	// ------------------------------------------------------------- Properties
 
-    // ------------------------------------------------------------- Properties
+	/**
+	 * Descriptive information about this implementation.
+	 */
+	protected static final String info = "org.apache.catalina.authenticator.SSLAuthenticator/1.0";
 
+	/**
+	 * Return descriptive information about this Valve implementation.
+	 */
+	@Override
+	public String getInfo() {
 
-    /**
-     * Descriptive information about this implementation.
-     */
-    protected static final String info =
-        "org.apache.catalina.authenticator.SSLAuthenticator/1.0";
+		return (info);
 
+	}
 
-    /**
-     * Return descriptive information about this Valve implementation.
-     */
-    @Override
-    public String getInfo() {
+	// --------------------------------------------------------- Public Methods
 
-        return (info);
+	/**
+	 * Authenticate the user by checking for the existence of a certificate
+	 * chain, validating it against the trust manager for the connector and then
+	 * validating the user's identity against the configured Realm.
+	 *
+	 * @param request
+	 *            Request we are processing
+	 * @param response
+	 *            Response we are creating
+	 * @param config
+	 *            Login configuration describing how authentication should be
+	 *            performed
+	 *
+	 * @exception IOException
+	 *                if an input/output error occurs
+	 */
+	@Override
+	public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException {
 
-    }
+		// NOTE: We don't try to reauthenticate using any existing SSO session,
+		// because that will only work if the original authentication was
+		// BASIC or FORM, which are less secure than the CLIENT-CERT auth-type
+		// specified for this webapp
+		//
+		// Change to true below to allow previous FORM or BASIC authentications
+		// to authenticate users for this webapp
+		// TODO make this a configurable attribute (in SingleSignOn??)
+		if (checkForCachedAuthentication(request, response, false)) {
+			return true;
+		}
 
+		// Retrieve the certificate chain for this client
+		if (containerLog.isDebugEnabled())
+			containerLog.debug(" Looking up certificates");
 
-    // --------------------------------------------------------- Public Methods
+		X509Certificate certs[] = getRequestCertificates(request);
 
+		if ((certs == null) || (certs.length < 1)) {
+			if (containerLog.isDebugEnabled())
+				containerLog.debug("  No certificates included with this request");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, sm.getString("authenticator.certificates"));
+			return false;
+		}
 
-    /**
-     * Authenticate the user by checking for the existence of a certificate
-     * chain, validating it against the trust manager for the connector and then
-     * validating the user's identity against the configured Realm.
-     *
-     * @param request Request we are processing
-     * @param response Response we are creating
-     * @param config    Login configuration describing how authentication
-     *              should be performed
-     *
-     * @exception IOException if an input/output error occurs
-     */
-    @Override
-    public boolean authenticate(Request request,
-                                HttpServletResponse response,
-                                LoginConfig config)
-        throws IOException {
+		// Authenticate the specified certificate chain
+		Principal principal = context.getRealm().authenticate(certs);
+		if (principal == null) {
+			if (containerLog.isDebugEnabled())
+				containerLog.debug("  Realm.authenticate() returned false");
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, sm.getString("authenticator.unauthorized"));
+			return (false);
+		}
 
-        // NOTE: We don't try to reauthenticate using any existing SSO session,
-        // because that will only work if the original authentication was
-        // BASIC or FORM, which are less secure than the CLIENT-CERT auth-type
-        // specified for this webapp
-        //
-        // Change to true below to allow previous FORM or BASIC authentications
-        // to authenticate users for this webapp
-        // TODO make this a configurable attribute (in SingleSignOn??)
-        if (checkForCachedAuthentication(request, response, false)) {
-            return true;
-        }
+		// Cache the principal (if requested) and record this authentication
+		register(request, response, principal, HttpServletRequest.CLIENT_CERT_AUTH, null, null);
+		return (true);
 
-        // Retrieve the certificate chain for this client
-        if (containerLog.isDebugEnabled())
-            containerLog.debug(" Looking up certificates");
+	}
 
-        X509Certificate certs[] = getRequestCertificates(request);
-
-        if ((certs == null) || (certs.length < 1)) {
-            if (containerLog.isDebugEnabled())
-                containerLog.debug("  No certificates included with this request");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    sm.getString("authenticator.certificates"));
-            return false;
-        }
-
-        // Authenticate the specified certificate chain
-        Principal principal = context.getRealm().authenticate(certs);
-        if (principal == null) {
-            if (containerLog.isDebugEnabled())
-                containerLog.debug("  Realm.authenticate() returned false");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                               sm.getString("authenticator.unauthorized"));
-            return (false);
-        }
-
-        // Cache the principal (if requested) and record this authentication
-        register(request, response, principal,
-                HttpServletRequest.CLIENT_CERT_AUTH, null, null);
-        return (true);
-
-    }
-
-
-    @Override
-    protected String getAuthMethod() {
-        return HttpServletRequest.CLIENT_CERT_AUTH;
-    }
+	@Override
+	protected String getAuthMethod() {
+		return HttpServletRequest.CLIENT_CERT_AUTH;
+	}
 }

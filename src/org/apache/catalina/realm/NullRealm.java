@@ -25,22 +25,22 @@ import java.security.Principal;
  */
 public class NullRealm extends RealmBase {
 
-    private static final String NAME = "NullRealm";
+	private static final String NAME = "NullRealm";
 
-    @Override
-    protected String getName() {
-        return NAME;
-    }
+	@Override
+	protected String getName() {
+		return NAME;
+	}
 
-    @Override
-    protected String getPassword(String username) {
-        // Always return null
-        return null;
-    }
+	@Override
+	protected String getPassword(String username) {
+		// Always return null
+		return null;
+	}
 
-    @Override
-    protected Principal getPrincipal(String username) {
-        // Always return null
-        return null;
-    }
+	@Override
+	protected Principal getPrincipal(String username) {
+		// Always return null
+		return null;
+	}
 }

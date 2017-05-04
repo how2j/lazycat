@@ -17,79 +17,107 @@
 
 package org.apache.tomcat.jni;
 
-/** Directory
+/**
+ * Directory
  *
  * @author Mladen Turk
  */
 public class Directory {
 
-    /**
-     * Create a new directory on the file system.
-     * @param path the path for the directory to be created. (use / on all systems)
-     * @param perm Permissions for the new directory.
-     * @param pool the pool to use.
-     */
-    public static native int make(String path, int perm, long pool);
+	/**
+	 * Create a new directory on the file system.
+	 * 
+	 * @param path
+	 *            the path for the directory to be created. (use / on all
+	 *            systems)
+	 * @param perm
+	 *            Permissions for the new directory.
+	 * @param pool
+	 *            the pool to use.
+	 */
+	public static native int make(String path, int perm, long pool);
 
-    /** Creates a new directory on the file system, but behaves like
-     * 'mkdir -p'. Creates intermediate directories as required. No error
-     * will be reported if PATH already exists.
-     * @param path the path for the directory to be created. (use / on all systems)
-     * @param perm Permissions for the new directory.
-     * @param pool the pool to use.
-     */
-    public static native int makeRecursive(String path, int perm, long pool);
+	/**
+	 * Creates a new directory on the file system, but behaves like 'mkdir -p'.
+	 * Creates intermediate directories as required. No error will be reported
+	 * if PATH already exists.
+	 * 
+	 * @param path
+	 *            the path for the directory to be created. (use / on all
+	 *            systems)
+	 * @param perm
+	 *            Permissions for the new directory.
+	 * @param pool
+	 *            the pool to use.
+	 */
+	public static native int makeRecursive(String path, int perm, long pool);
 
-    /**
-     * Remove directory from the file system.
-     * @param path the path for the directory to be removed. (use / on all systems)
-     * @param pool the pool to use.
-     */
-    public static native int remove(String path, long pool);
+	/**
+	 * Remove directory from the file system.
+	 * 
+	 * @param path
+	 *            the path for the directory to be removed. (use / on all
+	 *            systems)
+	 * @param pool
+	 *            the pool to use.
+	 */
+	public static native int remove(String path, long pool);
 
-    /**
-     * Find an existing directory suitable as a temporary storage location.
-     * @param pool The pool to use for any necessary allocations.
-     * @return The temp directory.
-     *
-     * This function uses an algorithm to search for a directory that an
-     * an application can use for temporary storage.  Once such a
-     * directory is found, that location is cached by the library.  Thus,
-     * callers only pay the cost of this algorithm once if that one time
-     * is successful.
-     *
-     */
-    public static native String tempGet(long pool);
+	/**
+	 * Find an existing directory suitable as a temporary storage location.
+	 * 
+	 * @param pool
+	 *            The pool to use for any necessary allocations.
+	 * @return The temp directory.
+	 *
+	 *         This function uses an algorithm to search for a directory that an
+	 *         an application can use for temporary storage. Once such a
+	 *         directory is found, that location is cached by the library. Thus,
+	 *         callers only pay the cost of this algorithm once if that one time
+	 *         is successful.
+	 *
+	 */
+	public static native String tempGet(long pool);
 
-    /**
-     * Open the specified directory.
-     * @param dirname The full path to the directory (use / on all systems)
-     * @param pool The pool to use.
-     * @return The opened directory descriptor.
-     */
-    public static native long open(String dirname, long pool)
-        throws Error;
+	/**
+	 * Open the specified directory.
+	 * 
+	 * @param dirname
+	 *            The full path to the directory (use / on all systems)
+	 * @param pool
+	 *            The pool to use.
+	 * @return The opened directory descriptor.
+	 */
+	public static native long open(String dirname, long pool) throws Error;
 
-    /**
-     * close the specified directory.
-     * @param thedir the directory descriptor to close.
-     */
-    public static native int close(long thedir);
+	/**
+	 * close the specified directory.
+	 * 
+	 * @param thedir
+	 *            the directory descriptor to close.
+	 */
+	public static native int close(long thedir);
 
-    /**
-     * Rewind the directory to the first entry.
-     * @param thedir the directory descriptor to rewind.
-     */
-    public static native int rewind(long thedir);
+	/**
+	 * Rewind the directory to the first entry.
+	 * 
+	 * @param thedir
+	 *            the directory descriptor to rewind.
+	 */
+	public static native int rewind(long thedir);
 
-
-    /**
-     * Read the next entry from the specified directory.
-     * @param finfo the file info structure and filled in by apr_dir_read
-     * @param wanted The desired apr_finfo_t fields, as a bit flag of APR_FINFO_ values
-     * @param thedir the directory descriptor returned from apr_dir_open
-     * No ordering is guaranteed for the entries read.
-     */
-    public static native int read(FileInfo finfo, int wanted, long thedir);
+	/**
+	 * Read the next entry from the specified directory.
+	 * 
+	 * @param finfo
+	 *            the file info structure and filled in by apr_dir_read
+	 * @param wanted
+	 *            The desired apr_finfo_t fields, as a bit flag of APR_FINFO_
+	 *            values
+	 * @param thedir
+	 *            the directory descriptor returned from apr_dir_open No
+	 *            ordering is guaranteed for the entries read.
+	 */
+	public static native int read(FileInfo finfo, int wanted, long thedir);
 
 }

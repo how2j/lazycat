@@ -37,12 +37,15 @@ import org.apache.juli.logging.LogFactory;
  * information available to Tomcat, some additional configuration is required.
  * In httpd, mod_headers is used to add the SSL information as HTTP headers. In
  * Tomcat, this valve is used to read the information from the HTTP headers and
- * insert it into the request.<p>
+ * insert it into the request.
+ * <p>
  *
  * <b>Note: Ensure that the headers are always set by httpd for all requests to
- * prevent a client spoofing SSL information by sending fake headers. </b><p>
+ * prevent a client spoofing SSL information by sending fake headers. </b>
+ * <p>
  *
  * In httpd.conf add the following:
+ * 
  * <pre>
  * &lt;IfModule ssl_module&gt;
  *   RequestHeader set SSL_CLIENT_CERT "%{SSL_CLIENT_CERT}s"
@@ -53,6 +56,7 @@ import org.apache.juli.logging.LogFactory;
  * </pre>
  *
  * In server.xml, configure this valve under the Engine element in server.xml:
+ * 
  * <pre>
  * &lt;Engine ...&gt;
  *   &lt;Valve className="org.apache.catalina.valves.SSLValve" /&gt;
@@ -62,113 +66,111 @@ import org.apache.juli.logging.LogFactory;
  */
 public class SSLValve extends ValveBase {
 
-    private static final Log log = LogFactory.getLog(SSLValve.class);
+	private static final Log log = LogFactory.getLog(SSLValve.class);
 
-    private String sslClientCertHeader = "ssl_client_cert";
-    private String sslCipherHeader = "ssl_cipher";
-    private String sslSessionIdHeader = "ssl_session_id";
-    private String sslCipherUserKeySizeHeader = "ssl_cipher_usekeysize";
+	private String sslClientCertHeader = "ssl_client_cert";
+	private String sslCipherHeader = "ssl_cipher";
+	private String sslSessionIdHeader = "ssl_session_id";
+	private String sslCipherUserKeySizeHeader = "ssl_cipher_usekeysize";
 
-    //------------------------------------------------------ Constructor
-    public SSLValve() {
-        super(true);
-    }
+	// ------------------------------------------------------ Constructor
+	public SSLValve() {
+		super(true);
+	}
 
+	public String getSslClientCertHeader() {
+		return sslClientCertHeader;
+	}
 
-    public String getSslClientCertHeader() {
-        return sslClientCertHeader;
-    }
+	public void setSslClientCertHeader(String sslClientCertHeader) {
+		this.sslClientCertHeader = sslClientCertHeader;
+	}
 
-    public void setSslClientCertHeader(String sslClientCertHeader) {
-        this.sslClientCertHeader = sslClientCertHeader;
-    }
+	public String getSslCipherHeader() {
+		return sslCipherHeader;
+	}
 
-    public String getSslCipherHeader() {
-        return sslCipherHeader;
-    }
+	public void setSslCipherHeader(String sslCipherHeader) {
+		this.sslCipherHeader = sslCipherHeader;
+	}
 
-    public void setSslCipherHeader(String sslCipherHeader) {
-        this.sslCipherHeader = sslCipherHeader;
-    }
+	public String getSslSessionIdHeader() {
+		return sslSessionIdHeader;
+	}
 
-    public String getSslSessionIdHeader() {
-        return sslSessionIdHeader;
-    }
+	public void setSslSessionIdHeader(String sslSessionIdHeader) {
+		this.sslSessionIdHeader = sslSessionIdHeader;
+	}
 
-    public void setSslSessionIdHeader(String sslSessionIdHeader) {
-        this.sslSessionIdHeader = sslSessionIdHeader;
-    }
+	public String getSslCipherUserKeySizeHeader() {
+		return sslCipherUserKeySizeHeader;
+	}
 
-    public String getSslCipherUserKeySizeHeader() {
-        return sslCipherUserKeySizeHeader;
-    }
+	public void setSslCipherUserKeySizeHeader(String sslCipherUserKeySizeHeader) {
+		this.sslCipherUserKeySizeHeader = sslCipherUserKeySizeHeader;
+	}
 
-    public void setSslCipherUserKeySizeHeader(String sslCipherUserKeySizeHeader) {
-        this.sslCipherUserKeySizeHeader = sslCipherUserKeySizeHeader;
-    }
+	public String mygetHeader(Request request, String header) {
+		String strcert0 = request.getHeader(header);
+		if (strcert0 == null) {
+			return null;
+		}
+		/* mod_header writes "(null)" when the ssl variable is no filled */
+		if ("(null)".equals(strcert0)) {
+			return null;
+		}
+		return strcert0;
+	}
 
+	@Override
+	public void invoke(Request request, Response response) throws IOException, ServletException {
 
-    public String mygetHeader(Request request, String header) {
-        String strcert0 = request.getHeader(header);
-        if (strcert0 == null) {
-            return null;
-        }
-        /* mod_header writes "(null)" when the ssl variable is no filled */
-        if ("(null)".equals(strcert0)) {
-            return null;
-        }
-        return strcert0;
-    }
-    @Override
-    public void invoke(Request request, Response response)
-        throws IOException, ServletException {
-
-        /* mod_header converts the '\n' into ' ' so we have to rebuild the client certificate */
-        String strcert0 = mygetHeader(request, sslClientCertHeader);
-        if (strcert0 != null && strcert0.length()>28) {
-            String strcert1 = strcert0.replace(' ', '\n');
-            String strcert2 = strcert1.substring(28, strcert1.length()-26);
-            String strcert3 = "-----BEGIN CERTIFICATE-----\n";
-            String strcert4 = strcert3.concat(strcert2);
-            String strcerts = strcert4.concat("\n-----END CERTIFICATE-----\n");
-            // ByteArrayInputStream bais = new ByteArrayInputStream(strcerts.getBytes("UTF-8"));
-            ByteArrayInputStream bais = new ByteArrayInputStream(
-                    strcerts.getBytes(Charset.defaultCharset()));
-            X509Certificate jsseCerts[] = null;
-            String providerName = (String) request.getConnector().getProperty(
-                    "clientCertProvider");
-            try {
-                CertificateFactory cf;
-                if (providerName == null) {
-                    cf = CertificateFactory.getInstance("X.509");
-                } else {
-                    cf = CertificateFactory.getInstance("X.509", providerName);
-                }
-                X509Certificate cert = (X509Certificate) cf.generateCertificate(bais);
-                jsseCerts = new X509Certificate[1];
-                jsseCerts[0] = cert;
-            } catch (java.security.cert.CertificateException e) {
-                log.warn(sm.getString("sslValve.certError", strcerts), e);
-            } catch (NoSuchProviderException e) {
-                log.error(sm.getString(
-                        "sslValve.invalidProvider", providerName), e);
-            }
-            request.setAttribute(Globals.CERTIFICATES_ATTR, jsseCerts);
-        }
-        strcert0 = mygetHeader(request, sslCipherHeader);
-        if (strcert0 != null) {
-            request.setAttribute(Globals.CIPHER_SUITE_ATTR, strcert0);
-        }
-        strcert0 = mygetHeader(request, sslSessionIdHeader);
-        if (strcert0 != null) {
-            request.setAttribute(Globals.SSL_SESSION_ID_ATTR, strcert0);
-            request.setAttribute(Globals.SSL_SESSION_ID_TOMCAT_ATTR, strcert0);
-        }
-        strcert0 = mygetHeader(request, sslCipherUserKeySizeHeader);
-        if (strcert0 != null) {
-            request.setAttribute(Globals.KEY_SIZE_ATTR,
-                    Integer.valueOf(strcert0));
-        }
-        getNext().invoke(request, response);
-    }
+		/*
+		 * mod_header converts the '\n' into ' ' so we have to rebuild the
+		 * client certificate
+		 */
+		String strcert0 = mygetHeader(request, sslClientCertHeader);
+		if (strcert0 != null && strcert0.length() > 28) {
+			String strcert1 = strcert0.replace(' ', '\n');
+			String strcert2 = strcert1.substring(28, strcert1.length() - 26);
+			String strcert3 = "-----BEGIN CERTIFICATE-----\n";
+			String strcert4 = strcert3.concat(strcert2);
+			String strcerts = strcert4.concat("\n-----END CERTIFICATE-----\n");
+			// ByteArrayInputStream bais = new
+			// ByteArrayInputStream(strcerts.getBytes("UTF-8"));
+			ByteArrayInputStream bais = new ByteArrayInputStream(strcerts.getBytes(Charset.defaultCharset()));
+			X509Certificate jsseCerts[] = null;
+			String providerName = (String) request.getConnector().getProperty("clientCertProvider");
+			try {
+				CertificateFactory cf;
+				if (providerName == null) {
+					cf = CertificateFactory.getInstance("X.509");
+				} else {
+					cf = CertificateFactory.getInstance("X.509", providerName);
+				}
+				X509Certificate cert = (X509Certificate) cf.generateCertificate(bais);
+				jsseCerts = new X509Certificate[1];
+				jsseCerts[0] = cert;
+			} catch (java.security.cert.CertificateException e) {
+				log.warn(sm.getString("sslValve.certError", strcerts), e);
+			} catch (NoSuchProviderException e) {
+				log.error(sm.getString("sslValve.invalidProvider", providerName), e);
+			}
+			request.setAttribute(Globals.CERTIFICATES_ATTR, jsseCerts);
+		}
+		strcert0 = mygetHeader(request, sslCipherHeader);
+		if (strcert0 != null) {
+			request.setAttribute(Globals.CIPHER_SUITE_ATTR, strcert0);
+		}
+		strcert0 = mygetHeader(request, sslSessionIdHeader);
+		if (strcert0 != null) {
+			request.setAttribute(Globals.SSL_SESSION_ID_ATTR, strcert0);
+			request.setAttribute(Globals.SSL_SESSION_ID_TOMCAT_ATTR, strcert0);
+		}
+		strcert0 = mygetHeader(request, sslCipherUserKeySizeHeader);
+		if (strcert0 != null) {
+			request.setAttribute(Globals.KEY_SIZE_ATTR, Integer.valueOf(strcert0));
+		}
+		getNext().invoke(request, response);
+	}
 }

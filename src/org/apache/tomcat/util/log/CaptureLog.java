@@ -28,23 +28,23 @@ import java.io.PrintStream;
 
 class CaptureLog {
 
-    protected CaptureLog() {
-        baos = new ByteArrayOutputStream();
-        ps = new PrintStream(baos);
-    }
+	protected CaptureLog() {
+		baos = new ByteArrayOutputStream();
+		ps = new PrintStream(baos);
+	}
 
-    private ByteArrayOutputStream baos;
-    private PrintStream ps;
+	private ByteArrayOutputStream baos;
+	private PrintStream ps;
 
-    protected PrintStream getStream() {
-        return ps;
-    }
+	protected PrintStream getStream() {
+		return ps;
+	}
 
-    protected void reset() {
-        baos.reset();
-    }
+	protected void reset() {
+		baos.reset();
+	}
 
-    protected String getCapture() {
-        return baos.toString();
-    }
+	protected String getCapture() {
+		return baos.toString();
+	}
 }

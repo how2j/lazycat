@@ -26,34 +26,36 @@ import javax.el.FunctionMapper;
  */
 public class FunctionMapperFactory extends FunctionMapper {
 
-    protected FunctionMapperImpl memento = null;
-    protected FunctionMapper target;
+	protected FunctionMapperImpl memento = null;
+	protected FunctionMapper target;
 
-    public FunctionMapperFactory(FunctionMapper mapper) {
-        if (mapper == null) {
-            throw new NullPointerException("FunctionMapper target cannot be null");
-        }
-        this.target = mapper;
-    }
+	public FunctionMapperFactory(FunctionMapper mapper) {
+		if (mapper == null) {
+			throw new NullPointerException("FunctionMapper target cannot be null");
+		}
+		this.target = mapper;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.el.FunctionMapper#resolveFunction(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public Method resolveFunction(String prefix, String localName) {
+		if (this.memento == null) {
+			this.memento = new FunctionMapperImpl();
+		}
+		Method m = this.target.resolveFunction(prefix, localName);
+		if (m != null) {
+			this.memento.addFunction(prefix, localName, m);
+		}
+		return m;
+	}
 
-    /* (non-Javadoc)
-     * @see javax.el.FunctionMapper#resolveFunction(java.lang.String, java.lang.String)
-     */
-    @Override
-    public Method resolveFunction(String prefix, String localName) {
-        if (this.memento == null) {
-            this.memento = new FunctionMapperImpl();
-        }
-        Method m = this.target.resolveFunction(prefix, localName);
-        if (m != null) {
-            this.memento.addFunction(prefix, localName, m);
-        }
-        return m;
-    }
-
-    public FunctionMapper create() {
-        return this.memento;
-    }
+	public FunctionMapper create() {
+		return this.memento;
+	}
 
 }

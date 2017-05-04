@@ -15,90 +15,83 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.startup;
-
 
 import org.apache.tomcat.util.digester.Digester;
 import org.apache.tomcat.util.digester.Rule;
 import org.apache.tomcat.util.digester.RuleSetBase;
 
-
 /**
- * <p><strong>RuleSet</strong> for processing the contents of a tag library
- * descriptor resource.</p>
+ * <p>
+ * <strong>RuleSet</strong> for processing the contents of a tag library
+ * descriptor resource.
+ * </p>
  *
  * @author Craig R. McClanahan
  */
 public class TldRuleSet extends RuleSetBase {
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * The matching pattern prefix to use for recognizing our elements.
+	 */
+	protected String prefix = null;
 
+	// ------------------------------------------------------------ Constructor
 
-    /**
-     * The matching pattern prefix to use for recognizing our elements.
-     */
-    protected String prefix = null;
+	/**
+	 * Construct an instance of this <code>RuleSet</code> with the default
+	 * matching pattern prefix.
+	 */
+	public TldRuleSet() {
 
+		this("");
 
-    // ------------------------------------------------------------ Constructor
+	}
 
+	/**
+	 * Construct an instance of this <code>RuleSet</code> with the specified
+	 * matching pattern prefix.
+	 *
+	 * @param prefix
+	 *            Prefix for matching pattern rules (including the trailing
+	 *            slash character)
+	 */
+	public TldRuleSet(String prefix) {
 
-    /**
-     * Construct an instance of this <code>RuleSet</code> with the default
-     * matching pattern prefix.
-     */
-    public TldRuleSet() {
+		super();
+		this.namespaceURI = null;
+		this.prefix = prefix;
 
-        this("");
+	}
 
-    }
+	// --------------------------------------------------------- Public Methods
 
+	/**
+	 * <p>
+	 * Add the set of Rule instances defined in this RuleSet to the specified
+	 * <code>Digester</code> instance, associating them with our namespace URI
+	 * (if any). This method should only be called by a Digester instance.
+	 * </p>
+	 *
+	 * @param digester
+	 *            Digester instance to which the new Rule instances should be
+	 *            added.
+	 */
+	@Override
+	public void addRuleInstances(Digester digester) {
 
-    /**
-     * Construct an instance of this <code>RuleSet</code> with the specified
-     * matching pattern prefix.
-     *
-     * @param prefix Prefix for matching pattern rules (including the
-     *  trailing slash character)
-     */
-    public TldRuleSet(String prefix) {
+		// Note the sharing of state between rules
+		TaglibUriRule taglibUriRule = new TaglibUriRule();
 
-        super();
-        this.namespaceURI = null;
-        this.prefix = prefix;
+		digester.addRule(prefix + "taglib", new TaglibRule(taglibUriRule));
 
-    }
+		digester.addRule(prefix + "taglib/uri", taglibUriRule);
 
+		digester.addRule(prefix + "taglib/listener/listener-class", new TaglibListenerRule(taglibUriRule));
 
-    // --------------------------------------------------------- Public Methods
-
-
-    /**
-     * <p>Add the set of Rule instances defined in this RuleSet to the
-     * specified <code>Digester</code> instance, associating them with
-     * our namespace URI (if any).  This method should only be called
-     * by a Digester instance.</p>
-     *
-     * @param digester Digester instance to which the new Rule instances
-     *  should be added.
-     */
-    @Override
-    public void addRuleInstances(Digester digester) {
-
-        // Note the sharing of state between rules
-        TaglibUriRule taglibUriRule = new TaglibUriRule(); 
-
-        digester.addRule(prefix + "taglib", new TaglibRule(taglibUriRule));
-        
-        digester.addRule(prefix + "taglib/uri", taglibUriRule);
-
-        digester.addRule(prefix + "taglib/listener/listener-class",
-                new TaglibListenerRule(taglibUriRule));
-
-    }
-
+	}
 
 }
 
@@ -106,81 +99,74 @@ public class TldRuleSet extends RuleSetBase {
  * This rule only exists to reset the duplicateUri flag on the TaglibUriRule.
  */
 final class TaglibRule extends Rule {
-    private final TaglibUriRule taglibUriRule;
-    
-    public TaglibRule(TaglibUriRule taglibUriRule) {
-        this.taglibUriRule = taglibUriRule;
-    }
-    
-    @Override
-    public void body(String namespace, String name, String text)
-    throws Exception {
-        taglibUriRule.setDuplicateUri(false);
-    }
+	private final TaglibUriRule taglibUriRule;
+
+	public TaglibRule(TaglibUriRule taglibUriRule) {
+		this.taglibUriRule = taglibUriRule;
+	}
+
+	@Override
+	public void body(String namespace, String name, String text) throws Exception {
+		taglibUriRule.setDuplicateUri(false);
+	}
 
 }
 
 final class TaglibUriRule extends Rule {
-    
-    // This is set to false for each file processed by the TaglibRule
-    private boolean duplicateUri;
-    
-    public TaglibUriRule() {
-    }
 
-    @Override
-    public void body(String namespace, String name, String text)
-            throws Exception {
-        TldConfig tldConfig =
-            (TldConfig) digester.peek(digester.getCount() - 1);
-        if (tldConfig.isKnownTaglibUri(text)) {
-            // Already seen this URI
-            duplicateUri = true;
-            // This is expected if the URI was defined in web.xml
-            // Log message at debug in this case
-            if (tldConfig.isKnownWebxmlTaglibUri(text)) {
-                if (digester.getLogger().isDebugEnabled()) {
-                    digester.getLogger().debug(
-                            "TLD skipped. URI: " + text + " is already defined");
-                }
-            } else {
-                digester.getLogger().info(
-                        "TLD skipped. URI: " + text + " is already defined");
-            }
-        } else {
-            // New URI. Add it to known list and carry on
-            tldConfig.addTaglibUri(text);
-        }
-    }
-    
-    public boolean isDuplicateUri() {
-        return duplicateUri;
-    }
+	// This is set to false for each file processed by the TaglibRule
+	private boolean duplicateUri;
 
-    public void setDuplicateUri(boolean duplciateUri) {
-        this.duplicateUri = duplciateUri;
-    }
+	public TaglibUriRule() {
+	}
+
+	@Override
+	public void body(String namespace, String name, String text) throws Exception {
+		TldConfig tldConfig = (TldConfig) digester.peek(digester.getCount() - 1);
+		if (tldConfig.isKnownTaglibUri(text)) {
+			// Already seen this URI
+			duplicateUri = true;
+			// This is expected if the URI was defined in web.xml
+			// Log message at debug in this case
+			if (tldConfig.isKnownWebxmlTaglibUri(text)) {
+				if (digester.getLogger().isDebugEnabled()) {
+					digester.getLogger().debug("TLD skipped. URI: " + text + " is already defined");
+				}
+			} else {
+				digester.getLogger().info("TLD skipped. URI: " + text + " is already defined");
+			}
+		} else {
+			// New URI. Add it to known list and carry on
+			tldConfig.addTaglibUri(text);
+		}
+	}
+
+	public boolean isDuplicateUri() {
+		return duplicateUri;
+	}
+
+	public void setDuplicateUri(boolean duplciateUri) {
+		this.duplicateUri = duplciateUri;
+	}
 
 }
 
 final class TaglibListenerRule extends Rule {
-    
-    private final TaglibUriRule taglibUriRule;
-    
-    public TaglibListenerRule(TaglibUriRule taglibUriRule) {
-        this.taglibUriRule = taglibUriRule;
-    }
 
-    @Override
-    public void body(String namespace, String name, String text)
-            throws Exception {
-        TldConfig tldConfig =
-            (TldConfig) digester.peek(digester.getCount() - 1);
-        
-        // Only process the listener if the URI is not a duplicate
-        if (!taglibUriRule.isDuplicateUri()) {
-            tldConfig.addApplicationListener(text.trim());
-        }
-    }
-    
+	private final TaglibUriRule taglibUriRule;
+
+	public TaglibListenerRule(TaglibUriRule taglibUriRule) {
+		this.taglibUriRule = taglibUriRule;
+	}
+
+	@Override
+	public void body(String namespace, String name, String text) throws Exception {
+		TldConfig tldConfig = (TldConfig) digester.peek(digester.getCount() - 1);
+
+		// Only process the listener if the URI is not a duplicate
+		if (!taglibUriRule.isDuplicateUri()) {
+			tldConfig.addApplicationListener(text.trim());
+		}
+	}
+
 }

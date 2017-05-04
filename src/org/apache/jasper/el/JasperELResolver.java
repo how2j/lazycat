@@ -38,126 +38,123 @@ import javax.servlet.jsp.el.ScopedAttributeELResolver;
  */
 public class JasperELResolver extends CompositeELResolver {
 
-    private int size;
-    private ELResolver[] resolvers;
-    private final int appResolversSize;
+	private int size;
+	private ELResolver[] resolvers;
+	private final int appResolversSize;
 
-    public JasperELResolver(List<ELResolver> appResolvers) {
-        appResolversSize = appResolvers.size();
-        resolvers = new ELResolver[appResolversSize + 7];
-        size = 0;
+	public JasperELResolver(List<ELResolver> appResolvers) {
+		appResolversSize = appResolvers.size();
+		resolvers = new ELResolver[appResolversSize + 7];
+		size = 0;
 
-        add(new ImplicitObjectELResolver());
-        for (ELResolver appResolver : appResolvers) {
-            add(appResolver);
-        }
-        add(new MapELResolver());
-        add(new ResourceBundleELResolver());
-        add(new ListELResolver());
-        add(new ArrayELResolver());
-        add(new BeanELResolver());
-        add(new ScopedAttributeELResolver());
-    }
+		add(new ImplicitObjectELResolver());
+		for (ELResolver appResolver : appResolvers) {
+			add(appResolver);
+		}
+		add(new MapELResolver());
+		add(new ResourceBundleELResolver());
+		add(new ListELResolver());
+		add(new ArrayELResolver());
+		add(new BeanELResolver());
+		add(new ScopedAttributeELResolver());
+	}
 
-    @Override
-    public synchronized void add(ELResolver elResolver) {
-        super.add(elResolver);
+	@Override
+	public synchronized void add(ELResolver elResolver) {
+		super.add(elResolver);
 
-        if (resolvers.length > size) {
-            resolvers[size] = elResolver;
-        } else {
-            ELResolver[] nr = new ELResolver[size + 1];
-            System.arraycopy(resolvers, 0, nr, 0, size);
-            nr[size] = elResolver;
+		if (resolvers.length > size) {
+			resolvers[size] = elResolver;
+		} else {
+			ELResolver[] nr = new ELResolver[size + 1];
+			System.arraycopy(resolvers, 0, nr, 0, size);
+			nr[size] = elResolver;
 
-            resolvers = nr;
-        }
-        size ++;
-    }
+			resolvers = nr;
+		}
+		size++;
+	}
 
-    @Override
-    public Object getValue(ELContext context, Object base, Object property)
-        throws NullPointerException, PropertyNotFoundException, ELException {
-        context.setPropertyResolved(false);
+	@Override
+	public Object getValue(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		context.setPropertyResolved(false);
 
-        int start;
-        Object result = null;
+		int start;
+		Object result = null;
 
-        if (base == null) {
-            // call implicit and app resolvers
-            int index = 1 /* implicit */ + appResolversSize;
-            for (int i = 0; i < index; i++) {
-                result = resolvers[i].getValue(context, base, property);
-                if (context.isPropertyResolved()) {
-                    return result;
-                }
-            }
-            // skip collection-based resolvers (map, resource, list, array, and
-            // bean)
-            start = index + 5;
-        } else {
-            // skip implicit resolver only
-            start = 1;
-        }
+		if (base == null) {
+			// call implicit and app resolvers
+			int index = 1 /* implicit */ + appResolversSize;
+			for (int i = 0; i < index; i++) {
+				result = resolvers[i].getValue(context, base, property);
+				if (context.isPropertyResolved()) {
+					return result;
+				}
+			}
+			// skip collection-based resolvers (map, resource, list, array, and
+			// bean)
+			start = index + 5;
+		} else {
+			// skip implicit resolver only
+			start = 1;
+		}
 
-        for (int i = start; i < size; i++) {
-            result = resolvers[i].getValue(context, base, property);
-            if (context.isPropertyResolved()) {
-                return result;
-            }
-        }
+		for (int i = start; i < size; i++) {
+			result = resolvers[i].getValue(context, base, property);
+			if (context.isPropertyResolved()) {
+				return result;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Object invoke(ELContext context, Object base, Object method,
-            Class<?>[] paramTypes, Object[] params) {
-        String targetMethod = coerceToString(method);
-        if (targetMethod.length() == 0) {
-            throw new ELException(new NoSuchMethodException());
-        }
+	@Override
+	public Object invoke(ELContext context, Object base, Object method, Class<?>[] paramTypes, Object[] params) {
+		String targetMethod = coerceToString(method);
+		if (targetMethod.length() == 0) {
+			throw new ELException(new NoSuchMethodException());
+		}
 
-        context.setPropertyResolved(false);
+		context.setPropertyResolved(false);
 
-        Object result = null;
+		Object result = null;
 
-        // skip implicit and call app resolvers
-        int index = 1 /* implicit */ + appResolversSize;
-        for (int i = 1; i < index; i++) {
-            result = resolvers[i].invoke(
-                    context, base, targetMethod, paramTypes, params);
-            if (context.isPropertyResolved()) {
-                return result;
-            }
-        }
+		// skip implicit and call app resolvers
+		int index = 1 /* implicit */ + appResolversSize;
+		for (int i = 1; i < index; i++) {
+			result = resolvers[i].invoke(context, base, targetMethod, paramTypes, params);
+			if (context.isPropertyResolved()) {
+				return result;
+			}
+		}
 
-        // skip map, resource, list, and array resolvers
-        index += 4;
-        // call bean and the rest of resolvers
-        for (int i = index; i < size; i++) {
-            result = resolvers[i].invoke(
-                    context, base, targetMethod, paramTypes, params);
-            if (context.isPropertyResolved()) {
-                return result;
-            }
-        }
+		// skip map, resource, list, and array resolvers
+		index += 4;
+		// call bean and the rest of resolvers
+		for (int i = index; i < size; i++) {
+			result = resolvers[i].invoke(context, base, targetMethod, paramTypes, params);
+			if (context.isPropertyResolved()) {
+				return result;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * Copied from {@link org.apache.el.lang.ELSupport#coerceToString(Object)}.
-     */
-    private static final String coerceToString(final Object obj) {
-        if (obj == null) {
-            return "";
-        } else if (obj instanceof String) {
-            return (String) obj;
-        } else if (obj instanceof Enum<?>) {
-            return ((Enum<?>) obj).name();
-        } else {
-            return obj.toString();
-        }
-    }
+	/**
+	 * Copied from {@link org.apache.el.lang.ELSupport#coerceToString(Object)}.
+	 */
+	private static final String coerceToString(final Object obj) {
+		if (obj == null) {
+			return "";
+		} else if (obj instanceof String) {
+			return (String) obj;
+		} else if (obj instanceof Enum<?>) {
+			return ((Enum<?>) obj).name();
+		} else {
+			return obj.toString();
+		}
+	}
 }

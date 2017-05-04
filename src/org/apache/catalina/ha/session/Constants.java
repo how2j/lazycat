@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ha.session;
 
 /**
@@ -27,6 +26,6 @@ package org.apache.catalina.ha.session;
 
 public class Constants {
 
-    public static final String Package = "org.apache.catalina.ha.session";
+	public static final String Package = "org.apache.catalina.ha.session";
 
 }

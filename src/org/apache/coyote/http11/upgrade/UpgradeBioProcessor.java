@@ -24,64 +24,57 @@ import java.net.Socket;
 import org.apache.tomcat.util.net.SocketWrapper;
 
 /**
- * @deprecated  Will be removed in Tomcat 8.0.x.
+ * @deprecated Will be removed in Tomcat 8.0.x.
  */
 @Deprecated
 public class UpgradeBioProcessor extends UpgradeProcessor<Socket> {
 
-    private final InputStream inputStream;
-    private final OutputStream outputStream;
+	private final InputStream inputStream;
+	private final OutputStream outputStream;
 
-    public UpgradeBioProcessor(SocketWrapper<Socket> wrapper,
-            UpgradeInbound upgradeInbound) throws IOException {
-        super(upgradeInbound);
+	public UpgradeBioProcessor(SocketWrapper<Socket> wrapper, UpgradeInbound upgradeInbound) throws IOException {
+		super(upgradeInbound);
 
-        int timeout = upgradeInbound.getReadTimeout();
-        if (timeout < 0) {
-            timeout = 0;
-        }
-        wrapper.getSocket().setSoTimeout(timeout);
+		int timeout = upgradeInbound.getReadTimeout();
+		if (timeout < 0) {
+			timeout = 0;
+		}
+		wrapper.getSocket().setSoTimeout(timeout);
 
-        this.inputStream = wrapper.getSocket().getInputStream();
-        this.outputStream = wrapper.getSocket().getOutputStream();
-    }
+		this.inputStream = wrapper.getSocket().getInputStream();
+		this.outputStream = wrapper.getSocket().getOutputStream();
+	}
 
+	/*
+	 * Output methods
+	 */
+	@Override
+	public void flush() throws IOException {
+		outputStream.flush();
+	}
 
-    /*
-     * Output methods
-     */
-    @Override
-    public void flush() throws IOException {
-        outputStream.flush();
-    }
+	@Override
+	public void write(int b) throws IOException {
+		outputStream.write(b);
+	}
 
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		outputStream.write(b, off, len);
+	}
 
-    @Override
-    public void write(int b) throws IOException {
-        outputStream.write(b);
-    }
+	/*
+	 * Input methods
+	 */
+	@Override
+	public int read() throws IOException {
+		return inputStream.read();
+	}
 
-
-    @Override
-    public void write(byte[]b, int off, int len) throws IOException {
-        outputStream.write(b, off, len);
-    }
-
-
-    /*
-     * Input methods
-     */
-    @Override
-    public int read() throws IOException {
-        return inputStream.read();
-    }
-
-
-    @Override
-    public int read(boolean block, byte[] bytes, int off, int len)
-            throws IOException {
-        // The BIO endpoint always uses blocking IO so the block parameter is
-        // ignored and a blocking read is performed.
-        return inputStream.read(bytes, off, len);
-    }
+	@Override
+	public int read(boolean block, byte[] bytes, int off, int len) throws IOException {
+		// The BIO endpoint always uses blocking IO so the block parameter is
+		// ignored and a blocking read is performed.
+		return inputStream.read(bytes, off, len);
+	}
 }

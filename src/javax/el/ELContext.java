@@ -26,82 +26,84 @@ import java.util.Map;
  */
 public abstract class ELContext {
 
-    private Locale locale;
-    
-    private Map<Class<?>, Object> map;
-    
-    private boolean resolved;
-    
-    /**
-     * 
-     */
-    public ELContext() {
-        this.resolved = false;
-    }
-    
-    // Can't use Class<?> because API needs to match specification
-    /**
-     * Obtain the context object for the given key.
-     *
-     * @param key The key of the required context object
-     *
-     * @return The value of the context object associated with the given key
-     *
-     * @throws NullPointerException
-     *              If the supplied key is <code>null</code>
-     */
-    public Object getContext(@SuppressWarnings("rawtypes") Class key) {
-        if (key == null) {
-            throw new NullPointerException();
-        }
-        if (this.map == null) {
-            return null;
-        }
-        return this.map.get(key);
-    }
-    
-    // Can't use Class<?> because API needs to match specification
-    /**
-     * Add an object to this EL context under the given key.
-     *
-     * @param key           The key under which to store the object
-     * @param contextObject The object to add
-     *
-     * @throws NullPointerException
-     *              If the supplied key or context is <code>null</code>
-     */
-    public void putContext(@SuppressWarnings("rawtypes") Class key,
-            Object contextObject) throws NullPointerException {
-        if (key == null || contextObject == null) {
-            throw new NullPointerException();
-        }
-        
-        if (this.map == null) {
-            this.map = new HashMap<Class<?>, Object>();
-        }
-        
-        this.map.put(key, contextObject);
-    }
-    
-    public void setPropertyResolved(boolean resolved) {
-        this.resolved = resolved;
-    }
-    
-    public boolean isPropertyResolved() {
-        return this.resolved;
-    }
-    
-    public abstract ELResolver getELResolver();
+	private Locale locale;
 
-    public abstract FunctionMapper getFunctionMapper();
-    
-    public abstract VariableMapper getVariableMapper();
-    
-    public Locale getLocale() {
-        return this.locale;
-    }
-    
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
+	private Map<Class<?>, Object> map;
+
+	private boolean resolved;
+
+	/**
+	 * 
+	 */
+	public ELContext() {
+		this.resolved = false;
+	}
+
+	// Can't use Class<?> because API needs to match specification
+	/**
+	 * Obtain the context object for the given key.
+	 *
+	 * @param key
+	 *            The key of the required context object
+	 *
+	 * @return The value of the context object associated with the given key
+	 *
+	 * @throws NullPointerException
+	 *             If the supplied key is <code>null</code>
+	 */
+	public Object getContext(@SuppressWarnings("rawtypes") Class key) {
+		if (key == null) {
+			throw new NullPointerException();
+		}
+		if (this.map == null) {
+			return null;
+		}
+		return this.map.get(key);
+	}
+
+	// Can't use Class<?> because API needs to match specification
+	/**
+	 * Add an object to this EL context under the given key.
+	 *
+	 * @param key
+	 *            The key under which to store the object
+	 * @param contextObject
+	 *            The object to add
+	 *
+	 * @throws NullPointerException
+	 *             If the supplied key or context is <code>null</code>
+	 */
+	public void putContext(@SuppressWarnings("rawtypes") Class key, Object contextObject) throws NullPointerException {
+		if (key == null || contextObject == null) {
+			throw new NullPointerException();
+		}
+
+		if (this.map == null) {
+			this.map = new HashMap<Class<?>, Object>();
+		}
+
+		this.map.put(key, contextObject);
+	}
+
+	public void setPropertyResolved(boolean resolved) {
+		this.resolved = resolved;
+	}
+
+	public boolean isPropertyResolved() {
+		return this.resolved;
+	}
+
+	public abstract ELResolver getELResolver();
+
+	public abstract FunctionMapper getFunctionMapper();
+
+	public abstract VariableMapper getVariableMapper();
+
+	public Locale getLocale() {
+		return this.locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
 }

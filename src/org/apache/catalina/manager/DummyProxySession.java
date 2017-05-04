@@ -27,185 +27,185 @@ import org.apache.catalina.SessionListener;
 
 public class DummyProxySession implements Session {
 
-    private String sessionId;
-    
-    public DummyProxySession(String sessionId) {
-        this.sessionId = sessionId;
-    }
+	private String sessionId;
 
-    @Override
-    public void access() {
-        // NOOP
-    }
+	public DummyProxySession(String sessionId) {
+		this.sessionId = sessionId;
+	}
 
-    @Override
-    public void addSessionListener(SessionListener listener) {
-        // NOOP
-    }
+	@Override
+	public void access() {
+		// NOOP
+	}
 
-    @Override
-    public void endAccess() {
-        // NOOP
-    }
+	@Override
+	public void addSessionListener(SessionListener listener) {
+		// NOOP
+	}
 
-    @Override
-    public void expire() {
-        // NOOP
-    }
+	@Override
+	public void endAccess() {
+		// NOOP
+	}
 
-    @Override
-    public String getAuthType() {
-        return null;
-    }
+	@Override
+	public void expire() {
+		// NOOP
+	}
 
-    @Override
-    public long getCreationTime() {
-        return 0;
-    }
+	@Override
+	public String getAuthType() {
+		return null;
+	}
 
-    @Override
-    public long getCreationTimeInternal() {
-        return 0;
-    }
+	@Override
+	public long getCreationTime() {
+		return 0;
+	}
 
-    @Override
-    public String getId() {
-        return sessionId;
-    }
+	@Override
+	public long getCreationTimeInternal() {
+		return 0;
+	}
 
-    @Override
-    public String getIdInternal() {
-        return sessionId;
-    }
+	@Override
+	public String getId() {
+		return sessionId;
+	}
 
-    @Override
-    public String getInfo() {
-        return null;
-    }
+	@Override
+	public String getIdInternal() {
+		return sessionId;
+	}
 
-    @Override
-    public long getLastAccessedTime() {
-        return 0;
-    }
+	@Override
+	public String getInfo() {
+		return null;
+	}
 
-    @Override
-    public long getLastAccessedTimeInternal() {
-        return 0;
-    }
+	@Override
+	public long getLastAccessedTime() {
+		return 0;
+	}
 
-    @Override
-    public Manager getManager() {
-        return null;
-    }
+	@Override
+	public long getLastAccessedTimeInternal() {
+		return 0;
+	}
 
-    @Override
-    public int getMaxInactiveInterval() {
-        return 0;
-    }
+	@Override
+	public Manager getManager() {
+		return null;
+	}
 
-    @Override
-    public Object getNote(String name) {
-        return null;
-    }
+	@Override
+	public int getMaxInactiveInterval() {
+		return 0;
+	}
 
-    @Override
-    public Iterator<String> getNoteNames() {
-        return null;
-    }
+	@Override
+	public Object getNote(String name) {
+		return null;
+	}
 
-    @Override
-    public Principal getPrincipal() {
-        return null;
-    }
+	@Override
+	public Iterator<String> getNoteNames() {
+		return null;
+	}
 
-    @Override
-    public HttpSession getSession() {
-        return null;
-    }
+	@Override
+	public Principal getPrincipal() {
+		return null;
+	}
 
-    @Override
-    public long getThisAccessedTime() {
-        return 0;
-    }
+	@Override
+	public HttpSession getSession() {
+		return null;
+	}
 
-    @Override
-    public long getThisAccessedTimeInternal() {
-        return 0;
-    }
+	@Override
+	public long getThisAccessedTime() {
+		return 0;
+	}
 
-    @Override
-    public boolean isValid() {
-        return false;
-    }
+	@Override
+	public long getThisAccessedTimeInternal() {
+		return 0;
+	}
 
-    @Override
-    public void recycle() {
-        // NOOP
-    }
+	@Override
+	public boolean isValid() {
+		return false;
+	}
 
-    @Override
-    public void removeNote(String name) {
-        // NOOP
-    }
+	@Override
+	public void recycle() {
+		// NOOP
+	}
 
-    @Override
-    public void removeSessionListener(SessionListener listener) {
-        // NOOP
-    }
+	@Override
+	public void removeNote(String name) {
+		// NOOP
+	}
 
-    @Override
-    public void setAuthType(String authType) {
-        // NOOP
-    }
+	@Override
+	public void removeSessionListener(SessionListener listener) {
+		// NOOP
+	}
 
-    @Override
-    public void setCreationTime(long time) {
-        // NOOP
-    }
+	@Override
+	public void setAuthType(String authType) {
+		// NOOP
+	}
 
-    @Override
-    public void setId(String id) {
-        this.sessionId = id;
-    }
+	@Override
+	public void setCreationTime(long time) {
+		// NOOP
+	}
 
-    @Override
-    public void setId(String id, boolean notify) {
-        this.sessionId = id;
-        // Ignore notify
-    }
+	@Override
+	public void setId(String id) {
+		this.sessionId = id;
+	}
 
-    @Override
-    public void setManager(Manager manager) {
-        // NOOP
-    }
+	@Override
+	public void setId(String id, boolean notify) {
+		this.sessionId = id;
+		// Ignore notify
+	}
 
-    @Override
-    public void setMaxInactiveInterval(int interval) {
-        // NOOP
-    }
+	@Override
+	public void setManager(Manager manager) {
+		// NOOP
+	}
 
-    @Override
-    public void setNew(boolean isNew) {
-        // NOOP
-    }
+	@Override
+	public void setMaxInactiveInterval(int interval) {
+		// NOOP
+	}
 
-    @Override
-    public void setNote(String name, Object value) {
-        // NOOP
-    }
+	@Override
+	public void setNew(boolean isNew) {
+		// NOOP
+	}
 
-    @Override
-    public void setPrincipal(Principal principal) {
-        // NOOP
-    }
+	@Override
+	public void setNote(String name, Object value) {
+		// NOOP
+	}
 
-    @Override
-    public void setValid(boolean isValid) {
-        // NOOP
-    }
+	@Override
+	public void setPrincipal(Principal principal) {
+		// NOOP
+	}
 
-    @Override
-    public boolean isAttributeDistributable(String name, Object value) {
-        return false;
-    }
+	@Override
+	public void setValid(boolean isValid) {
+		// NOOP
+	}
+
+	@Override
+	public boolean isAttributeDistributable(String name, Object value) {
+		return false;
+	}
 }

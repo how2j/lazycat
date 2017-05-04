@@ -21,23 +21,23 @@ import java.io.IOException;
 /**
  * Receives notification of write events when using non-blocking IO.
  */
-public interface WriteListener extends java.util.EventListener{
+public interface WriteListener extends java.util.EventListener {
 
-    /**
-     * Invoked when it it possible to write data without blocking. The container
-     * will invoke this method the first time for a request as soon as data can
-     * be written. Subsequent invocations will only occur if a call to {@link
-     * org.apache.coyote.http11.upgrade.AbstractServletOutputStream#isReady()}
-     * has returned false and it has since become possible to write data.
-     *
-     * @throws IOException
-     */
-    public void onWritePossible() throws IOException;
+	/**
+	 * Invoked when it it possible to write data without blocking. The container
+	 * will invoke this method the first time for a request as soon as data can
+	 * be written. Subsequent invocations will only occur if a call to
+	 * {@link org.apache.coyote.http11.upgrade.AbstractServletOutputStream#isReady()}
+	 * has returned false and it has since become possible to write data.
+	 *
+	 * @throws IOException
+	 */
+	public void onWritePossible() throws IOException;
 
-    /**
-     * Invoked if an error occurs while writing the response.
-     *
-     * @param throwable
-     */
-    public void onError(java.lang.Throwable throwable);
+	/**
+	 * Invoked if an error occurs while writing the response.
+	 *
+	 * @param throwable
+	 */
+	public void onError(java.lang.Throwable throwable);
 }

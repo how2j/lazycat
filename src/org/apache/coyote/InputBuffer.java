@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import org.apache.tomcat.util.buf.ByteChunk;
 
-
 /**
  * Input buffer.
  *
@@ -33,14 +32,12 @@ import org.apache.tomcat.util.buf.ByteChunk;
  */
 public interface InputBuffer {
 
-
-    /** Return from the input stream.
-        IMPORTANT: the current model assumes that the protocol will 'own' the
-        buffer and return a pointer to it in ByteChunk ( i.e. the param will
-        have chunk.getBytes()==null before call, and the result after the call ).
-    */
-    public int doRead(ByteChunk chunk, Request request) 
-        throws IOException;
-
+	/**
+	 * Return from the input stream. IMPORTANT: the current model assumes that
+	 * the protocol will 'own' the buffer and return a pointer to it in
+	 * ByteChunk ( i.e. the param will have chunk.getBytes()==null before call,
+	 * and the result after the call ).
+	 */
+	public int doRead(ByteChunk chunk, Request request) throws IOException;
 
 }

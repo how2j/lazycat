@@ -21,38 +21,37 @@ package org.apache.tomcat.util.http.mapper;
  */
 public class WrapperMappingInfo {
 
-    private final String mapping;
+	private final String mapping;
 
-    /** <code>org.apache.catalina.Wrapper</code> */
-    private final Object wrapper;
-    private final boolean jspWildCard;
-    private final boolean resourceOnly;
+	/** <code>org.apache.catalina.Wrapper</code> */
+	private final Object wrapper;
+	private final boolean jspWildCard;
+	private final boolean resourceOnly;
 
-    public WrapperMappingInfo(String mapping, /* Wrapper */Object wrapper,
-            boolean jspWildCard, boolean resourceOnly) {
-        this.mapping = mapping;
-        this.wrapper = wrapper;
-        this.jspWildCard = jspWildCard;
-        this.resourceOnly = resourceOnly;
-    }
+	public WrapperMappingInfo(String mapping, /* Wrapper */Object wrapper, boolean jspWildCard, boolean resourceOnly) {
+		this.mapping = mapping;
+		this.wrapper = wrapper;
+		this.jspWildCard = jspWildCard;
+		this.resourceOnly = resourceOnly;
+	}
 
-    public String getMapping() {
-        return mapping;
-    }
+	public String getMapping() {
+		return mapping;
+	}
 
-    /**
-     * @return <code>org.apache.catalina.Wrapper</code>
-     */
-    public Object getWrapper() {
-        return wrapper;
-    }
+	/**
+	 * @return <code>org.apache.catalina.Wrapper</code>
+	 */
+	public Object getWrapper() {
+		return wrapper;
+	}
 
-    public boolean isJspWildCard() {
-        return jspWildCard;
-    }
+	public boolean isJspWildCard() {
+		return jspWildCard;
+	}
 
-    public boolean isResourceOnly() {
-        return resourceOnly;
-    }
+	public boolean isResourceOnly() {
+		return resourceOnly;
+	}
 
 }

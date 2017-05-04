@@ -22,6 +22,6 @@ package org.apache.catalina.ha.deploy;
  */
 public class Constants {
 
-    public static final String Package = "org.apache.catalina.ha.deploy";
+	public static final String Package = "org.apache.catalina.ha.deploy";
 
 }

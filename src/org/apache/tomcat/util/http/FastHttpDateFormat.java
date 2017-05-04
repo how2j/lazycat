@@ -32,201 +32,176 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class FastHttpDateFormat {
 
+	// -------------------------------------------------------------- Variables
 
-    // -------------------------------------------------------------- Variables
+	private static final int CACHE_SIZE = Integer
+			.parseInt(System.getProperty("org.apache.tomcat.util.http.FastHttpDateFormat.CACHE_SIZE", "1000"));
 
+	/**
+	 * HTTP date format.
+	 */
+	private static final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
 
-    private static final int CACHE_SIZE =
-        Integer.parseInt(System.getProperty("org.apache.tomcat.util.http.FastHttpDateFormat.CACHE_SIZE", "1000"));
+	/**
+	 * The set of SimpleDateFormat formats to use in getDateHeader().
+	 */
+	private static final SimpleDateFormat formats[] = {
+			new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US),
+			new SimpleDateFormat("EEEEEE, dd-MMM-yy HH:mm:ss zzz", Locale.US),
+			new SimpleDateFormat("EEE MMMM d HH:mm:ss yyyy", Locale.US) };
 
+	private static final TimeZone gmtZone = TimeZone.getTimeZone("GMT");
 
-    /**
-     * HTTP date format.
-     */
-    private static final SimpleDateFormat format =
-        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+	/**
+	 * GMT timezone - all HTTP dates are on GMT
+	 */
+	static {
 
+		format.setTimeZone(gmtZone);
 
-    /**
-     * The set of SimpleDateFormat formats to use in getDateHeader().
-     */
-    private static final SimpleDateFormat formats[] = {
-        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US),
-        new SimpleDateFormat("EEEEEE, dd-MMM-yy HH:mm:ss zzz", Locale.US),
-        new SimpleDateFormat("EEE MMMM d HH:mm:ss yyyy", Locale.US)
-    };
+		formats[0].setTimeZone(gmtZone);
+		formats[1].setTimeZone(gmtZone);
+		formats[2].setTimeZone(gmtZone);
 
+	}
 
-    private static final TimeZone gmtZone = TimeZone.getTimeZone("GMT");
+	/**
+	 * Instant on which the currentDate object was generated.
+	 */
+	private static volatile long currentDateGenerated = 0L;
 
+	/**
+	 * Current formatted date.
+	 */
+	private static String currentDate = null;
 
-    /**
-     * GMT timezone - all HTTP dates are on GMT
-     */
-    static {
+	/**
+	 * Formatter cache.
+	 */
+	private static final Map<Long, String> formatCache = new ConcurrentHashMap<Long, String>(CACHE_SIZE);
 
-        format.setTimeZone(gmtZone);
+	/**
+	 * Parser cache.
+	 */
+	private static final Map<String, Long> parseCache = new ConcurrentHashMap<String, Long>(CACHE_SIZE);
 
-        formats[0].setTimeZone(gmtZone);
-        formats[1].setTimeZone(gmtZone);
-        formats[2].setTimeZone(gmtZone);
+	// --------------------------------------------------------- Public Methods
 
-    }
+	/**
+	 * Get the current date in HTTP format.
+	 */
+	public static final String getCurrentDate() {
 
+		long now = System.currentTimeMillis();
+		if ((now - currentDateGenerated) > 1000) {
+			synchronized (format) {
+				if ((now - currentDateGenerated) > 1000) {
+					currentDate = format.format(new Date(now));
+					currentDateGenerated = now;
+				}
+			}
+		}
+		return currentDate;
 
-    /**
-     * Instant on which the currentDate object was generated.
-     */
-    private static volatile long currentDateGenerated = 0L;
+	}
 
+	/**
+	 * Get the HTTP format of the specified date.
+	 */
+	public static final String formatDate(long value, DateFormat threadLocalformat) {
 
-    /**
-     * Current formatted date.
-     */
-    private static String currentDate = null;
+		Long longValue = Long.valueOf(value);
+		String cachedDate = formatCache.get(longValue);
+		if (cachedDate != null) {
+			return cachedDate;
+		}
 
+		String newDate = null;
+		Date dateValue = new Date(value);
+		if (threadLocalformat != null) {
+			newDate = threadLocalformat.format(dateValue);
+			updateFormatCache(longValue, newDate);
+		} else {
+			synchronized (formatCache) {
+				synchronized (format) {
+					newDate = format.format(dateValue);
+				}
+				updateFormatCache(longValue, newDate);
+			}
+		}
+		return newDate;
 
-    /**
-     * Formatter cache.
-     */
-    private static final Map<Long, String> formatCache =
-            new ConcurrentHashMap<Long, String>(CACHE_SIZE);
+	}
 
+	/**
+	 * Try to parse the given date as a HTTP date.
+	 */
+	public static final long parseDate(String value, DateFormat[] threadLocalformats) {
 
-    /**
-     * Parser cache.
-     */
-    private static final Map<String, Long> parseCache = 
-            new ConcurrentHashMap<String, Long>(CACHE_SIZE);
+		Long cachedDate = parseCache.get(value);
+		if (cachedDate != null) {
+			return cachedDate.longValue();
+		}
 
+		Long date = null;
+		if (threadLocalformats != null) {
+			date = internalParseDate(value, threadLocalformats);
+			updateParseCache(value, date);
+		} else {
+			synchronized (parseCache) {
+				date = internalParseDate(value, formats);
+				updateParseCache(value, date);
+			}
+		}
+		if (date == null) {
+			return (-1L);
+		}
 
-    // --------------------------------------------------------- Public Methods
+		return date.longValue();
+	}
 
+	/**
+	 * Parse date with given formatters.
+	 */
+	private static final Long internalParseDate(String value, DateFormat[] formats) {
+		Date date = null;
+		for (int i = 0; (date == null) && (i < formats.length); i++) {
+			try {
+				date = formats[i].parse(value);
+			} catch (ParseException e) {
+				// Ignore
+			}
+		}
+		if (date == null) {
+			return null;
+		}
+		return Long.valueOf(date.getTime());
+	}
 
-    /**
-     * Get the current date in HTTP format.
-     */
-    public static final String getCurrentDate() {
+	/**
+	 * Update cache.
+	 */
+	private static void updateFormatCache(Long key, String value) {
+		if (value == null) {
+			return;
+		}
+		if (formatCache.size() > CACHE_SIZE) {
+			formatCache.clear();
+		}
+		formatCache.put(key, value);
+	}
 
-        long now = System.currentTimeMillis();
-        if ((now - currentDateGenerated) > 1000) {
-            synchronized (format) {
-                if ((now - currentDateGenerated) > 1000) {
-                    currentDate = format.format(new Date(now));
-                    currentDateGenerated = now;
-                }
-            }
-        }
-        return currentDate;
-
-    }
-
-
-    /**
-     * Get the HTTP format of the specified date.
-     */
-    public static final String formatDate
-        (long value, DateFormat threadLocalformat) {
-
-        Long longValue = Long.valueOf(value);
-        String cachedDate = formatCache.get(longValue);
-        if (cachedDate != null) {
-            return cachedDate;
-        }
-
-        String newDate = null;
-        Date dateValue = new Date(value);
-        if (threadLocalformat != null) {
-            newDate = threadLocalformat.format(dateValue);
-            updateFormatCache(longValue, newDate);
-        } else {
-            synchronized (formatCache) {
-                synchronized (format) {
-                    newDate = format.format(dateValue);
-                }
-                updateFormatCache(longValue, newDate);
-            }
-        }
-        return newDate;
-
-    }
-
-
-    /**
-     * Try to parse the given date as a HTTP date.
-     */
-    public static final long parseDate(String value,
-                                       DateFormat[] threadLocalformats) {
-
-        Long cachedDate = parseCache.get(value);
-        if (cachedDate != null) {
-            return cachedDate.longValue();
-        }
-
-        Long date = null;
-        if (threadLocalformats != null) {
-            date = internalParseDate(value, threadLocalformats);
-            updateParseCache(value, date);
-        } else {
-            synchronized (parseCache) {
-                date = internalParseDate(value, formats);
-                updateParseCache(value, date);
-            }
-        }
-        if (date == null) {
-            return (-1L);
-        }
-
-        return date.longValue();
-    }
-
-
-    /**
-     * Parse date with given formatters.
-     */
-    private static final Long internalParseDate
-        (String value, DateFormat[] formats) {
-        Date date = null;
-        for (int i = 0; (date == null) && (i < formats.length); i++) {
-            try {
-                date = formats[i].parse(value);
-            } catch (ParseException e) {
-                // Ignore
-            }
-        }
-        if (date == null) {
-            return null;
-        }
-        return Long.valueOf(date.getTime());
-    }
-
-
-    /**
-     * Update cache.
-     */
-    private static void updateFormatCache(Long key, String value) {
-        if (value == null) {
-            return;
-        }
-        if (formatCache.size() > CACHE_SIZE) {
-            formatCache.clear();
-        }
-        formatCache.put(key, value);
-    }
-
-
-    /**
-     * Update cache.
-     */
-    private static void updateParseCache(String key, Long value) {
-        if (value == null) {
-            return;
-        }
-        if (parseCache.size() > CACHE_SIZE) {
-            parseCache.clear();
-        }
-        parseCache.put(key, value);
-    }
-
+	/**
+	 * Update cache.
+	 */
+	private static void updateParseCache(String key, Long value) {
+		if (value == null) {
+			return;
+		}
+		if (parseCache.size() > CACHE_SIZE) {
+			parseCache.clear();
+		}
+		parseCache.put(key, value);
+	}
 
 }

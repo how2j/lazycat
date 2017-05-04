@@ -23,24 +23,24 @@ import javax.websocket.Extension;
 
 public class WsExtension implements Extension {
 
-    private final String name;
-    private final List<Parameter> parameters = new ArrayList<Parameter>();
+	private final String name;
+	private final List<Parameter> parameters = new ArrayList<Parameter>();
 
-    WsExtension(String name) {
-        this.name = name;
-    }
+	WsExtension(String name) {
+		this.name = name;
+	}
 
-    void addParameter(Parameter parameter) {
-        parameters.add(parameter);
-    }
+	void addParameter(Parameter parameter) {
+		parameters.add(parameter);
+	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public List<Parameter> getParameters() {
-        return parameters;
-    }
+	@Override
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
 }

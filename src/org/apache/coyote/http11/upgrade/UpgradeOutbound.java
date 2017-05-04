@@ -19,33 +19,32 @@ package org.apache.coyote.http11.upgrade;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
 /**
  * Allows data to be written to the upgraded connection.
  * 
- * @deprecated  Will be removed in Tomcat 8.0.x.
+ * @deprecated Will be removed in Tomcat 8.0.x.
  */
 @Deprecated
 public class UpgradeOutbound extends OutputStream {
 
-    @Override
-    public void flush() throws IOException {
-        processor.flush();
-    }
+	@Override
+	public void flush() throws IOException {
+		processor.flush();
+	}
 
-    private final UpgradeProcessor<?> processor;
+	private final UpgradeProcessor<?> processor;
 
-    public UpgradeOutbound(UpgradeProcessor<?> processor) {
-        this.processor = processor;
-    }
+	public UpgradeOutbound(UpgradeProcessor<?> processor) {
+		this.processor = processor;
+	}
 
-    @Override
-    public void write(int b) throws IOException {
-        processor.write(b);
-    }
+	@Override
+	public void write(int b) throws IOException {
+		processor.write(b);
+	}
 
-    @Override
-    public void write(byte[] b, int off, int len) throws IOException {
-        processor.write(b, off, len);
-    }
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		processor.write(b, off, len);
+	}
 }

@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ant;
-
 
 import org.apache.tools.ant.BuildException;
 
-
 /**
- * Ant task that implements the <code>/threaddump</code> command
- * supported by the Tomcat manager application.
+ * Ant task that implements the <code>/threaddump</code> command supported by
+ * the Tomcat manager application.
  *
  */
 public class ThreaddumpTask extends AbstractCatalinaTask {
 
-    // Public Methods
+	// Public Methods
 
-    /**
-     * Execute the requested operation.
-     *
-     * @exception BuildException if an error occurs
-     */
-    @Override
-    public void execute() throws BuildException {
+	/**
+	 * Execute the requested operation.
+	 *
+	 * @exception BuildException
+	 *                if an error occurs
+	 */
+	@Override
+	public void execute() throws BuildException {
 
-        super.execute();
-        execute("/threaddump");
+		super.execute();
+		execute("/threaddump");
 
-    }
+	}
 
 }

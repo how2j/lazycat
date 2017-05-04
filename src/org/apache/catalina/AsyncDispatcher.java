@@ -24,11 +24,10 @@ import javax.servlet.ServletResponse;
 
 public interface AsyncDispatcher {
 
-    /**
-     * Perform an asynchronous dispatch. The method does not check if the
-     * request is in an appropriate state for this; it is the caller's
-     * responsibility to check this.
-     */
-    public void dispatch(ServletRequest request, ServletResponse response)
-            throws ServletException, IOException;
+	/**
+	 * Perform an asynchronous dispatch. The method does not check if the
+	 * request is in an appropriate state for this; it is the caller's
+	 * responsibility to check this.
+	 */
+	public void dispatch(ServletRequest request, ServletResponse response) throws ServletException, IOException;
 }

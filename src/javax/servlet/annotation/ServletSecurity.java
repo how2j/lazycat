@@ -38,53 +38,53 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ServletSecurity {
 
-    /**
-     * Represents the two possible values of the empty role semantic, active
-     * when a list of role names is empty.
-     */
-    enum EmptyRoleSemantic {
+	/**
+	 * Represents the two possible values of the empty role semantic, active
+	 * when a list of role names is empty.
+	 */
+	enum EmptyRoleSemantic {
 
-        /**
-         * Access MUST be permitted, regardless of authentication state or
-         * identity
-         */
-        PERMIT,
+		/**
+		 * Access MUST be permitted, regardless of authentication state or
+		 * identity
+		 */
+		PERMIT,
 
-        /**
-         * Access MUST be denied, regardless of authentication state or identity
-         */
-        DENY
-    }
+		/**
+		 * Access MUST be denied, regardless of authentication state or identity
+		 */
+		DENY
+	}
 
-    /**
-     * Represents the two possible values of data transport, encrypted or not.
-     */
-    enum TransportGuarantee {
+	/**
+	 * Represents the two possible values of data transport, encrypted or not.
+	 */
+	enum TransportGuarantee {
 
-        /**
-         * User data must not be encrypted by the container during transport
-         */
-        NONE,
+		/**
+		 * User data must not be encrypted by the container during transport
+		 */
+		NONE,
 
-        /**
-         * The container MUST encrypt user data during transport
-         */
-        CONFIDENTIAL
-    }
+		/**
+		 * The container MUST encrypt user data during transport
+		 */
+		CONFIDENTIAL
+	}
 
-    /**
-     * The default constraint to apply to requests not handled by specific
-     * method constraints
-     * 
-     * @return http constraint
-     */
-    HttpConstraint value() default @HttpConstraint;
+	/**
+	 * The default constraint to apply to requests not handled by specific
+	 * method constraints
+	 * 
+	 * @return http constraint
+	 */
+	HttpConstraint value() default @HttpConstraint;
 
-    /**
-     * An array of HttpMethodConstraint objects to which the security constraint
-     * will be applied
-     * 
-     * @return array of http method constraint
-     */
-    HttpMethodConstraint[] httpMethodConstraints() default {};
+	/**
+	 * An array of HttpMethodConstraint objects to which the security constraint
+	 * will be applied
+	 * 
+	 * @return array of http method constraint
+	 */
+	HttpMethodConstraint[] httpMethodConstraints() default {};
 }

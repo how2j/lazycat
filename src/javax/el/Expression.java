@@ -24,16 +24,16 @@ import java.io.Serializable;
  */
 public abstract class Expression implements Serializable {
 
-    private static final long serialVersionUID = -6663767980471823812L;
+	private static final long serialVersionUID = -6663767980471823812L;
 
-    @Override
-    public abstract boolean equals(Object obj);
+	@Override
+	public abstract boolean equals(Object obj);
 
-    @Override
-    public abstract int hashCode();
-    
-    public abstract String getExpressionString();
-    
-    public abstract boolean isLiteralText();
+	@Override
+	public abstract int hashCode();
+
+	public abstract String getExpressionString();
+
+	public abstract boolean isLiteralText();
 
 }

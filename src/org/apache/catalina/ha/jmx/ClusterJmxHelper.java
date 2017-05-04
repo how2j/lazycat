@@ -29,106 +29,107 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
+
 /**
  * 
  * @author Filip Hanik
  *
- * @deprecated  Unused - registration now happens via
- *              {@link org.apache.catalina.util.LifecycleMBeanBase}
+ * @deprecated Unused - registration now happens via
+ *             {@link org.apache.catalina.util.LifecycleMBeanBase}
  */
 @Deprecated
 public class ClusterJmxHelper {
-    
-    protected static Registry registry = Registry.getRegistry(null,null);
-    
-    private static final Log log = LogFactory.getLog(ClusterJmxHelper.class);
-    
-    protected static boolean jmxEnabled = true;
-    
-    protected static MBeanServer mbeanServer = null;
-    
-    public static Registry getRegistry() {
-        return registry;
-    }
 
-    public static MBeanServer getMBeanServer() throws Exception {
-        if (mbeanServer == null) {
-            if (MBeanServerFactory.findMBeanServer(null).size() > 0) {
-                mbeanServer = MBeanServerFactory.findMBeanServer(null).get(0);
-            } else {
-                mbeanServer = MBeanServerFactory.createMBeanServer();
-            }
-        }
-        return mbeanServer;
-    }
-    
-    protected static boolean initMetaData(Class<?> clazz) {
-        try {
-            if (clazz==null) return false;
-            getRegistry().loadMetadata(clazz.getResourceAsStream("mbeans-descriptors.xml"));
-        }catch (Exception x) {
-            log.warn("Unable to load meta data for class:"+clazz.getName());
-            return false;
-        }
-        return true;
-    }
-    
-    public static DynamicMBean getManagedBean(Object object) throws Exception {
-        DynamicMBean mbean = null;
-        if (getRegistry() != null) {
-            ManagedBean managedBean = registry.findManagedBean(object.getClass().getName());
-            mbean = managedBean.createMBean(object);
-        }
-        return mbean;
-    }
+	protected static Registry registry = Registry.getRegistry(null, null);
 
-    
-    protected static void initDefaultCluster() {
-        initMetaData(SimpleTcpCluster.class);
-        initMetaData(FarmWarDeployer.class); //not functional yet
-    }
-    
-    public static boolean registerDefaultCluster(SimpleTcpCluster cluster)  {
-        try {
-            initDefaultCluster();
-            ObjectName clusterName = getDefaultClusterName(cluster);
-            if (!getMBeanServer().isRegistered(clusterName)) {
-                getMBeanServer().registerMBean(getManagedBean(cluster), clusterName);
-            }
-            return true;
-        }catch ( Exception x ) {
-            log.warn("Unable to register default cluster implementation with JMX",x);
-            return false;
-        }
-    }
+	private static final Log log = LogFactory.getLog(ClusterJmxHelper.class);
 
-    public static boolean unregisterDefaultCluster(SimpleTcpCluster cluster) {
-        try {
-            ObjectName clusterName = getDefaultClusterName(cluster);
-            if (getMBeanServer().isRegistered(clusterName)) {
-                getMBeanServer().unregisterMBean(clusterName);
-            }
-            return true;
-        }catch ( Exception x ) {
-            log.warn("Unable to unregister default cluster implementation with JMX",x);
-            return false;
-        }
-    }
+	protected static boolean jmxEnabled = true;
 
-    private static ObjectName getDefaultClusterName(SimpleTcpCluster cluster) throws Exception {
-        String domain = getMBeanServer().getDefaultDomain();
-        String type = ":type=";
-        String clusterType= type+"Cluster";
-        if (cluster.getContainer() instanceof StandardHost) {
-            domain = ((StandardHost) cluster.getContainer()).getDomain();
-            clusterType += ",host=" + cluster.getContainer().getName();
-        } else {
-            if (cluster.getContainer() instanceof StandardEngine) {
-                domain = ((StandardEngine) cluster.getContainer()).getDomain();
-            }
-        }
-        ObjectName clusterName = new ObjectName(domain + clusterType);
-        return clusterName;
-    }
-    
+	protected static MBeanServer mbeanServer = null;
+
+	public static Registry getRegistry() {
+		return registry;
+	}
+
+	public static MBeanServer getMBeanServer() throws Exception {
+		if (mbeanServer == null) {
+			if (MBeanServerFactory.findMBeanServer(null).size() > 0) {
+				mbeanServer = MBeanServerFactory.findMBeanServer(null).get(0);
+			} else {
+				mbeanServer = MBeanServerFactory.createMBeanServer();
+			}
+		}
+		return mbeanServer;
+	}
+
+	protected static boolean initMetaData(Class<?> clazz) {
+		try {
+			if (clazz == null)
+				return false;
+			getRegistry().loadMetadata(clazz.getResourceAsStream("mbeans-descriptors.xml"));
+		} catch (Exception x) {
+			log.warn("Unable to load meta data for class:" + clazz.getName());
+			return false;
+		}
+		return true;
+	}
+
+	public static DynamicMBean getManagedBean(Object object) throws Exception {
+		DynamicMBean mbean = null;
+		if (getRegistry() != null) {
+			ManagedBean managedBean = registry.findManagedBean(object.getClass().getName());
+			mbean = managedBean.createMBean(object);
+		}
+		return mbean;
+	}
+
+	protected static void initDefaultCluster() {
+		initMetaData(SimpleTcpCluster.class);
+		initMetaData(FarmWarDeployer.class); // not functional yet
+	}
+
+	public static boolean registerDefaultCluster(SimpleTcpCluster cluster) {
+		try {
+			initDefaultCluster();
+			ObjectName clusterName = getDefaultClusterName(cluster);
+			if (!getMBeanServer().isRegistered(clusterName)) {
+				getMBeanServer().registerMBean(getManagedBean(cluster), clusterName);
+			}
+			return true;
+		} catch (Exception x) {
+			log.warn("Unable to register default cluster implementation with JMX", x);
+			return false;
+		}
+	}
+
+	public static boolean unregisterDefaultCluster(SimpleTcpCluster cluster) {
+		try {
+			ObjectName clusterName = getDefaultClusterName(cluster);
+			if (getMBeanServer().isRegistered(clusterName)) {
+				getMBeanServer().unregisterMBean(clusterName);
+			}
+			return true;
+		} catch (Exception x) {
+			log.warn("Unable to unregister default cluster implementation with JMX", x);
+			return false;
+		}
+	}
+
+	private static ObjectName getDefaultClusterName(SimpleTcpCluster cluster) throws Exception {
+		String domain = getMBeanServer().getDefaultDomain();
+		String type = ":type=";
+		String clusterType = type + "Cluster";
+		if (cluster.getContainer() instanceof StandardHost) {
+			domain = ((StandardHost) cluster.getContainer()).getDomain();
+			clusterType += ",host=" + cluster.getContainer().getName();
+		} else {
+			if (cluster.getContainer() instanceof StandardEngine) {
+				domain = ((StandardEngine) cluster.getContainer()).getDomain();
+			}
+		}
+		ObjectName clusterName = new ObjectName(domain + clusterType);
+		return clusterName;
+	}
+
 }

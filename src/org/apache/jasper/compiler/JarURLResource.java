@@ -24,37 +24,37 @@ import java.net.URL;
 import java.util.jar.JarFile;
 
 public class JarURLResource implements JarResource {
-    
-    private String jarUrl;
-    
-    public JarURLResource(URL jarURL) {
-        this(jarURL.toExternalForm());
-    }
-    
-    public JarURLResource(String jarUrl) {
-        this.jarUrl = jarUrl;
-    }
-    
-    @Override
-    public JarFile getJarFile() throws IOException {
-        URL jarFileUrl = new URL("jar:" + jarUrl + "!/");
-        JarURLConnection conn = (JarURLConnection) jarFileUrl.openConnection();
-        conn.setUseCaches(false);
-        conn.connect();
-        return conn.getJarFile();
-    }
-       
-    @Override
-    public String getUrl() {
-        return jarUrl;
-    }
-    
-    @Override
-    public URL getEntry(String name) {
-        try {
-            return new URL("jar:" + jarUrl + "!/" + name);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("", e);
-        }
-    }
+
+	private String jarUrl;
+
+	public JarURLResource(URL jarURL) {
+		this(jarURL.toExternalForm());
+	}
+
+	public JarURLResource(String jarUrl) {
+		this.jarUrl = jarUrl;
+	}
+
+	@Override
+	public JarFile getJarFile() throws IOException {
+		URL jarFileUrl = new URL("jar:" + jarUrl + "!/");
+		JarURLConnection conn = (JarURLConnection) jarFileUrl.openConnection();
+		conn.setUseCaches(false);
+		conn.connect();
+		return conn.getJarFile();
+	}
+
+	@Override
+	public String getUrl() {
+		return jarUrl;
+	}
+
+	@Override
+	public URL getEntry(String name) {
+		try {
+			return new URL("jar:" + jarUrl + "!/" + name);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("", e);
+		}
+	}
 }

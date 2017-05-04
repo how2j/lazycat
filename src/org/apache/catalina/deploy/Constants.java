@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.deploy;
-
 
 public class Constants {
 
-    public static final String Package = "org.apache.catalina.deploy";
+	public static final String Package = "org.apache.catalina.deploy";
 
 }

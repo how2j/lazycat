@@ -35,382 +35,369 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BeanELResolver extends ELResolver {
 
-    private static final int CACHE_SIZE;
-    private static final String CACHE_SIZE_PROP =
-        "org.apache.el.BeanELResolver.CACHE_SIZE";
+	private static final int CACHE_SIZE;
+	private static final String CACHE_SIZE_PROP = "org.apache.el.BeanELResolver.CACHE_SIZE";
 
-    static {
-        String cacheSizeStr;
-        if (System.getSecurityManager() == null) {
-            cacheSizeStr = System.getProperty(CACHE_SIZE_PROP, "1000");
-        } else {
-            cacheSizeStr = AccessController.doPrivileged(
-                    new PrivilegedAction<String>() {
+	static {
+		String cacheSizeStr;
+		if (System.getSecurityManager() == null) {
+			cacheSizeStr = System.getProperty(CACHE_SIZE_PROP, "1000");
+		} else {
+			cacheSizeStr = AccessController.doPrivileged(new PrivilegedAction<String>() {
 
-                    @Override
-                    public String run() {
-                        return System.getProperty(CACHE_SIZE_PROP, "1000");
-                    }
-                });
-        }
-        CACHE_SIZE = Integer.parseInt(cacheSizeStr);
-    }
+				@Override
+				public String run() {
+					return System.getProperty(CACHE_SIZE_PROP, "1000");
+				}
+			});
+		}
+		CACHE_SIZE = Integer.parseInt(cacheSizeStr);
+	}
 
-    private final boolean readOnly;
+	private final boolean readOnly;
 
-    private final ConcurrentCache<String, BeanProperties> cache =
-        new ConcurrentCache<String, BeanProperties>(CACHE_SIZE);
+	private final ConcurrentCache<String, BeanProperties> cache = new ConcurrentCache<String, BeanProperties>(
+			CACHE_SIZE);
 
-    public BeanELResolver() {
-        this.readOnly = false;
-    }
+	public BeanELResolver() {
+		this.readOnly = false;
+	}
 
-    public BeanELResolver(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
+	public BeanELResolver(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
 
-    @Override
-    public Class<?> getType(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        if (base == null || property == null) {
-            return null;
-        }
+	@Override
+	public Class<?> getType(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		if (base == null || property == null) {
+			return null;
+		}
 
-        context.setPropertyResolved(true);
-        return this.property(context, base, property).getPropertyType();
-    }
+		context.setPropertyResolved(true);
+		return this.property(context, base, property).getPropertyType();
+	}
 
-    @Override
-    public Object getValue(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        if (base == null || property == null) {
-            return null;
-        }
+	@Override
+	public Object getValue(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		if (base == null || property == null) {
+			return null;
+		}
 
-        context.setPropertyResolved(true);
-        Method m = this.property(context, base, property).read(context);
-        try {
-            return m.invoke(base, (Object[]) null);
-        } catch (IllegalAccessException e) {
-            throw new ELException(e);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof ThreadDeath) {
-                throw (ThreadDeath) cause;
-            }
-            if (cause instanceof VirtualMachineError) {
-                throw (VirtualMachineError) cause;
-            }
-            throw new ELException(Util.message(context, "propertyReadError",
-                    base.getClass().getName(), property.toString()), cause);
-        } catch (Exception e) {
-            throw new ELException(e);
-        }
-    }
+		context.setPropertyResolved(true);
+		Method m = this.property(context, base, property).read(context);
+		try {
+			return m.invoke(base, (Object[]) null);
+		} catch (IllegalAccessException e) {
+			throw new ELException(e);
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ThreadDeath) {
+				throw (ThreadDeath) cause;
+			}
+			if (cause instanceof VirtualMachineError) {
+				throw (VirtualMachineError) cause;
+			}
+			throw new ELException(
+					Util.message(context, "propertyReadError", base.getClass().getName(), property.toString()), cause);
+		} catch (Exception e) {
+			throw new ELException(e);
+		}
+	}
 
-    @Override
-    public void setValue(ELContext context, Object base, Object property,
-            Object value) throws NullPointerException,
-            PropertyNotFoundException, PropertyNotWritableException,
-            ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        if (base == null || property == null) {
-            return;
-        }
+	@Override
+	public void setValue(ELContext context, Object base, Object property, Object value)
+			throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		if (base == null || property == null) {
+			return;
+		}
 
-        context.setPropertyResolved(true);
+		context.setPropertyResolved(true);
 
-        if (this.readOnly) {
-            throw new PropertyNotWritableException(Util.message(context,
-                    "resolverNotWriteable", base.getClass().getName()));
-        }
+		if (this.readOnly) {
+			throw new PropertyNotWritableException(
+					Util.message(context, "resolverNotWriteable", base.getClass().getName()));
+		}
 
-        Method m = this.property(context, base, property).write(context);
-        try {
-            m.invoke(base, value);
-        } catch (IllegalAccessException e) {
-            throw new ELException(e);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof ThreadDeath) {
-                throw (ThreadDeath) cause;
-            }
-            if (cause instanceof VirtualMachineError) {
-                throw (VirtualMachineError) cause;
-            }
-            throw new ELException(Util.message(context, "propertyWriteError",
-                    base.getClass().getName(), property.toString()), cause);
-        } catch (Exception e) {
-            throw new ELException(e);
-        }
-    }
+		Method m = this.property(context, base, property).write(context);
+		try {
+			m.invoke(base, value);
+		} catch (IllegalAccessException e) {
+			throw new ELException(e);
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ThreadDeath) {
+				throw (ThreadDeath) cause;
+			}
+			if (cause instanceof VirtualMachineError) {
+				throw (VirtualMachineError) cause;
+			}
+			throw new ELException(
+					Util.message(context, "propertyWriteError", base.getClass().getName(), property.toString()), cause);
+		} catch (Exception e) {
+			throw new ELException(e);
+		}
+	}
 
-    /**
-     * @since EL 2.2
-     */
-    @Override
-    public Object invoke(ELContext context, Object base, Object method,
-            Class<?>[] paramTypes, Object[] params) {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        if (base == null || method == null) {
-            return null;
-        }
+	/**
+	 * @since EL 2.2
+	 */
+	@Override
+	public Object invoke(ELContext context, Object base, Object method, Class<?>[] paramTypes, Object[] params) {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		if (base == null || method == null) {
+			return null;
+		}
 
-        ExpressionFactory factory = Util.getExpressionFactory();
+		ExpressionFactory factory = Util.getExpressionFactory();
 
-        String methodName = (String) factory.coerceToType(method, String.class);
+		String methodName = (String) factory.coerceToType(method, String.class);
 
-        // Find the matching method
-        Method matchingMethod =
-                Util.findMethod(base.getClass(), methodName, paramTypes, params);
+		// Find the matching method
+		Method matchingMethod = Util.findMethod(base.getClass(), methodName, paramTypes, params);
 
-        Object[] parameters = Util.buildParameters(
-                matchingMethod.getParameterTypes(), matchingMethod.isVarArgs(),
-                params);
+		Object[] parameters = Util.buildParameters(matchingMethod.getParameterTypes(), matchingMethod.isVarArgs(),
+				params);
 
-        Object result = null;
-        try {
-            result = matchingMethod.invoke(base, parameters);
-        } catch (IllegalArgumentException e) {
-            throw new ELException(e);
-        } catch (IllegalAccessException e) {
-            throw new ELException(e);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            Util.handleThrowable(cause);
-            throw new ELException(cause);
-        }
+		Object result = null;
+		try {
+			result = matchingMethod.invoke(base, parameters);
+		} catch (IllegalArgumentException e) {
+			throw new ELException(e);
+		} catch (IllegalAccessException e) {
+			throw new ELException(e);
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			Util.handleThrowable(cause);
+			throw new ELException(cause);
+		}
 
-        context.setPropertyResolved(true);
-        return result;
-    }
+		context.setPropertyResolved(true);
+		return result;
+	}
 
-    @Override
-    public boolean isReadOnly(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        if (base == null || property == null) {
-            return false;
-        }
+	@Override
+	public boolean isReadOnly(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		if (base == null || property == null) {
+			return false;
+		}
 
-        context.setPropertyResolved(true);
-        return this.readOnly
-                || this.property(context, base, property).isReadOnly();
-    }
+		context.setPropertyResolved(true);
+		return this.readOnly || this.property(context, base, property).isReadOnly();
+	}
 
-    @Override
-    public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
-        if (base == null) {
-            return null;
-        }
+	@Override
+	public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
+		if (base == null) {
+			return null;
+		}
 
-        try {
-            BeanInfo info = Introspector.getBeanInfo(base.getClass());
-            PropertyDescriptor[] pds = info.getPropertyDescriptors();
-            for (int i = 0; i < pds.length; i++) {
-                pds[i].setValue(RESOLVABLE_AT_DESIGN_TIME, Boolean.TRUE);
-                pds[i].setValue(TYPE, pds[i].getPropertyType());
-            }
-            return Arrays.asList((FeatureDescriptor[]) pds).iterator();
-        } catch (IntrospectionException e) {
-            //
-        }
+		try {
+			BeanInfo info = Introspector.getBeanInfo(base.getClass());
+			PropertyDescriptor[] pds = info.getPropertyDescriptors();
+			for (int i = 0; i < pds.length; i++) {
+				pds[i].setValue(RESOLVABLE_AT_DESIGN_TIME, Boolean.TRUE);
+				pds[i].setValue(TYPE, pds[i].getPropertyType());
+			}
+			return Arrays.asList((FeatureDescriptor[]) pds).iterator();
+		} catch (IntrospectionException e) {
+			//
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Class<?> getCommonPropertyType(ELContext context, Object base) {
-        if (base != null) {
-            return Object.class;
-        }
+	@Override
+	public Class<?> getCommonPropertyType(ELContext context, Object base) {
+		if (base != null) {
+			return Object.class;
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected static final class BeanProperties {
-        private final Map<String, BeanProperty> properties;
+	protected static final class BeanProperties {
+		private final Map<String, BeanProperty> properties;
 
-        private final Class<?> type;
+		private final Class<?> type;
 
-        public BeanProperties(Class<?> type) throws ELException {
-            this.type = type;
-            this.properties = new HashMap<String, BeanProperty>();
-            try {
-                BeanInfo info = Introspector.getBeanInfo(this.type);
-                PropertyDescriptor[] pds = info.getPropertyDescriptors();
-                for (PropertyDescriptor pd: pds) {
-                    this.properties.put(pd.getName(), new BeanProperty(type, pd));
-                }
-                if (System.getSecurityManager() != null) {
-                    // When running with SecurityManager, some classes may be
-                    // not accessible, but have accessible interfaces.
-                    populateFromInterfaces(type);
-                }
-            } catch (IntrospectionException ie) {
-                throw new ELException(ie);
-            }
-        }
+		public BeanProperties(Class<?> type) throws ELException {
+			this.type = type;
+			this.properties = new HashMap<String, BeanProperty>();
+			try {
+				BeanInfo info = Introspector.getBeanInfo(this.type);
+				PropertyDescriptor[] pds = info.getPropertyDescriptors();
+				for (PropertyDescriptor pd : pds) {
+					this.properties.put(pd.getName(), new BeanProperty(type, pd));
+				}
+				if (System.getSecurityManager() != null) {
+					// When running with SecurityManager, some classes may be
+					// not accessible, but have accessible interfaces.
+					populateFromInterfaces(type);
+				}
+			} catch (IntrospectionException ie) {
+				throw new ELException(ie);
+			}
+		}
 
-        private void populateFromInterfaces(Class<?> aClass) throws IntrospectionException {
-            Class<?> interfaces[] = aClass.getInterfaces();
-            if (interfaces.length > 0) {
-                for (Class<?> ifs : interfaces) {
-                    BeanInfo info = Introspector.getBeanInfo(ifs);
-                    PropertyDescriptor[] pds = info.getPropertyDescriptors();
-                    for (PropertyDescriptor pd : pds) {
-                        if (!this.properties.containsKey(pd.getName())) {
-                            this.properties.put(pd.getName(), new BeanProperty(
-                                    this.type, pd));
-                        }
-                    }
-                }
-            }
-            Class<?> superclass = aClass.getSuperclass();
-            if (superclass != null) {
-                populateFromInterfaces(superclass);
-            }
-        }
+		private void populateFromInterfaces(Class<?> aClass) throws IntrospectionException {
+			Class<?> interfaces[] = aClass.getInterfaces();
+			if (interfaces.length > 0) {
+				for (Class<?> ifs : interfaces) {
+					BeanInfo info = Introspector.getBeanInfo(ifs);
+					PropertyDescriptor[] pds = info.getPropertyDescriptors();
+					for (PropertyDescriptor pd : pds) {
+						if (!this.properties.containsKey(pd.getName())) {
+							this.properties.put(pd.getName(), new BeanProperty(this.type, pd));
+						}
+					}
+				}
+			}
+			Class<?> superclass = aClass.getSuperclass();
+			if (superclass != null) {
+				populateFromInterfaces(superclass);
+			}
+		}
 
-        private BeanProperty get(ELContext ctx, String name) {
-            BeanProperty property = this.properties.get(name);
-            if (property == null) {
-                throw new PropertyNotFoundException(Util.message(ctx,
-                        "propertyNotFound", type.getName(), name));
-            }
-            return property;
-        }
+		private BeanProperty get(ELContext ctx, String name) {
+			BeanProperty property = this.properties.get(name);
+			if (property == null) {
+				throw new PropertyNotFoundException(Util.message(ctx, "propertyNotFound", type.getName(), name));
+			}
+			return property;
+		}
 
-        public BeanProperty getBeanProperty(String name) {
-            return get(null, name);
-        }
-        
-        private Class<?> getType() {
-            return type;
-        }
-    }
+		public BeanProperty getBeanProperty(String name) {
+			return get(null, name);
+		}
 
-    protected static final class BeanProperty {
-        private final Class<?> type;
+		private Class<?> getType() {
+			return type;
+		}
+	}
 
-        private final Class<?> owner;
+	protected static final class BeanProperty {
+		private final Class<?> type;
 
-        private final PropertyDescriptor descriptor;
+		private final Class<?> owner;
 
-        private Method read;
+		private final PropertyDescriptor descriptor;
 
-        private Method write;
+		private Method read;
 
-        public BeanProperty(Class<?> owner, PropertyDescriptor descriptor) {
-            this.owner = owner;
-            this.descriptor = descriptor;
-            this.type = descriptor.getPropertyType();
-        }
+		private Method write;
 
-        // Can't use Class<?> because API needs to match specification
-        @SuppressWarnings("rawtypes")
-        public Class getPropertyType() {
-            return this.type;
-        }
+		public BeanProperty(Class<?> owner, PropertyDescriptor descriptor) {
+			this.owner = owner;
+			this.descriptor = descriptor;
+			this.type = descriptor.getPropertyType();
+		}
 
-        public boolean isReadOnly() {
-            return this.write == null
-                && (null == (this.write = Util.getMethod(this.owner, descriptor.getWriteMethod())));
-        }
+		// Can't use Class<?> because API needs to match specification
+		@SuppressWarnings("rawtypes")
+		public Class getPropertyType() {
+			return this.type;
+		}
 
-        public Method getWriteMethod() {
-            return write(null);
-        }
+		public boolean isReadOnly() {
+			return this.write == null
+					&& (null == (this.write = Util.getMethod(this.owner, descriptor.getWriteMethod())));
+		}
 
-        public Method getReadMethod() {
-            return this.read(null);
-        }
+		public Method getWriteMethod() {
+			return write(null);
+		}
 
-        private Method write(ELContext ctx) {
-            if (this.write == null) {
-                this.write = Util.getMethod(this.owner, descriptor.getWriteMethod());
-                if (this.write == null) {
-                    throw new PropertyNotFoundException(Util.message(ctx,
-                            "propertyNotWritable", new Object[] {
-                                    owner.getName(), descriptor.getName() }));
-                }
-            }
-            return this.write;
-        }
+		public Method getReadMethod() {
+			return this.read(null);
+		}
 
-        private Method read(ELContext ctx) {
-            if (this.read == null) {
-                this.read = Util.getMethod(this.owner, descriptor.getReadMethod());
-                if (this.read == null) {
-                    throw new PropertyNotFoundException(Util.message(ctx,
-                            "propertyNotReadable", new Object[] {
-                                    owner.getName(), descriptor.getName() }));
-                }
-            }
-            return this.read;
-        }
-    }
+		private Method write(ELContext ctx) {
+			if (this.write == null) {
+				this.write = Util.getMethod(this.owner, descriptor.getWriteMethod());
+				if (this.write == null) {
+					throw new PropertyNotFoundException(Util.message(ctx, "propertyNotWritable",
+							new Object[] { owner.getName(), descriptor.getName() }));
+				}
+			}
+			return this.write;
+		}
 
-    private final BeanProperty property(ELContext ctx, Object base,
-            Object property) {
-        Class<?> type = base.getClass();
-        String prop = property.toString();
+		private Method read(ELContext ctx) {
+			if (this.read == null) {
+				this.read = Util.getMethod(this.owner, descriptor.getReadMethod());
+				if (this.read == null) {
+					throw new PropertyNotFoundException(Util.message(ctx, "propertyNotReadable",
+							new Object[] { owner.getName(), descriptor.getName() }));
+				}
+			}
+			return this.read;
+		}
+	}
 
-        BeanProperties props = this.cache.get(type.getName());
-        if (props == null || type != props.getType()) {
-            props = new BeanProperties(type);
-            this.cache.put(type.getName(), props);
-        }
+	private final BeanProperty property(ELContext ctx, Object base, Object property) {
+		Class<?> type = base.getClass();
+		String prop = property.toString();
 
-        return props.get(ctx, prop);
-    }
+		BeanProperties props = this.cache.get(type.getName());
+		if (props == null || type != props.getType()) {
+			props = new BeanProperties(type);
+			this.cache.put(type.getName(), props);
+		}
 
-    private static final class ConcurrentCache<K,V> {
+		return props.get(ctx, prop);
+	}
 
-        private final int size;
-        private final Map<K,V> eden;
-        private final Map<K,V> longterm;
-        
-        public ConcurrentCache(int size) {
-            this.size = size;
-            this.eden = new ConcurrentHashMap<K,V>(size);
-            this.longterm = new WeakHashMap<K,V>(size);
-        }
-        
-        public V get(K key) {
-            V value = this.eden.get(key);
-            if (value == null) {
-                synchronized (longterm) {
-                    value = this.longterm.get(key);
-                }
-                if (value != null) {
-                    this.eden.put(key, value);
-                }
-            }
-            return value;
-        }
-        
-        public void put(K key, V value) {
-            if (this.eden.size() >= this.size) {
-                synchronized (longterm) {
-                    this.longterm.putAll(this.eden);
-                }
-                this.eden.clear();
-            }
-            this.eden.put(key, value);
-        }
+	private static final class ConcurrentCache<K, V> {
 
-    }
+		private final int size;
+		private final Map<K, V> eden;
+		private final Map<K, V> longterm;
+
+		public ConcurrentCache(int size) {
+			this.size = size;
+			this.eden = new ConcurrentHashMap<K, V>(size);
+			this.longterm = new WeakHashMap<K, V>(size);
+		}
+
+		public V get(K key) {
+			V value = this.eden.get(key);
+			if (value == null) {
+				synchronized (longterm) {
+					value = this.longterm.get(key);
+				}
+				if (value != null) {
+					this.eden.put(key, value);
+				}
+			}
+			return value;
+		}
+
+		public void put(K key, V value) {
+			if (this.eden.size() >= this.size) {
+				synchronized (longterm) {
+					this.longterm.putAll(this.eden);
+				}
+				this.eden.clear();
+			}
+			this.eden.put(key, value);
+		}
+
+	}
 }

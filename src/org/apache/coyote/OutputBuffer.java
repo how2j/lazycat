@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import org.apache.tomcat.util.buf.ByteChunk;
 
-
 /**
  * Output buffer.
  *
@@ -32,23 +31,23 @@ import org.apache.tomcat.util.buf.ByteChunk;
  */
 public interface OutputBuffer {
 
+	/**
+	 * Write the response. The caller ( tomcat ) owns the chunks.
+	 *
+	 * @param chunk
+	 *            data to write
+	 * @param response
+	 *            used to allow buffers that can be shared by multiple
+	 *            responses.
+	 * @throws IOException
+	 */
+	public int doWrite(ByteChunk chunk, Response response) throws IOException;
 
-    /**
-     * Write the response. The caller ( tomcat ) owns the chunks.
-     *
-     * @param chunk data to write
-     * @param response used to allow buffers that can be shared by multiple
-     *          responses.
-     * @throws IOException
-     */
-    public int doWrite(ByteChunk chunk, Response response)
-        throws IOException;
-
-    /**
-     * Bytes written to the underlying socket. This includes the effects of
-     * chunking, compression, etc.
-     * 
-     * @return  Bytes written for the current request
-     */
-    public long getBytesWritten();
+	/**
+	 * Bytes written to the underlying socket. This includes the effects of
+	 * chunking, compression, etc.
+	 * 
+	 * @return Bytes written for the current request
+	 */
+	public long getBytesWritten();
 }

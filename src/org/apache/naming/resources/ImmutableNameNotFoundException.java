@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
+ */
 
 package org.apache.naming.resources;
 
@@ -27,25 +27,33 @@ import javax.naming.NameNotFoundException;
  * 
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  */
-public class ImmutableNameNotFoundException
-    extends NameNotFoundException {
+public class ImmutableNameNotFoundException extends NameNotFoundException {
 
-    private static final long serialVersionUID = 1L;
-    
-    @Override
-    public void appendRemainingComponent(String name) {/*NOOP*/}
-    @Override
-    public void appendRemainingName(Name name) {/*NOOP*/}
-    @Override
-    public void setRemainingName(Name name) {/*NOOP*/}
-    @Override
-    public void setResolvedName(Name name) {/*NOOP*/}
-    @Override
-    public void setRootCause(Throwable e) {/*NOOP*/}
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        // This class does not provide a stack trace
-        return this;
-    }
+	@Override
+	public void appendRemainingComponent(String name) {
+		/* NOOP */}
+
+	@Override
+	public void appendRemainingName(Name name) {
+		/* NOOP */}
+
+	@Override
+	public void setRemainingName(Name name) {
+		/* NOOP */}
+
+	@Override
+	public void setResolvedName(Name name) {
+		/* NOOP */}
+
+	@Override
+	public void setRootCause(Throwable e) {
+		/* NOOP */}
+
+	@Override
+	public synchronized Throwable fillInStackTrace() {
+		// This class does not provide a stack trace
+		return this;
+	}
 }

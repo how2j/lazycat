@@ -39,187 +39,176 @@ import org.apache.juli.logging.LogFactory;
  */
 public class JspFactoryImpl extends JspFactory {
 
-    // Logger
-    private final Log log = LogFactory.getLog(JspFactoryImpl.class);
+	// Logger
+	private final Log log = LogFactory.getLog(JspFactoryImpl.class);
 
-    private static final String SPEC_VERSION = "2.2";
-    private static final boolean USE_POOL = 
-        Boolean.parseBoolean(System.getProperty("org.apache.jasper.runtime.JspFactoryImpl.USE_POOL", "true"));
-    private static final int POOL_SIZE = 
-        Integer.parseInt(System.getProperty("org.apache.jasper.runtime.JspFactoryImpl.POOL_SIZE", "8"));
+	private static final String SPEC_VERSION = "2.2";
+	private static final boolean USE_POOL = Boolean
+			.parseBoolean(System.getProperty("org.apache.jasper.runtime.JspFactoryImpl.USE_POOL", "true"));
+	private static final int POOL_SIZE = Integer
+			.parseInt(System.getProperty("org.apache.jasper.runtime.JspFactoryImpl.POOL_SIZE", "8"));
 
-    private ThreadLocal<PageContextPool> localPool = new ThreadLocal<PageContextPool>();
+	private ThreadLocal<PageContextPool> localPool = new ThreadLocal<PageContextPool>();
 
-    @Override
-    public PageContext getPageContext(Servlet servlet, ServletRequest request,
-            ServletResponse response, String errorPageURL, boolean needsSession,
-            int bufferSize, boolean autoflush) {
+	@Override
+	public PageContext getPageContext(Servlet servlet, ServletRequest request, ServletResponse response,
+			String errorPageURL, boolean needsSession, int bufferSize, boolean autoflush) {
 
-        if( Constants.IS_SECURITY_ENABLED ) {
-            PrivilegedGetPageContext dp = new PrivilegedGetPageContext(
-                    this, servlet, request, response, errorPageURL,
-                    needsSession, bufferSize, autoflush);
-            return AccessController.doPrivileged(dp);
-        } else {
-            return internalGetPageContext(servlet, request, response,
-                    errorPageURL, needsSession,
-                    bufferSize, autoflush);
-        }
-    }
+		if (Constants.IS_SECURITY_ENABLED) {
+			PrivilegedGetPageContext dp = new PrivilegedGetPageContext(this, servlet, request, response, errorPageURL,
+					needsSession, bufferSize, autoflush);
+			return AccessController.doPrivileged(dp);
+		} else {
+			return internalGetPageContext(servlet, request, response, errorPageURL, needsSession, bufferSize,
+					autoflush);
+		}
+	}
 
-    @Override
-    public void releasePageContext(PageContext pc) {
-        if( pc == null )
-            return;
-        if( Constants.IS_SECURITY_ENABLED ) {
-            PrivilegedReleasePageContext dp = new PrivilegedReleasePageContext(
-                    this,pc);
-            AccessController.doPrivileged(dp);
-        } else {
-            internalReleasePageContext(pc);
-        }
-    }
+	@Override
+	public void releasePageContext(PageContext pc) {
+		if (pc == null)
+			return;
+		if (Constants.IS_SECURITY_ENABLED) {
+			PrivilegedReleasePageContext dp = new PrivilegedReleasePageContext(this, pc);
+			AccessController.doPrivileged(dp);
+		} else {
+			internalReleasePageContext(pc);
+		}
+	}
 
-    @Override
-    public JspEngineInfo getEngineInfo() {
-        return new JspEngineInfo() {
-            @Override
-            public String getSpecificationVersion() {
-                return SPEC_VERSION;
-            }
-        };
-    }
+	@Override
+	public JspEngineInfo getEngineInfo() {
+		return new JspEngineInfo() {
+			@Override
+			public String getSpecificationVersion() {
+				return SPEC_VERSION;
+			}
+		};
+	}
 
-    private PageContext internalGetPageContext(Servlet servlet, ServletRequest request,
-            ServletResponse response, String errorPageURL, boolean needsSession,
-            int bufferSize, boolean autoflush) {
-        try {
-            PageContext pc;
-            if (USE_POOL) {
-                PageContextPool pool = localPool.get();
-                if (pool == null) {
-                    pool = new PageContextPool();
-                    localPool.set(pool);
-                }
-                pc = pool.get();
-                if (pc == null) {
-                    pc = new PageContextImpl();
-                }
-            } else {
-                pc = new PageContextImpl();
-            }
-            pc.initialize(servlet, request, response, errorPageURL, 
-                    needsSession, bufferSize, autoflush);
-            return pc;
-        } catch (Throwable ex) {
-            ExceptionUtils.handleThrowable(ex);
-            if (ex instanceof RuntimeException) {
-                throw (RuntimeException) ex;
-            }
-            log.fatal("Exception initializing page context", ex);
-            return null;
-        }
-    }
+	private PageContext internalGetPageContext(Servlet servlet, ServletRequest request, ServletResponse response,
+			String errorPageURL, boolean needsSession, int bufferSize, boolean autoflush) {
+		try {
+			PageContext pc;
+			if (USE_POOL) {
+				PageContextPool pool = localPool.get();
+				if (pool == null) {
+					pool = new PageContextPool();
+					localPool.set(pool);
+				}
+				pc = pool.get();
+				if (pc == null) {
+					pc = new PageContextImpl();
+				}
+			} else {
+				pc = new PageContextImpl();
+			}
+			pc.initialize(servlet, request, response, errorPageURL, needsSession, bufferSize, autoflush);
+			return pc;
+		} catch (Throwable ex) {
+			ExceptionUtils.handleThrowable(ex);
+			if (ex instanceof RuntimeException) {
+				throw (RuntimeException) ex;
+			}
+			log.fatal("Exception initializing page context", ex);
+			return null;
+		}
+	}
 
-    private void internalReleasePageContext(PageContext pc) {
-        pc.release();
-        if (USE_POOL && (pc instanceof PageContextImpl)) {
-            localPool.get().put(pc);
-        }
-    }
+	private void internalReleasePageContext(PageContext pc) {
+		pc.release();
+		if (USE_POOL && (pc instanceof PageContextImpl)) {
+			localPool.get().put(pc);
+		}
+	}
 
-    private static class PrivilegedGetPageContext
-            implements PrivilegedAction<PageContext> {
+	private static class PrivilegedGetPageContext implements PrivilegedAction<PageContext> {
 
-        private JspFactoryImpl factory;
-        private Servlet servlet;
-        private ServletRequest request;
-        private ServletResponse response;
-        private String errorPageURL;
-        private boolean needsSession;
-        private int bufferSize;
-        private boolean autoflush;
+		private JspFactoryImpl factory;
+		private Servlet servlet;
+		private ServletRequest request;
+		private ServletResponse response;
+		private String errorPageURL;
+		private boolean needsSession;
+		private int bufferSize;
+		private boolean autoflush;
 
-        PrivilegedGetPageContext(JspFactoryImpl factory, Servlet servlet,
-                ServletRequest request, ServletResponse response, String errorPageURL,
-                boolean needsSession, int bufferSize, boolean autoflush) {
-            this.factory = factory;
-            this.servlet = servlet;
-            this.request = request;
-            this.response = response;
-            this.errorPageURL = errorPageURL;
-            this.needsSession = needsSession;
-            this.bufferSize = bufferSize;
-            this.autoflush = autoflush;
-        }
+		PrivilegedGetPageContext(JspFactoryImpl factory, Servlet servlet, ServletRequest request,
+				ServletResponse response, String errorPageURL, boolean needsSession, int bufferSize,
+				boolean autoflush) {
+			this.factory = factory;
+			this.servlet = servlet;
+			this.request = request;
+			this.response = response;
+			this.errorPageURL = errorPageURL;
+			this.needsSession = needsSession;
+			this.bufferSize = bufferSize;
+			this.autoflush = autoflush;
+		}
 
-        @Override
-        public PageContext run() {
-            return factory.internalGetPageContext(servlet, request, response,
-                    errorPageURL, needsSession, bufferSize, autoflush);
-        }
-    }
+		@Override
+		public PageContext run() {
+			return factory.internalGetPageContext(servlet, request, response, errorPageURL, needsSession, bufferSize,
+					autoflush);
+		}
+	}
 
-    private static class PrivilegedReleasePageContext
-            implements PrivilegedAction<Void> {
+	private static class PrivilegedReleasePageContext implements PrivilegedAction<Void> {
 
-        private JspFactoryImpl factory;
-        private PageContext pageContext;
+		private JspFactoryImpl factory;
+		private PageContext pageContext;
 
-        PrivilegedReleasePageContext(JspFactoryImpl factory,
-                PageContext pageContext) {
-            this.factory = factory;
-            this.pageContext = pageContext;
-        }
+		PrivilegedReleasePageContext(JspFactoryImpl factory, PageContext pageContext) {
+			this.factory = factory;
+			this.pageContext = pageContext;
+		}
 
-        @Override
-        public Void run() {
-            factory.internalReleasePageContext(pageContext);
-            return null;
-        }
-    }
+		@Override
+		public Void run() {
+			factory.internalReleasePageContext(pageContext);
+			return null;
+		}
+	}
 
-    protected static final class PageContextPool  {
+	protected static final class PageContextPool {
 
-        private PageContext[] pool;
+		private PageContext[] pool;
 
-        private int current = -1;
+		private int current = -1;
 
-        public PageContextPool() {
-            this.pool = new PageContext[POOL_SIZE];
-        }
+		public PageContextPool() {
+			this.pool = new PageContext[POOL_SIZE];
+		}
 
-        public void put(PageContext o) {
-            if (current < (POOL_SIZE - 1)) {
-                current++;
-                pool[current] = o;
-            }
-        }
+		public void put(PageContext o) {
+			if (current < (POOL_SIZE - 1)) {
+				current++;
+				pool[current] = o;
+			}
+		}
 
-        public PageContext get() {
-            PageContext item = null;
-            if (current >= 0) {
-                item = pool[current];
-                current--;
-            }
-            return item;
-        }
+		public PageContext get() {
+			PageContext item = null;
+			if (current >= 0) {
+				item = pool[current];
+				current--;
+			}
+			return item;
+		}
 
-    }
+	}
 
-    @Override
-    public JspApplicationContext getJspApplicationContext(
-            final ServletContext context) {
-        if (Constants.IS_SECURITY_ENABLED) {
-            return AccessController.doPrivileged(
-                    new PrivilegedAction<JspApplicationContext>() {
-                @Override
-                public JspApplicationContext run() {
-                    return JspApplicationContextImpl.getInstance(context);
-                }
-            });
-        } else {
-            return JspApplicationContextImpl.getInstance(context);
-        }
-    }
+	@Override
+	public JspApplicationContext getJspApplicationContext(final ServletContext context) {
+		if (Constants.IS_SECURITY_ENABLED) {
+			return AccessController.doPrivileged(new PrivilegedAction<JspApplicationContext>() {
+				@Override
+				public JspApplicationContext run() {
+					return JspApplicationContextImpl.getInstance(context);
+				}
+			});
+		} else {
+			return JspApplicationContextImpl.getInstance(context);
+		}
+	}
 }

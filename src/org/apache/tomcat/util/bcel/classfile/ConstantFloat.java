@@ -23,32 +23,31 @@ import java.io.IOException;
 import org.apache.tomcat.util.bcel.Const;
 
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a float object.
+ * This class is derived from the abstract {@link Constant} and represents a
+ * reference to a float object.
  *
- * @see     Constant
+ * @see Constant
  */
 public final class ConstantFloat extends Constant {
 
-    private final float bytes;
+	private final float bytes;
 
+	/**
+	 * Initialize instance from file data.
+	 *
+	 * @param file
+	 *            Input stream
+	 * @throws IOException
+	 */
+	ConstantFloat(final DataInput file) throws IOException {
+		super(Const.CONSTANT_Float);
+		this.bytes = file.readFloat();
+	}
 
-    /**
-     * Initialize instance from file data.
-     *
-     * @param file Input stream
-     * @throws IOException
-     */
-    ConstantFloat(final DataInput file) throws IOException {
-        super(Const.CONSTANT_Float);
-        this.bytes = file.readFloat();
-    }
-
-
-    /**
-     * @return data, i.e., 4 bytes.
-     */
-    public final float getBytes() {
-        return bytes;
-    }
+	/**
+	 * @return data, i.e., 4 bytes.
+	 */
+	public final float getBytes() {
+		return bytes;
+	}
 }

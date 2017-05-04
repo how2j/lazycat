@@ -24,37 +24,34 @@ import javax.el.ELException;
 
 import org.apache.el.lang.EvaluationContext;
 
-
 /**
  * @author Jacob Hookom [jacob@hookom.net]
  */
 public final class AstInteger extends SimpleNode {
-    public AstInteger(int id) {
-        super(id);
-    }
+	public AstInteger(int id) {
+		super(id);
+	}
 
-    private volatile Number number;
+	private volatile Number number;
 
-    protected Number getInteger() {
-        if (this.number == null) {
-            try {
-                this.number = new Long(this.image);
-            } catch (ArithmeticException e1) {
-                this.number = new BigInteger(this.image);
-            }
-        }
-        return number;
-    }
+	protected Number getInteger() {
+		if (this.number == null) {
+			try {
+				this.number = new Long(this.image);
+			} catch (ArithmeticException e1) {
+				this.number = new BigInteger(this.image);
+			}
+		}
+		return number;
+	}
 
-    @Override
-    public Class<?> getType(EvaluationContext ctx)
-            throws ELException {
-        return this.getInteger().getClass();
-    }
+	@Override
+	public Class<?> getType(EvaluationContext ctx) throws ELException {
+		return this.getInteger().getClass();
+	}
 
-    @Override
-    public Object getValue(EvaluationContext ctx)
-            throws ELException {
-        return this.getInteger();
-    }
+	@Override
+	public Object getValue(EvaluationContext ctx) throws ELException {
+		return this.getInteger();
+	}
 }

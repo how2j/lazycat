@@ -27,123 +27,119 @@ import java.util.Map;
 
 public class MapELResolver extends ELResolver {
 
-    private static final Class<?> UNMODIFIABLE = Collections.unmodifiableMap(
-            new HashMap<Object, Object>()).getClass();
+	private static final Class<?> UNMODIFIABLE = Collections.unmodifiableMap(new HashMap<Object, Object>()).getClass();
 
-    private final boolean readOnly;
+	private final boolean readOnly;
 
-    public MapELResolver() {
-        this.readOnly = false;
-    }
+	public MapELResolver() {
+		this.readOnly = false;
+	}
 
-    public MapELResolver(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
+	public MapELResolver(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
 
-    @Override
-    public Object getValue(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
+	@Override
+	public Object getValue(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
 
-        if (base instanceof Map<?,?>) {
-            context.setPropertyResolved(true);
-            return ((Map<?,?>) base).get(property);
-        }
-        
-        return null;
-    }
+		if (base instanceof Map<?, ?>) {
+			context.setPropertyResolved(true);
+			return ((Map<?, ?>) base).get(property);
+		}
 
-    @Override
-    public Class<?> getType(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
+		return null;
+	}
 
-        if (base instanceof Map<?,?>) {
-            context.setPropertyResolved(true);
-            return Object.class;
-        }
-        
-        return null;
-    }
+	@Override
+	public Class<?> getType(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
 
-    @Override
-    public void setValue(ELContext context, Object base, Object property,
-            Object value) throws NullPointerException,
-            PropertyNotFoundException, PropertyNotWritableException,
-            ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
+		if (base instanceof Map<?, ?>) {
+			context.setPropertyResolved(true);
+			return Object.class;
+		}
 
-        if (base instanceof Map<?, ?>) {
-            context.setPropertyResolved(true);
+		return null;
+	}
 
-            if (this.readOnly) {
-                throw new PropertyNotWritableException(Util.message(context,
-                        "resolverNotWriteable", new Object[] { base.getClass()
-                                .getName() }));
-            }
+	@Override
+	public void setValue(ELContext context, Object base, Object property, Object value)
+			throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
 
-            try {
-                @SuppressWarnings("unchecked") // Must be OK
-                Map<Object, Object> map = ((Map<Object, Object>) base);
-                map.put(property, value);
-            } catch (UnsupportedOperationException e) {
-                throw new PropertyNotWritableException(e);
-            }
-        }
-    }
+		if (base instanceof Map<?, ?>) {
+			context.setPropertyResolved(true);
 
-    @Override
-    public boolean isReadOnly(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
+			if (this.readOnly) {
+				throw new PropertyNotWritableException(
+						Util.message(context, "resolverNotWriteable", new Object[] { base.getClass().getName() }));
+			}
 
-        if (base instanceof Map<?, ?>) {
-            context.setPropertyResolved(true);
-            return this.readOnly || UNMODIFIABLE.equals(base.getClass());
-        }
-        
-        return this.readOnly;
-    }
+			try {
+				@SuppressWarnings("unchecked") // Must be OK
+				Map<Object, Object> map = ((Map<Object, Object>) base);
+				map.put(property, value);
+			} catch (UnsupportedOperationException e) {
+				throw new PropertyNotWritableException(e);
+			}
+		}
+	}
 
-    @Override
-    public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
-        if (base instanceof Map<?, ?>) {
-            Iterator<?> itr = ((Map<?, ?>) base).keySet().iterator();
-            List<FeatureDescriptor> feats = new ArrayList<FeatureDescriptor>();
-            Object key;
-            FeatureDescriptor desc;
-            while (itr.hasNext()) {
-                key = itr.next();
-                desc = new FeatureDescriptor();
-                desc.setDisplayName(key.toString());
-                desc.setShortDescription("");
-                desc.setExpert(false);
-                desc.setHidden(false);
-                desc.setName(key.toString());
-                desc.setPreferred(true);
-                desc.setValue(RESOLVABLE_AT_DESIGN_TIME, Boolean.TRUE);
-                desc.setValue(TYPE, key.getClass());
-                feats.add(desc);
-            }
-            return feats.iterator();
-        }
-        return null;
-    }
+	@Override
+	public boolean isReadOnly(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
 
-    @Override
-    public Class<?> getCommonPropertyType(ELContext context, Object base) {
-        if (base instanceof Map<?, ?>) {
-            return Object.class;
-        }
-        return null;
-    }
+		if (base instanceof Map<?, ?>) {
+			context.setPropertyResolved(true);
+			return this.readOnly || UNMODIFIABLE.equals(base.getClass());
+		}
+
+		return this.readOnly;
+	}
+
+	@Override
+	public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
+		if (base instanceof Map<?, ?>) {
+			Iterator<?> itr = ((Map<?, ?>) base).keySet().iterator();
+			List<FeatureDescriptor> feats = new ArrayList<FeatureDescriptor>();
+			Object key;
+			FeatureDescriptor desc;
+			while (itr.hasNext()) {
+				key = itr.next();
+				desc = new FeatureDescriptor();
+				desc.setDisplayName(key.toString());
+				desc.setShortDescription("");
+				desc.setExpert(false);
+				desc.setHidden(false);
+				desc.setName(key.toString());
+				desc.setPreferred(true);
+				desc.setValue(RESOLVABLE_AT_DESIGN_TIME, Boolean.TRUE);
+				desc.setValue(TYPE, key.getClass());
+				feats.add(desc);
+			}
+			return feats.iterator();
+		}
+		return null;
+	}
+
+	@Override
+	public Class<?> getCommonPropertyType(ELContext context, Object base) {
+		if (base instanceof Map<?, ?>) {
+			return Object.class;
+		}
+		return null;
+	}
 
 }

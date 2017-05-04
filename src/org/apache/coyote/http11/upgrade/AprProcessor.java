@@ -25,19 +25,20 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class AprProcessor extends AbstractProcessor<Long> {
 
-    private static final Log log = LogFactory.getLog(AprProcessor.class);
-    @Override
-    protected Log getLog() {return log;}
+	private static final Log log = LogFactory.getLog(AprProcessor.class);
 
-    private static final int INFINITE_TIMEOUT = -1;
+	@Override
+	protected Log getLog() {
+		return log;
+	}
 
-    public AprProcessor(SocketWrapper<Long> wrapper,
-            HttpUpgradeHandler httpUpgradeProcessor, AprEndpoint endpoint,
-            int asyncWriteBufferSize) {
-        super(httpUpgradeProcessor,
-                new AprServletInputStream(wrapper),
-                new AprServletOutputStream(wrapper, asyncWriteBufferSize, endpoint));
+	private static final int INFINITE_TIMEOUT = -1;
 
-        Socket.timeoutSet(wrapper.getSocket().longValue(), INFINITE_TIMEOUT);
-    }
+	public AprProcessor(SocketWrapper<Long> wrapper, HttpUpgradeHandler httpUpgradeProcessor, AprEndpoint endpoint,
+			int asyncWriteBufferSize) {
+		super(httpUpgradeProcessor, new AprServletInputStream(wrapper),
+				new AprServletOutputStream(wrapper, asyncWriteBufferSize, endpoint));
+
+		Socket.timeoutSet(wrapper.getSocket().longValue(), INFINITE_TIMEOUT);
+	}
 }

@@ -18,68 +18,75 @@ package org.apache.catalina.ha;
 
 import org.apache.catalina.tribes.Member;
 
-
 /**
- * <p>Title: </p>
+ * <p>
+ * Title:
+ * </p>
  *
- * <p>Description: </p>
+ * <p>
+ * Description:
+ * </p>
  *
  *
- * <p>Company: </p>
+ * <p>
+ * Company:
+ * </p>
  *
  * @author not attributable
  * @version 1.0
  */
 public class ClusterMessageBase implements ClusterMessage {
-    
-    private static final long serialVersionUID = 1L;
 
-    protected transient Member address;
-    private String uniqueId;
-    private long timestamp;
-    public ClusterMessageBase() {
-        // NO-OP
-    }
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * getAddress
-     *
-     * @return Member
-     * TODO Implement this org.apache.catalina.ha.ClusterMessage method
-     */
-    @Override
-    public Member getAddress() {
-        return address;
-    }
+	protected transient Member address;
+	private String uniqueId;
+	private long timestamp;
 
-    @Override
-    public String getUniqueId() {
-        return uniqueId;
-    }
+	public ClusterMessageBase() {
+		// NO-OP
+	}
 
-    @Override
-    public long getTimestamp() {
-        return timestamp;
-    }
+	/**
+	 * getAddress
+	 *
+	 * @return Member TODO Implement this org.apache.catalina.ha.ClusterMessage
+	 *         method
+	 */
+	@Override
+	public Member getAddress() {
+		return address;
+	}
 
-    /**
-     * setAddress
-     *
-     * @param member Member
-     * TODO Implement this org.apache.catalina.ha.ClusterMessage method
-     */
-    @Override
-    public void setAddress(Member member) {
-        this.address = member;
-    }
+	@Override
+	public String getUniqueId() {
+		return uniqueId;
+	}
 
-    @Override
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
+	@Override
+	public long getTimestamp() {
+		return timestamp;
+	}
 
-    @Override
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
+	/**
+	 * setAddress
+	 *
+	 * @param member
+	 *            Member TODO Implement this
+	 *            org.apache.catalina.ha.ClusterMessage method
+	 */
+	@Override
+	public void setAddress(Member member) {
+		this.address = member;
+	}
+
+	@Override
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	@Override
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 }

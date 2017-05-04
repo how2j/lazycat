@@ -22,18 +22,16 @@ import javax.el.ELException;
 
 import org.apache.el.lang.EvaluationContext;
 
-
 /**
  * @author Jacob Hookom [jacob@hookom.net]
  */
 public final class AstFalse extends BooleanNode {
-    public AstFalse(int id) {
-        super(id);
-    }
+	public AstFalse(int id) {
+		super(id);
+	}
 
-    @Override
-    public Object getValue(EvaluationContext ctx)
-            throws ELException {
-        return Boolean.FALSE;
-    }
+	@Override
+	public Object getValue(EvaluationContext ctx) throws ELException {
+		return Boolean.FALSE;
+	}
 }

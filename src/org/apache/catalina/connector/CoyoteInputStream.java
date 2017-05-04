@@ -31,214 +31,185 @@ import org.apache.catalina.security.SecurityUtil;
  * @author Remy Maucherat
  * @author Jean-Francois Arcand
  */
-public class CoyoteInputStream
-    extends ServletInputStream {
+public class CoyoteInputStream extends ServletInputStream {
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	protected InputBuffer ib;
 
+	// ----------------------------------------------------------- Constructors
 
-    protected InputBuffer ib;
+	protected CoyoteInputStream(InputBuffer ib) {
+		this.ib = ib;
+	}
 
+	// -------------------------------------------------------- Package Methods
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * Clear facade.
+	 */
+	void clear() {
+		ib = null;
+	}
 
+	// --------------------------------------------------------- Public Methods
 
-    protected CoyoteInputStream(InputBuffer ib) {
-        this.ib = ib;
-    }
+	/**
+	 * Prevent cloning the facade.
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
+	// --------------------------------------------- ServletInputStream Methods
 
-    // -------------------------------------------------------- Package Methods
+	@Override
+	public int read() throws IOException {
+		if (SecurityUtil.isPackageProtectionEnabled()) {
 
+			try {
+				Integer result = AccessController.doPrivileged(new PrivilegedExceptionAction<Integer>() {
 
-    /**
-     * Clear facade.
-     */
-    void clear() {
-        ib = null;
-    }
+					@Override
+					public Integer run() throws IOException {
+						Integer integer = Integer.valueOf(ib.readByte());
+						return integer;
+					}
 
+				});
+				return result.intValue();
+			} catch (PrivilegedActionException pae) {
+				Exception e = pae.getException();
+				if (e instanceof IOException) {
+					throw (IOException) e;
+				} else {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+		} else {
+			return ib.readByte();
+		}
+	}
 
-    // --------------------------------------------------------- Public Methods
+	@Override
+	public int available() throws IOException {
 
+		if (SecurityUtil.isPackageProtectionEnabled()) {
+			try {
+				Integer result = AccessController.doPrivileged(new PrivilegedExceptionAction<Integer>() {
 
-    /**
-     * Prevent cloning the facade.
-     */
-    @Override
-    protected Object clone()
-        throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
-    }
+					@Override
+					public Integer run() throws IOException {
+						Integer integer = Integer.valueOf(ib.available());
+						return integer;
+					}
 
+				});
+				return result.intValue();
+			} catch (PrivilegedActionException pae) {
+				Exception e = pae.getException();
+				if (e instanceof IOException) {
+					throw (IOException) e;
+				} else {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+		} else {
+			return ib.available();
+		}
+	}
 
-    // --------------------------------------------- ServletInputStream Methods
+	@Override
+	public int read(final byte[] b) throws IOException {
 
+		if (SecurityUtil.isPackageProtectionEnabled()) {
+			try {
+				Integer result = AccessController.doPrivileged(new PrivilegedExceptionAction<Integer>() {
 
-    @Override
-    public int read()
-        throws IOException {
-        if (SecurityUtil.isPackageProtectionEnabled()){
+					@Override
+					public Integer run() throws IOException {
+						Integer integer = Integer.valueOf(ib.read(b, 0, b.length));
+						return integer;
+					}
 
-            try{
-                Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
+				});
+				return result.intValue();
+			} catch (PrivilegedActionException pae) {
+				Exception e = pae.getException();
+				if (e instanceof IOException) {
+					throw (IOException) e;
+				} else {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+		} else {
+			return ib.read(b, 0, b.length);
+		}
+	}
 
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer = Integer.valueOf(ib.readByte());
-                                return integer;
-                            }
+	@Override
+	public int read(final byte[] b, final int off, final int len) throws IOException {
 
-                });
-                return result.intValue();
-            } catch(PrivilegedActionException pae){
-                Exception e = pae.getException();
-                if (e instanceof IOException){
-                    throw (IOException)e;
-                } else {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
-        } else {
-            return ib.readByte();
-        }
-    }
+		if (SecurityUtil.isPackageProtectionEnabled()) {
+			try {
+				Integer result = AccessController.doPrivileged(new PrivilegedExceptionAction<Integer>() {
 
-    @Override
-    public int available() throws IOException {
+					@Override
+					public Integer run() throws IOException {
+						Integer integer = Integer.valueOf(ib.read(b, off, len));
+						return integer;
+					}
 
-        if (SecurityUtil.isPackageProtectionEnabled()){
-            try{
-                Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
+				});
+				return result.intValue();
+			} catch (PrivilegedActionException pae) {
+				Exception e = pae.getException();
+				if (e instanceof IOException) {
+					throw (IOException) e;
+				} else {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+		} else {
+			return ib.read(b, off, len);
+		}
+	}
 
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer = Integer.valueOf(ib.available());
-                                return integer;
-                            }
+	@Override
+	public int readLine(byte[] b, int off, int len) throws IOException {
+		return super.readLine(b, off, len);
+	}
 
-                });
-                return result.intValue();
-            } catch(PrivilegedActionException pae){
-                Exception e = pae.getException();
-                if (e instanceof IOException){
-                    throw (IOException)e;
-                } else {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
-        } else {
-           return ib.available();
-        }
-    }
+	/**
+	 * Close the stream Since we re-cycle, we can't allow the call to
+	 * super.close() which would permanently disable us.
+	 */
+	@Override
+	public void close() throws IOException {
 
-    @Override
-    public int read(final byte[] b) throws IOException {
+		if (SecurityUtil.isPackageProtectionEnabled()) {
+			try {
+				AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
 
-        if (SecurityUtil.isPackageProtectionEnabled()){
-            try{
-                Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
+					@Override
+					public Void run() throws IOException {
+						ib.close();
+						return null;
+					}
 
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer =
-                                    Integer.valueOf(ib.read(b, 0, b.length));
-                                return integer;
-                            }
-
-                });
-                return result.intValue();
-            } catch(PrivilegedActionException pae){
-                Exception e = pae.getException();
-                if (e instanceof IOException){
-                    throw (IOException)e;
-                } else {
-                    throw new RuntimeException(e.getMessage() ,e);
-                }
-            }
-        } else {
-            return ib.read(b, 0, b.length);
-         }
-    }
-
-
-    @Override
-    public int read(final byte[] b, final int off, final int len)
-        throws IOException {
-
-        if (SecurityUtil.isPackageProtectionEnabled()){
-            try{
-                Integer result =
-                    AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Integer>(){
-
-                            @Override
-                            public Integer run() throws IOException{
-                                Integer integer =
-                                    Integer.valueOf(ib.read(b, off, len));
-                                return integer;
-                            }
-
-                });
-                return result.intValue();
-            } catch(PrivilegedActionException pae){
-                Exception e = pae.getException();
-                if (e instanceof IOException){
-                    throw (IOException)e;
-                } else {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
-        } else {
-            return ib.read(b, off, len);
-        }
-    }
-
-
-    @Override
-    public int readLine(byte[] b, int off, int len) throws IOException {
-        return super.readLine(b, off, len);
-    }
-
-
-    /**
-     * Close the stream
-     * Since we re-cycle, we can't allow the call to super.close()
-     * which would permanently disable us.
-     */
-    @Override
-    public void close() throws IOException {
-
-        if (SecurityUtil.isPackageProtectionEnabled()){
-            try{
-                AccessController.doPrivileged(
-                    new PrivilegedExceptionAction<Void>(){
-
-                        @Override
-                        public Void run() throws IOException{
-                            ib.close();
-                            return null;
-                        }
-
-                });
-            } catch(PrivilegedActionException pae){
-                Exception e = pae.getException();
-                if (e instanceof IOException){
-                    throw (IOException)e;
-                } else {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
-        } else {
-             ib.close();
-        }
-    }
+				});
+			} catch (PrivilegedActionException pae) {
+				Exception e = pae.getException();
+				if (e instanceof IOException) {
+					throw (IOException) e;
+				} else {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+		} else {
+			ib.close();
+		}
+	}
 
 }

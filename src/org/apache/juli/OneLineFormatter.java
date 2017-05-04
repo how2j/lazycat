@@ -32,94 +32,92 @@ import java.util.logging.LogRecord;
  */
 public class OneLineFormatter extends Formatter {
 
-    private static final String LINE_SEP = System.getProperty("line.separator");
-    private static final String ST_SEP = LINE_SEP + " ";
+	private static final String LINE_SEP = System.getProperty("line.separator");
+	private static final String ST_SEP = LINE_SEP + " ";
 
-    /* Timestamp format */
-    private static final String timeFormat = "dd-MMM-yyyy HH:mm:ss";
+	/* Timestamp format */
+	private static final String timeFormat = "dd-MMM-yyyy HH:mm:ss";
 
-    /**
-     * The size of our global date format cache
-     */
-    private static final int globalCacheSize = 30;
+	/**
+	 * The size of our global date format cache
+	 */
+	private static final int globalCacheSize = 30;
 
-    /**
-     * The size of our thread local date format cache
-     */
-    private static final int localCacheSize = 5;
+	/**
+	 * The size of our thread local date format cache
+	 */
+	private static final int localCacheSize = 5;
 
-    /**
-     * Global date format cache.
-     */
-    private static final DateFormatCache globalDateCache =
-            new DateFormatCache(globalCacheSize, timeFormat, null);
+	/**
+	 * Global date format cache.
+	 */
+	private static final DateFormatCache globalDateCache = new DateFormatCache(globalCacheSize, timeFormat, null);
 
-    /**
-     * Thread local date format cache.
-     */
-    private static final ThreadLocal<DateFormatCache> localDateCache =
-            new ThreadLocal<DateFormatCache>() {
-        @Override
-        protected DateFormatCache initialValue() {
-            return new DateFormatCache(localCacheSize, timeFormat, globalDateCache);
-        }
-    };
+	/**
+	 * Thread local date format cache.
+	 */
+	private static final ThreadLocal<DateFormatCache> localDateCache = new ThreadLocal<DateFormatCache>() {
+		@Override
+		protected DateFormatCache initialValue() {
+			return new DateFormatCache(localCacheSize, timeFormat, globalDateCache);
+		}
+	};
 
-    @Override
-    public String format(LogRecord record) {
-        StringBuilder sb = new StringBuilder();
+	@Override
+	public String format(LogRecord record) {
+		StringBuilder sb = new StringBuilder();
 
-        // Timestamp
-        addTimestamp(sb, record.getMillis());
+		// Timestamp
+		addTimestamp(sb, record.getMillis());
 
-        // Severity
-        sb.append(' ');
-        sb.append(record.getLevel().getLocalizedName());
+		// Severity
+		sb.append(' ');
+		sb.append(record.getLevel().getLocalizedName());
 
-        // Thread
-        sb.append(' ');
-        sb.append('[');
-        sb.append(Thread.currentThread().getName());
-        sb.append(']');
+		// Thread
+		sb.append(' ');
+		sb.append('[');
+		sb.append(Thread.currentThread().getName());
+		sb.append(']');
 
-        // Source
-        sb.append(' ');
-        sb.append(record.getSourceClassName());
-        sb.append('.');
-        sb.append(record.getSourceMethodName());
+		// Source
+		sb.append(' ');
+		sb.append(record.getSourceClassName());
+		sb.append('.');
+		sb.append(record.getSourceMethodName());
 
-        // Message
-        sb.append(' ');
-        sb.append(formatMessage(record));
+		// Message
+		sb.append(' ');
+		sb.append(formatMessage(record));
 
-        // Stack trace
-        if (record.getThrown() != null) {
-            sb.append(ST_SEP);
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            record.getThrown().printStackTrace(pw);
-            pw.close();
-            sb.append(sw.getBuffer());
-        }
+		// Stack trace
+		if (record.getThrown() != null) {
+			sb.append(ST_SEP);
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			record.getThrown().printStackTrace(pw);
+			pw.close();
+			sb.append(sw.getBuffer());
+		}
 
-        // New line for next record
-        sb.append(LINE_SEP);
+		// New line for next record
+		sb.append(LINE_SEP);
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
-    protected void addTimestamp(StringBuilder buf, long timestamp) {
-        buf.append(localDateCache.get().getFormat(timestamp));
-        long frac = timestamp % 1000;
-        buf.append('.');
-        if (frac < 100) {
-            if (frac < 10) {
-                buf.append('0');
-                buf.append('0');
-            } else {
-                buf.append('0');
-            }
-        }
-        buf.append(frac);
-    }
+	protected void addTimestamp(StringBuilder buf, long timestamp) {
+		buf.append(localDateCache.get().getFormat(timestamp));
+		long frac = timestamp % 1000;
+		buf.append('.');
+		if (frac < 100) {
+			if (frac < 10) {
+				buf.append('0');
+				buf.append('0');
+			} else {
+				buf.append('0');
+			}
+		}
+		buf.append(frac);
+	}
 }

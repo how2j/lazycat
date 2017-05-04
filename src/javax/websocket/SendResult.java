@@ -17,23 +17,23 @@
 package javax.websocket;
 
 public final class SendResult {
-    private Throwable exception;
-    private boolean ok = true;
+	private Throwable exception;
+	private boolean ok = true;
 
-    public SendResult(Throwable exception) {
-        this.exception = exception;
-        this.ok = false;
-    }
+	public SendResult(Throwable exception) {
+		this.exception = exception;
+		this.ok = false;
+	}
 
-    public SendResult() {
-        // NO-OP
-    }
+	public SendResult() {
+		// NO-OP
+	}
 
-    public Throwable getException() {
-        return exception;
-    }
+	public Throwable getException() {
+		return exception;
+	}
 
-    public boolean isOK() {
-        return ok;
-    }
+	public boolean isOK() {
+		return ok;
+	}
 }

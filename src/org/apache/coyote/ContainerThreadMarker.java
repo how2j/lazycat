@@ -18,18 +18,18 @@ package org.apache.coyote;
 
 public class ContainerThreadMarker {
 
-    private static final ThreadLocal<Boolean> marker = new ThreadLocal<Boolean>();
+	private static final ThreadLocal<Boolean> marker = new ThreadLocal<Boolean>();
 
-    public static boolean isContainerThread() {
-        Boolean flag = marker.get();
-        if (flag == null) {
-            return false;
-        } else {
-            return flag.booleanValue();
-        }
-    }
+	public static boolean isContainerThread() {
+		Boolean flag = marker.get();
+		if (flag == null) {
+			return false;
+		} else {
+			return flag.booleanValue();
+		}
+	}
 
-    public static void markAsContainerThread() {
-        marker.set(Boolean.TRUE);
-    }
+	public static void markAsContainerThread() {
+		marker.set(Boolean.TRUE);
+	}
 }

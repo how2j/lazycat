@@ -31,76 +31,76 @@ import java.util.zip.ZipEntry;
  */
 public class FileUrlJar implements Jar {
 
-    private JarFile jarFile;
-    private Enumeration<JarEntry> entries;
-    private JarEntry entry = null;
+	private JarFile jarFile;
+	private Enumeration<JarEntry> entries;
+	private JarEntry entry = null;
 
-    public FileUrlJar(URL url) throws IOException {
-        JarURLConnection jarConn = (JarURLConnection) url.openConnection();
-        jarConn.setUseCaches(false);
-        jarFile = jarConn.getJarFile();
-    }
+	public FileUrlJar(URL url) throws IOException {
+		JarURLConnection jarConn = (JarURLConnection) url.openConnection();
+		jarConn.setUseCaches(false);
+		jarFile = jarConn.getJarFile();
+	}
 
-    @Override
-    public boolean entryExists(String name) {
-        ZipEntry entry = jarFile.getEntry(name);
-        return entry != null;
-    }
+	@Override
+	public boolean entryExists(String name) {
+		ZipEntry entry = jarFile.getEntry(name);
+		return entry != null;
+	}
 
-    @Override
-    public InputStream getInputStream(String name) throws IOException {
-        ZipEntry entry = jarFile.getEntry(name);
-        if (entry == null) {
-            return null;
-        } else {
-            return jarFile.getInputStream(entry);
-        }
-    }
+	@Override
+	public InputStream getInputStream(String name) throws IOException {
+		ZipEntry entry = jarFile.getEntry(name);
+		if (entry == null) {
+			return null;
+		} else {
+			return jarFile.getInputStream(entry);
+		}
+	}
 
-    @Override
-    public void close() {
-        if (jarFile != null) {
-            try {
-                jarFile.close();
-            } catch (IOException e) {
-                // Ignore
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (jarFile != null) {
+			try {
+				jarFile.close();
+			} catch (IOException e) {
+				// Ignore
+			}
+		}
+	}
 
-    @Override
-    public void nextEntry() {
-        if (entries == null) {
-            entries = jarFile.entries();
-        }
-        if (entries.hasMoreElements()) {
-            entry = entries.nextElement();
-        } else {
-            entry = null;
-        }
-    }
+	@Override
+	public void nextEntry() {
+		if (entries == null) {
+			entries = jarFile.entries();
+		}
+		if (entries.hasMoreElements()) {
+			entry = entries.nextElement();
+		} else {
+			entry = null;
+		}
+	}
 
-    @Override
-    public String getEntryName() {
-        if (entry == null) {
-            return null;
-        } else {
-            return entry.getName();
-        }
-    }
+	@Override
+	public String getEntryName() {
+		if (entry == null) {
+			return null;
+		} else {
+			return entry.getName();
+		}
+	}
 
-    @Override
-    public InputStream getEntryInputStream() throws IOException {
-        if (entry == null) {
-            return null;
-        } else {
-            return jarFile.getInputStream(entry);
-        }
-    }
+	@Override
+	public InputStream getEntryInputStream() throws IOException {
+		if (entry == null) {
+			return null;
+		} else {
+			return jarFile.getInputStream(entry);
+		}
+	}
 
-    @Override
-    public void reset() throws IOException {
-        entries = null;
-        entry = null;
-    }
+	@Override
+	public void reset() throws IOException {
+		entries = null;
+		entry = null;
+	}
 }

@@ -22,37 +22,34 @@ import java.util.Locale;
 
 class Jre7Compat extends JreCompat {
 
-    private static final Method forLanguageTagMethod;
+	private static final Method forLanguageTagMethod;
 
+	static {
+		Method m = null;
+		try {
+			m = Locale.class.getMethod("forLanguageTag", String.class);
+		} catch (SecurityException e) {
+			// Should never happen
+		} catch (NoSuchMethodException e) {
+			// Expected on Java < 7
+		}
+		forLanguageTagMethod = m;
+	}
 
-    static {
-        Method m = null;
-        try {
-            m = Locale.class.getMethod("forLanguageTag", String.class);
-        } catch (SecurityException e) {
-            // Should never happen
-        } catch (NoSuchMethodException e) {
-            // Expected on Java < 7
-        }
-        forLanguageTagMethod = m;
-    }
+	static boolean isSupported() {
+		return forLanguageTagMethod != null;
+	}
 
-
-    static boolean isSupported() {
-        return forLanguageTagMethod != null;
-    }
-
-
-    @Override
-    public Locale forLanguageTag(String languageTag) {
-        try {
-            return (Locale) forLanguageTagMethod.invoke(null, languageTag);
-        } catch (IllegalArgumentException e) {
-            return null;
-        } catch (IllegalAccessException e) {
-            return null;
-        } catch (InvocationTargetException e) {
-            return null;
-        }
-    }
+	@Override
+	public Locale forLanguageTag(String languageTag) {
+		try {
+			return (Locale) forLanguageTagMethod.invoke(null, languageTag);
+		} catch (IllegalArgumentException e) {
+			return null;
+		} catch (IllegalAccessException e) {
+			return null;
+		} catch (InvocationTargetException e) {
+			return null;
+		}
+	}
 }

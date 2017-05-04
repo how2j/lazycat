@@ -31,113 +31,105 @@ import org.apache.tomcat.util.buf.ByteChunk;
  */
 public class BufferedInputFilter implements InputFilter {
 
-    // -------------------------------------------------------------- Constants
+	// -------------------------------------------------------------- Constants
 
-    private static final String ENCODING_NAME = "buffered";
-    private static final ByteChunk ENCODING = new ByteChunk();
+	private static final String ENCODING_NAME = "buffered";
+	private static final ByteChunk ENCODING = new ByteChunk();
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	private ByteChunk buffered = null;
+	private ByteChunk tempRead = new ByteChunk(1024);
+	private InputBuffer buffer;
+	private boolean hasRead = false;
 
-    private ByteChunk buffered = null;
-    private ByteChunk tempRead = new ByteChunk(1024);
-    private InputBuffer buffer;
-    private boolean hasRead = false;
+	// ----------------------------------------------------- Static Initializer
 
+	static {
+		ENCODING.setBytes(ENCODING_NAME.getBytes(Charset.defaultCharset()), 0, ENCODING_NAME.length());
+	}
 
-    // ----------------------------------------------------- Static Initializer
+	// --------------------------------------------------------- Public Methods
 
-    static {
-        ENCODING.setBytes(ENCODING_NAME.getBytes(Charset.defaultCharset()), 0,
-                ENCODING_NAME.length());
-    }
+	/**
+	 * Set the buffering limit. This should be reset every time the buffer is
+	 * used.
+	 *
+	 * @param limit
+	 *            The maximum number of bytes that will be buffered
+	 */
+	public void setLimit(int limit) {
+		if (buffered == null) {
+			buffered = new ByteChunk(4048);
+			buffered.setLimit(limit);
+		}
+	}
 
+	// ---------------------------------------------------- InputBuffer Methods
 
-    // --------------------------------------------------------- Public Methods
+	/**
+	 * Reads the request body and buffers it.
+	 */
+	@Override
+	public void setRequest(Request request) {
+		// save off the Request body
+		try {
+			while (buffer.doRead(tempRead, request) >= 0) {
+				buffered.append(tempRead);
+				tempRead.recycle();
+			}
+		} catch (IOException ioe) {
+			// No need for i18n - this isn't going to get logged anywhere
+			throw new IllegalStateException("Request body too large for buffer");
+		}
+	}
 
+	/**
+	 * Fills the given ByteChunk with the buffered request body.
+	 */
+	@Override
+	public int doRead(ByteChunk chunk, Request request) throws IOException {
+		if (hasRead || buffered.getLength() <= 0) {
+			return -1;
+		}
 
-    /**
-     * Set the buffering limit. This should be reset every time the buffer is
-     * used.
-     *
-     * @param limit The maximum number of bytes that will be buffered
-     */
-    public void setLimit(int limit) {
-        if (buffered == null) {
-            buffered = new ByteChunk(4048);
-            buffered.setLimit(limit);
-        }
-    }
+		chunk.setBytes(buffered.getBytes(), buffered.getStart(), buffered.getLength());
+		hasRead = true;
+		return chunk.getLength();
+	}
 
+	@Override
+	public void setBuffer(InputBuffer buffer) {
+		this.buffer = buffer;
+	}
 
-    // ---------------------------------------------------- InputBuffer Methods
+	@Override
+	public void recycle() {
+		if (buffered != null) {
+			if (buffered.getBuffer().length > 65536) {
+				buffered = null;
+			} else {
+				buffered.recycle();
+			}
+		}
+		tempRead.recycle();
+		hasRead = false;
+		buffer = null;
+	}
 
+	@Override
+	public ByteChunk getEncodingName() {
+		return ENCODING;
+	}
 
-    /**
-     * Reads the request body and buffers it.
-     */
-    @Override
-    public void setRequest(Request request) {
-        // save off the Request body
-        try {
-            while (buffer.doRead(tempRead, request) >= 0) {
-                buffered.append(tempRead);
-                tempRead.recycle();
-            }
-        } catch(IOException ioe) {
-            // No need for i18n - this isn't going to get logged anywhere
-            throw new IllegalStateException(
-                    "Request body too large for buffer");
-        }
-    }
+	@Override
+	public long end() throws IOException {
+		return 0;
+	}
 
-    /**
-     * Fills the given ByteChunk with the buffered request body.
-     */
-    @Override
-    public int doRead(ByteChunk chunk, Request request) throws IOException {
-        if (hasRead || buffered.getLength() <= 0) {
-            return -1;
-        }
+	@Override
+	public int available() {
+		return buffered.getLength();
+	}
 
-        chunk.setBytes(buffered.getBytes(), buffered.getStart(),
-                buffered.getLength());
-        hasRead = true;
-        return chunk.getLength();
-    }
-
-    @Override
-    public void setBuffer(InputBuffer buffer) {
-        this.buffer = buffer;
-    }
-
-    @Override
-    public void recycle() {
-        if (buffered != null) {
-            if (buffered.getBuffer().length > 65536) {
-                buffered = null;
-            } else {
-                buffered.recycle();
-            }
-        }
-        tempRead.recycle();
-        hasRead = false;
-        buffer = null;
-    }
-
-    @Override
-    public ByteChunk getEncodingName() {
-        return ENCODING;
-    }
-
-    @Override
-    public long end() throws IOException {
-        return 0;
-    }
-
-    @Override
-    public int available() {
-        return buffered.getLength();
-    }
-    
 }

@@ -27,71 +27,68 @@ import java.net.Socket;
  */
 public interface ServerSocketFactory {
 
-    /**
-     * Returns a server socket which uses all network interfaces on the host,
-     * and is bound to a the specified port. The socket is configured with the
-     * socket options (such as accept timeout) given to this factory.
-     *
-     * @param port
-     *            the port to listen to
-     * @exception IOException
-     *                for networking errors
-     * @exception InstantiationException
-     *                for construction errors
-     */
-    ServerSocket createSocket(int port) throws IOException,
-            InstantiationException;
+	/**
+	 * Returns a server socket which uses all network interfaces on the host,
+	 * and is bound to a the specified port. The socket is configured with the
+	 * socket options (such as accept timeout) given to this factory.
+	 *
+	 * @param port
+	 *            the port to listen to
+	 * @exception IOException
+	 *                for networking errors
+	 * @exception InstantiationException
+	 *                for construction errors
+	 */
+	ServerSocket createSocket(int port) throws IOException, InstantiationException;
 
-    /**
-     * Returns a server socket which uses all network interfaces on the host, is
-     * bound to a the specified port, and uses the specified connection backlog.
-     * The socket is configured with the socket options (such as accept timeout)
-     * given to this factory.
-     *
-     * @param port
-     *            the port to listen to
-     * @param backlog
-     *            how many connections are queued
-     * @exception IOException
-     *                for networking errors
-     * @exception InstantiationException
-     *                for construction errors
-     */
-    ServerSocket createSocket(int port, int backlog) throws IOException,
-            InstantiationException;
+	/**
+	 * Returns a server socket which uses all network interfaces on the host, is
+	 * bound to a the specified port, and uses the specified connection backlog.
+	 * The socket is configured with the socket options (such as accept timeout)
+	 * given to this factory.
+	 *
+	 * @param port
+	 *            the port to listen to
+	 * @param backlog
+	 *            how many connections are queued
+	 * @exception IOException
+	 *                for networking errors
+	 * @exception InstantiationException
+	 *                for construction errors
+	 */
+	ServerSocket createSocket(int port, int backlog) throws IOException, InstantiationException;
 
-    /**
-     * Returns a server socket which uses only the specified network interface
-     * on the local host, is bound to a the specified port, and uses the
-     * specified connection backlog. The socket is configured with the socket
-     * options (such as accept timeout) given to this factory.
-     *
-     * @param port
-     *            the port to listen to
-     * @param backlog
-     *            how many connections are queued
-     * @param ifAddress
-     *            the network interface address to use
-     * @exception IOException
-     *                for networking errors
-     * @exception InstantiationException
-     *                for construction errors
-     */
-    ServerSocket createSocket(int port, int backlog, InetAddress ifAddress)
-            throws IOException, InstantiationException;
+	/**
+	 * Returns a server socket which uses only the specified network interface
+	 * on the local host, is bound to a the specified port, and uses the
+	 * specified connection backlog. The socket is configured with the socket
+	 * options (such as accept timeout) given to this factory.
+	 *
+	 * @param port
+	 *            the port to listen to
+	 * @param backlog
+	 *            how many connections are queued
+	 * @param ifAddress
+	 *            the network interface address to use
+	 * @exception IOException
+	 *                for networking errors
+	 * @exception InstantiationException
+	 *                for construction errors
+	 */
+	ServerSocket createSocket(int port, int backlog, InetAddress ifAddress) throws IOException, InstantiationException;
 
-    /**
-     * Wrapper function for accept(). This allows us to trap and translate
-     * exceptions if necessary.
-     *
-     * @exception IOException
-     */
-    Socket acceptSocket(ServerSocket socket) throws IOException;
+	/**
+	 * Wrapper function for accept(). This allows us to trap and translate
+	 * exceptions if necessary.
+	 *
+	 * @exception IOException
+	 */
+	Socket acceptSocket(ServerSocket socket) throws IOException;
 
-    /**
-     * Triggers the SSL handshake. This will be a no-op for non-SSL sockets.
-     *
-     * @exception IOException
-     */
-    void handshake(Socket sock) throws IOException;
+	/**
+	 * Triggers the SSL handshake. This will be a no-op for non-SSL sockets.
+	 *
+	 * @exception IOException
+	 */
+	void handshake(Socket sock) throws IOException;
 }

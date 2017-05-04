@@ -18,5 +18,5 @@ package javax.websocket;
 
 public interface SendHandler {
 
-    void onResult(SendResult result);
+	void onResult(SendResult result);
 }

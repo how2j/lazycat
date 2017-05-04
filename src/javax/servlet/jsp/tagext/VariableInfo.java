@@ -65,8 +65,8 @@ package javax.servlet.jsp.tagext;
  * name, its type, whether the variable is new or not, and what its scope is.
  * Scope is best described through a picture:
  * <p>
- * <IMG src="doc-files/VariableInfo-1.gif"
- * alt="NESTED, AT_BEGIN and AT_END Variable Scopes"/>
+ * <IMG src="doc-files/VariableInfo-1.gif" alt=
+ * "NESTED, AT_BEGIN and AT_END Variable Scopes"/>
  * <p>
  * The JSP 2.0 specification defines the interpretation of 3 values:
  * <ul>
@@ -80,9 +80,9 @@ package javax.servlet.jsp.tagext;
  * The scope value for a variable implies what methods may affect its value and
  * thus where synchronization is needed as illustrated by the table below.
  * <b>Note:</b> the synchronization of the variable(s) will occur <em>after</em>
- * the respective method has been called. <blockquote>
- * <table cellpadding="2" cellspacing="2" border="0" width="55%" * bgcolor="#999999" summary="Variable Synchronization Points">
- * <tbody>
+ * the respective method has been called. <blockquote> <table cellpadding="2"
+ * cellspacing="2" border="0" width="55%" * bgcolor="#999999" summary=
+ * "Variable Synchronization Points"> <tbody>
  * <tr align="center">
  * <td valign="top" colspan="6" bgcolor="#999999"><u><b>Variable Synchronization
  * Points</b></u><br>
@@ -127,11 +127,11 @@ package javax.servlet.jsp.tagext;
  * <tr>
  * <td valign="top" bgcolor="#c0c0c0"><b>BodyTag<br>
  * </b></td>
- * <td valign="top" align="center" bgcolor="#ffffff">AT_BEGIN,
- * NESTED<sup>1</sup><br>
+ * <td valign="top" align="center" bgcolor="#ffffff">AT_BEGIN, NESTED
+ * <sup>1</sup><br>
  * </td>
- * <td valign="top" align="center" bgcolor="#ffffff">AT_BEGIN,
- * NESTED<sup>1</sup><br>
+ * <td valign="top" align="center" bgcolor="#ffffff">AT_BEGIN, NESTED
+ * <sup>1</sup><br>
  * </td>
  * <td valign="top" align="center" bgcolor="#ffffff">AT_BEGIN, NESTED<br>
  * </td>
@@ -168,90 +168,89 @@ package javax.servlet.jsp.tagext;
  */
 public class VariableInfo {
 
-    /**
-     * Scope information that scripting variable is visible only within the
-     * start/end tags.
-     */
-    public static final int NESTED = 0;
+	/**
+	 * Scope information that scripting variable is visible only within the
+	 * start/end tags.
+	 */
+	public static final int NESTED = 0;
 
-    /**
-     * Scope information that scripting variable is visible after start tag.
-     */
-    public static final int AT_BEGIN = 1;
+	/**
+	 * Scope information that scripting variable is visible after start tag.
+	 */
+	public static final int AT_BEGIN = 1;
 
-    /**
-     * Scope information that scripting variable is visible after end tag.
-     */
-    public static final int AT_END = 2;
+	/**
+	 * Scope information that scripting variable is visible after end tag.
+	 */
+	public static final int AT_END = 2;
 
-    /**
-     * Constructor These objects can be created (at translation time) by the
-     * TagExtraInfo instances.
-     * 
-     * @param varName
-     *            The name of the scripting variable
-     * @param className
-     *            The type of this variable
-     * @param declare
-     *            If true, it is a new variable (in some languages this will
-     *            require a declaration)
-     * @param scope
-     *            Indication on the lexical scope of the variable
-     */
-    public VariableInfo(String varName, String className, boolean declare,
-            int scope) {
-        this.varName = varName;
-        this.className = className;
-        this.declare = declare;
-        this.scope = scope;
-    }
+	/**
+	 * Constructor These objects can be created (at translation time) by the
+	 * TagExtraInfo instances.
+	 * 
+	 * @param varName
+	 *            The name of the scripting variable
+	 * @param className
+	 *            The type of this variable
+	 * @param declare
+	 *            If true, it is a new variable (in some languages this will
+	 *            require a declaration)
+	 * @param scope
+	 *            Indication on the lexical scope of the variable
+	 */
+	public VariableInfo(String varName, String className, boolean declare, int scope) {
+		this.varName = varName;
+		this.className = className;
+		this.declare = declare;
+		this.scope = scope;
+	}
 
-    // Accessor methods
+	// Accessor methods
 
-    /**
-     * Returns the name of the scripting variable.
-     * 
-     * @return the name of the scripting variable
-     */
-    public String getVarName() {
-        return varName;
-    }
+	/**
+	 * Returns the name of the scripting variable.
+	 * 
+	 * @return the name of the scripting variable
+	 */
+	public String getVarName() {
+		return varName;
+	}
 
-    /**
-     * Returns the type of this variable.
-     * 
-     * @return the type of this variable
-     */
-    public String getClassName() {
-        return className;
-    }
+	/**
+	 * Returns the type of this variable.
+	 * 
+	 * @return the type of this variable
+	 */
+	public String getClassName() {
+		return className;
+	}
 
-    /**
-     * Returns whether this is a new variable. If so, in some languages this
-     * will require a declaration.
-     * 
-     * @return whether this is a new variable.
-     */
-    public boolean getDeclare() {
-        return declare;
-    }
+	/**
+	 * Returns whether this is a new variable. If so, in some languages this
+	 * will require a declaration.
+	 * 
+	 * @return whether this is a new variable.
+	 */
+	public boolean getDeclare() {
+		return declare;
+	}
 
-    /**
-     * Returns the lexical scope of the variable.
-     * 
-     * @return the lexical scope of the variable, either AT_BEGIN, AT_END, or
-     *         NESTED.
-     * @see #AT_BEGIN
-     * @see #AT_END
-     * @see #NESTED
-     */
-    public int getScope() {
-        return scope;
-    }
+	/**
+	 * Returns the lexical scope of the variable.
+	 * 
+	 * @return the lexical scope of the variable, either AT_BEGIN, AT_END, or
+	 *         NESTED.
+	 * @see #AT_BEGIN
+	 * @see #AT_END
+	 * @see #NESTED
+	 */
+	public int getScope() {
+		return scope;
+	}
 
-    // == private data
-    private final String varName;
-    private final String className;
-    private final boolean declare;
-    private final int scope;
+	// == private data
+	private final String varName;
+	private final String className;
+	private final boolean declare;
+	private final int scope;
 }

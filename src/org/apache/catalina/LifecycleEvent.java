@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina;
-
 
 import java.util.EventObject;
 
-
 /**
  * General event for notifying listeners of significant changes on a component
- * that implements the Lifecycle interface.  In particular, this will be useful
+ * that implements the Lifecycle interface. In particular, this will be useful
  * on Containers, where these events replace the ContextInterceptor concept in
  * Tomcat 3.x.
  *
@@ -32,72 +29,66 @@ import java.util.EventObject;
  */
 public final class LifecycleEvent extends EventObject {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
+	// ----------------------------------------------------------- Constructors
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * Construct a new LifecycleEvent with the specified parameters.
+	 *
+	 * @param lifecycle
+	 *            Component on which this event occurred
+	 * @param type
+	 *            Event type (required)
+	 * @param data
+	 *            Event data (if any)
+	 */
+	public LifecycleEvent(Lifecycle lifecycle, String type, Object data) {
 
-    /**
-     * Construct a new LifecycleEvent with the specified parameters.
-     *
-     * @param lifecycle Component on which this event occurred
-     * @param type Event type (required)
-     * @param data Event data (if any)
-     */
-    public LifecycleEvent(Lifecycle lifecycle, String type, Object data) {
+		super(lifecycle);
+		this.type = type;
+		this.data = data;
+	}
 
-        super(lifecycle);
-        this.type = type;
-        this.data = data;
-    }
+	// ----------------------------------------------------- Instance Variables
 
+	/**
+	 * The event data associated with this event.
+	 */
+	private Object data = null;
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * The event type this instance represents.
+	 */
+	private String type = null;
 
+	// ------------------------------------------------------------- Properties
 
-    /**
-     * The event data associated with this event.
-     */
-    private Object data = null;
+	/**
+	 * Return the event data of this event.
+	 */
+	public Object getData() {
 
+		return (this.data);
 
-    /**
-     * The event type this instance represents.
-     */
-    private String type = null;
+	}
 
+	/**
+	 * Return the Lifecycle on which this event occurred.
+	 */
+	public Lifecycle getLifecycle() {
 
-    // ------------------------------------------------------------- Properties
+		return (Lifecycle) getSource();
 
+	}
 
-    /**
-     * Return the event data of this event.
-     */
-    public Object getData() {
+	/**
+	 * Return the event type of this event.
+	 */
+	public String getType() {
 
-        return (this.data);
+		return (this.type);
 
-    }
-
-
-    /**
-     * Return the Lifecycle on which this event occurred.
-     */
-    public Lifecycle getLifecycle() {
-
-        return (Lifecycle) getSource();
-
-    }
-
-
-    /**
-     * Return the event type of this event.
-     */
-    public String getType() {
-
-        return (this.type);
-
-    }
-
+	}
 
 }

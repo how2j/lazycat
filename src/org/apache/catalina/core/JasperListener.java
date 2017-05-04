@@ -17,7 +17,6 @@
 
 package org.apache.catalina.core;
 
-
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
@@ -26,53 +25,46 @@ import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.util.ExceptionUtils;
 import org.apache.tomcat.util.res.StringManager;
 
-
 /**
- * This listener is designed to initialize Jasper before any web applications are
- * started.
+ * This listener is designed to initialize Jasper before any web applications
+ * are started.
  *
  * @author Remy Maucherat
  * @since 4.1
  */
-public class JasperListener
-    implements LifecycleListener {
+public class JasperListener implements LifecycleListener {
 
-    private static final Log log = LogFactory.getLog(JasperListener.class);
+	private static final Log log = LogFactory.getLog(JasperListener.class);
 
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+	/**
+	 * The string manager for this package.
+	 */
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
+	// ---------------------------------------------- LifecycleListener Methods
 
-    // ---------------------------------------------- LifecycleListener Methods
+	/**
+	 * Primary entry point for startup and shutdown events.
+	 *
+	 * @param event
+	 *            The event that has occurred
+	 */
+	@Override
+	public void lifecycleEvent(LifecycleEvent event) {
 
+		if (Lifecycle.BEFORE_INIT_EVENT.equals(event.getType())) {
+			try {
+				// Set JSP factory
+				Class.forName("org.apache.jasper.compiler.JspRuntimeContext", true, this.getClass().getClassLoader());
+			} catch (Throwable t) {
+				ExceptionUtils.handleThrowable(t);
+				// Should not occur, obviously
+				log.warn("Couldn't initialize Jasper", t);
+			}
+			// Another possibility is to do directly:
+			// JspFactory.setDefaultFactory(new JspFactoryImpl());
+		}
 
-    /**
-     * Primary entry point for startup and shutdown events.
-     *
-     * @param event The event that has occurred
-     */
-    @Override
-    public void lifecycleEvent(LifecycleEvent event) {
-
-        if (Lifecycle.BEFORE_INIT_EVENT.equals(event.getType())) {
-            try {
-                // Set JSP factory
-                Class.forName("org.apache.jasper.compiler.JspRuntimeContext",
-                              true,
-                              this.getClass().getClassLoader());
-            } catch (Throwable t) {
-                ExceptionUtils.handleThrowable(t);
-                // Should not occur, obviously
-                log.warn("Couldn't initialize Jasper", t);
-            }
-            // Another possibility is to do directly:
-            // JspFactory.setDefaultFactory(new JspFactoryImpl());
-        }
-
-    }
-
+	}
 
 }

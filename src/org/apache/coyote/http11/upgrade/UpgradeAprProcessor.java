@@ -23,89 +23,77 @@ import org.apache.tomcat.jni.Status;
 import org.apache.tomcat.util.net.SocketWrapper;
 
 /**
- * @deprecated  Will be removed in Tomcat 8.0.x.
+ * @deprecated Will be removed in Tomcat 8.0.x.
  */
 @Deprecated
 public class UpgradeAprProcessor extends UpgradeProcessor<Long> {
 
-    private final long socket;
+	private final long socket;
 
+	public UpgradeAprProcessor(SocketWrapper<Long> wrapper, UpgradeInbound upgradeInbound) {
+		super(upgradeInbound);
 
-    public UpgradeAprProcessor(SocketWrapper<Long> wrapper,
-            UpgradeInbound upgradeInbound) {
-        super(upgradeInbound);
+		Socket.timeoutSet(wrapper.getSocket().longValue(), upgradeInbound.getReadTimeout());
 
-        Socket.timeoutSet(wrapper.getSocket().longValue(),
-                upgradeInbound.getReadTimeout());
+		this.socket = wrapper.getSocket().longValue();
+	}
 
-        this.socket = wrapper.getSocket().longValue();
-    }
+	/*
+	 * Output methods
+	 */
+	@Override
+	public void flush() throws IOException {
+		// NOOP
+	}
 
+	@Override
+	public void write(int b) throws IOException {
+		int result = Socket.send(socket, new byte[] { (byte) b }, 0, 1);
+		if (result != 1) {
+			throw new IOException(sm.getString("apr.write.error", Integer.valueOf(-result)));
+		}
+	}
 
-    /*
-     * Output methods
-     */
-    @Override
-    public void flush() throws IOException {
-        // NOOP
-    }
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		int result = Socket.send(socket, b, off, len);
+		if (result != len) {
+			throw new IOException(sm.getString("apr.write.error", Integer.valueOf(-result)));
+		}
+	}
 
+	/*
+	 * Input methods
+	 */
+	@Override
+	public int read() throws IOException {
+		byte[] bytes = new byte[1];
+		int result = Socket.recv(socket, bytes, 0, 1);
+		if (result == -1) {
+			return -1;
+		} else {
+			return bytes[0] & 0xFF;
+		}
+	}
 
-    @Override
-    public void write(int b) throws IOException {
-        int result = Socket.send(socket, new byte[] {(byte) b}, 0, 1);
-        if (result != 1) {
-            throw new IOException(sm.getString("apr.write.error",
-                    Integer.valueOf(-result)));
-        }
-    }
-
-
-    @Override
-    public void write(byte[]b, int off, int len) throws IOException {
-        int result = Socket.send(socket, b, off, len);
-        if (result != len) {
-            throw new IOException(sm.getString("apr.write.error",
-                    Integer.valueOf(-result)));
-        }
-    }
-
-
-    /*
-     * Input methods
-     */
-    @Override
-    public int read() throws IOException {
-        byte[] bytes = new byte[1];
-        int result = Socket.recv(socket, bytes, 0, 1);
-        if (result == -1) {
-            return -1;
-        } else {
-            return bytes[0] & 0xFF;
-        }
-    }
-
-
-    @Override
-    public int read(boolean block, byte[] bytes, int off, int len)
-            throws IOException {
-        if (!block) {
-            Socket.optSet(socket, Socket.APR_SO_NONBLOCK, -1);
-        }
-        try {
-            int result = Socket.recv(socket, bytes, off, len);
-            if (result > 0) {
-                return result;
-            } else if (-result == Status.EAGAIN) {
-                return 0;
-            } else {
-                throw new IOException(sm.getString("apr.read.error",
-                        Integer.valueOf(-result)));
-            }
-        } finally {
-            if (!block) {
-                Socket.optSet(socket, Socket.APR_SO_NONBLOCK, 0);
-            }
-        }
-    }
+	@Override
+	public int read(boolean block, byte[] bytes, int off, int len) throws IOException {
+		if (!block) {
+			Socket.optSet(socket, Socket.APR_SO_NONBLOCK, -1);
+		}
+		try {
+			int result = Socket.recv(socket, bytes, off, len);
+			if (result > 0) {
+				return result;
+			} else if (-result == Status.EAGAIN) {
+				return 0;
+			} else {
+				throw new IOException(sm.getString("apr.read.error", Integer.valueOf(-result)));
+			}
+		} finally {
+			if (!block) {
+				Socket.optSet(socket, Socket.APR_SO_NONBLOCK, 0);
+			}
+		}
+	}
 }

@@ -31,67 +31,67 @@ import org.apache.catalina.tribes.group.InterceptorPayload;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-
 /**
  * @author Filip Hanik
  * @version 1.0
  */
 public class GzipInterceptor extends ChannelInterceptorBase {
 
-    private static final Log log = LogFactory.getLog(GzipInterceptor.class);
+	private static final Log log = LogFactory.getLog(GzipInterceptor.class);
 
-    public static final int DEFAULT_BUFFER_SIZE = 2048;
-    
-    @Override
-    public void sendMessage(Member[] destination, ChannelMessage msg, InterceptorPayload payload) throws ChannelException {
-        try {
-            byte[] data = compress(msg.getMessage().getBytes());
-            msg.getMessage().trim(msg.getMessage().getLength());
-            msg.getMessage().append(data,0,data.length);
-            getNext().sendMessage(destination, msg, payload);
-        } catch ( IOException x ) {
-            log.error("Unable to compress byte contents");
-            throw new ChannelException(x);
-        }
-    }
+	public static final int DEFAULT_BUFFER_SIZE = 2048;
 
-    @Override
-    public void messageReceived(ChannelMessage msg) {
-        try {
-            byte[] data = decompress(msg.getMessage().getBytes());
-            msg.getMessage().trim(msg.getMessage().getLength());
-            msg.getMessage().append(data,0,data.length);
-            getPrevious().messageReceived(msg);
-        } catch ( IOException x ) {
-            log.error("Unable to decompress byte contents",x);
-        }
-    }
-    
-    public static byte[] compress(byte[] data) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        GZIPOutputStream gout = new GZIPOutputStream(bout);
-        gout.write(data);
-        gout.flush();
-        gout.close();
-        return bout.toByteArray();
-    }
-    
-    /**
-     * @param data  Data to decompress
-     * @return      Decompressed data
-     * @throws IOException
-     */
-    public static byte[] decompress(byte[] data) throws IOException {
-        ByteArrayOutputStream bout =
-            new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
-        ByteArrayInputStream bin = new ByteArrayInputStream(data);
-        GZIPInputStream gin = new GZIPInputStream(bin);
-        byte[] tmp = new byte[DEFAULT_BUFFER_SIZE];
-        int length = gin.read(tmp);
-        while (length > -1) {
-            bout.write(tmp, 0, length);
-            length = gin.read(tmp);
-        }
-        return bout.toByteArray();
-    }
+	@Override
+	public void sendMessage(Member[] destination, ChannelMessage msg, InterceptorPayload payload)
+			throws ChannelException {
+		try {
+			byte[] data = compress(msg.getMessage().getBytes());
+			msg.getMessage().trim(msg.getMessage().getLength());
+			msg.getMessage().append(data, 0, data.length);
+			getNext().sendMessage(destination, msg, payload);
+		} catch (IOException x) {
+			log.error("Unable to compress byte contents");
+			throw new ChannelException(x);
+		}
+	}
+
+	@Override
+	public void messageReceived(ChannelMessage msg) {
+		try {
+			byte[] data = decompress(msg.getMessage().getBytes());
+			msg.getMessage().trim(msg.getMessage().getLength());
+			msg.getMessage().append(data, 0, data.length);
+			getPrevious().messageReceived(msg);
+		} catch (IOException x) {
+			log.error("Unable to decompress byte contents", x);
+		}
+	}
+
+	public static byte[] compress(byte[] data) throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		GZIPOutputStream gout = new GZIPOutputStream(bout);
+		gout.write(data);
+		gout.flush();
+		gout.close();
+		return bout.toByteArray();
+	}
+
+	/**
+	 * @param data
+	 *            Data to decompress
+	 * @return Decompressed data
+	 * @throws IOException
+	 */
+	public static byte[] decompress(byte[] data) throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
+		ByteArrayInputStream bin = new ByteArrayInputStream(data);
+		GZIPInputStream gin = new GZIPInputStream(bin);
+		byte[] tmp = new byte[DEFAULT_BUFFER_SIZE];
+		int length = gin.read(tmp);
+		while (length > -1) {
+			bout.write(tmp, 0, length);
+			length = gin.read(tmp);
+		}
+		return bout.toByteArray();
+	}
 }

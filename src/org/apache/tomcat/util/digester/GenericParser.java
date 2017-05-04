@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.tomcat.util.digester;
 
@@ -35,52 +34,47 @@ import org.xml.sax.SAXNotRecognizedException;
  * @since 1.6
  */
 
-public class GenericParser{
+public class GenericParser {
 
-    /**
-     * The Log to which all SAX event related logging calls will be made.
-     */
-    private static final Log log =
-        LogFactory.getLog("org.apache.tomcat.util.digester.Digester.sax");
+	/**
+	 * The Log to which all SAX event related logging calls will be made.
+	 */
+	private static final Log log = LogFactory.getLog("org.apache.tomcat.util.digester.Digester.sax");
 
-    /**
-     * The JAXP 1.2 property required to set up the schema location.
-     */
-    private static final String JAXP_SCHEMA_SOURCE =
-        "http://java.sun.com/xml/jaxp/properties/schemaSource";
+	/**
+	 * The JAXP 1.2 property required to set up the schema location.
+	 */
+	private static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
-    /**
-     * The JAXP 1.2 property to set up the schemaLanguage used.
-     */
-    protected static String JAXP_SCHEMA_LANGUAGE =
-        "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+	/**
+	 * The JAXP 1.2 property to set up the schemaLanguage used.
+	 */
+	protected static String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
-    /**
-     * Create a <code>SAXParser</code> configured to support XML Schema and DTD
-     * @param properties parser specific properties/features
-     * @return an XML Schema/DTD enabled <code>SAXParser</code>
-     */
-    public static SAXParser newSAXParser(Properties properties)
-            throws ParserConfigurationException, 
-                   SAXException,
-                   SAXNotRecognizedException{ 
+	/**
+	 * Create a <code>SAXParser</code> configured to support XML Schema and DTD
+	 * 
+	 * @param properties
+	 *            parser specific properties/features
+	 * @return an XML Schema/DTD enabled <code>SAXParser</code>
+	 */
+	public static SAXParser newSAXParser(Properties properties)
+			throws ParserConfigurationException, SAXException, SAXNotRecognizedException {
 
-        SAXParserFactory factory = 
-                        (SAXParserFactory)properties.get("SAXParserFactory");
-        SAXParser parser = factory.newSAXParser();
-        String schemaLocation = (String)properties.get("schemaLocation");
-        String schemaLanguage = (String)properties.get("schemaLanguage");
+		SAXParserFactory factory = (SAXParserFactory) properties.get("SAXParserFactory");
+		SAXParser parser = factory.newSAXParser();
+		String schemaLocation = (String) properties.get("schemaLocation");
+		String schemaLanguage = (String) properties.get("schemaLanguage");
 
-        try{
-            if (schemaLocation != null) {
-                parser.setProperty(JAXP_SCHEMA_LANGUAGE, schemaLanguage);
-                parser.setProperty(JAXP_SCHEMA_SOURCE, schemaLocation);
-            }
-        } catch (SAXNotRecognizedException e){
-            log.info(parser.getClass().getName() + ": "  
-                                        + e.getMessage() + " not supported."); 
-        }
-        return parser;
-    }
+		try {
+			if (schemaLocation != null) {
+				parser.setProperty(JAXP_SCHEMA_LANGUAGE, schemaLanguage);
+				parser.setProperty(JAXP_SCHEMA_SOURCE, schemaLocation);
+			}
+		} catch (SAXNotRecognizedException e) {
+			log.info(parser.getClass().getName() + ": " + e.getMessage() + " not supported.");
+		}
+		return parser;
+	}
 
 }

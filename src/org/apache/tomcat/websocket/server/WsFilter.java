@@ -32,57 +32,51 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class WsFilter implements Filter {
 
-    private WsServerContainer sc;
+	private WsServerContainer sc;
 
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		sc = (WsServerContainer) filterConfig.getServletContext()
+				.getAttribute(Constants.SERVER_CONTAINER_SERVLET_CONTEXT_ATTRIBUTE);
+	}
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        sc = (WsServerContainer) filterConfig.getServletContext().getAttribute(
-                Constants.SERVER_CONTAINER_SERVLET_CONTEXT_ATTRIBUTE);
-    }
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
+		// This filter only needs to handle WebSocket upgrade requests
+		if (!sc.areEndpointsRegistered() || !UpgradeUtil.isWebSocketUpgradeRequest(request, response)) {
+			chain.doFilter(request, response);
+			return;
+		}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+		// HTTP request with an upgrade header for WebSocket present
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse resp = (HttpServletResponse) response;
 
-        // This filter only needs to handle WebSocket upgrade requests
-        if (!sc.areEndpointsRegistered() ||
-                !UpgradeUtil.isWebSocketUpgradeRequest(request, response)) {
-            chain.doFilter(request, response);
-            return;
-        }
+		// Check to see if this WebSocket implementation has a matching mapping
+		String path;
+		String pathInfo = req.getPathInfo();
+		if (pathInfo == null) {
+			path = req.getServletPath();
+		} else {
+			path = req.getServletPath() + pathInfo;
+		}
+		WsMappingResult mappingResult = sc.findMapping(path);
 
-        // HTTP request with an upgrade header for WebSocket present
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
+		if (mappingResult == null) {
+			// No endpoint registered for the requested path. Let the
+			// application handle it (it might redirect or forward for example)
+			chain.doFilter(request, response);
+			return;
+		}
 
-        // Check to see if this WebSocket implementation has a matching mapping
-        String path;
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null) {
-            path = req.getServletPath();
-        } else {
-            path = req.getServletPath() + pathInfo;
-        }
-        WsMappingResult mappingResult = sc.findMapping(path);
+		UpgradeUtil.doUpgrade(sc, req, resp, mappingResult.getConfig(), mappingResult.getPathParams());
+	}
 
-        if (mappingResult == null) {
-            // No endpoint registered for the requested path. Let the
-            // application handle it (it might redirect or forward for example)
-            chain.doFilter(request, response);
-            return;
-        }
-
-        UpgradeUtil.doUpgrade(sc, req, resp, mappingResult.getConfig(),
-                mappingResult.getPathParams());
-    }
-
-
-    @Override
-    public void destroy() {
-        // NO-OP
-    }
-
+	@Override
+	public void destroy() {
+		// NO-OP
+	}
 
 }

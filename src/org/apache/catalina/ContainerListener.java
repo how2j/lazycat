@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina;
-
 
 /**
  * Interface defining a listener for significant Container generated events.
@@ -28,13 +26,12 @@ package org.apache.catalina;
  */
 public interface ContainerListener {
 
-
-    /**
-     * Acknowledge the occurrence of the specified event.
-     *
-     * @param event ContainerEvent that has occurred
-     */
-    public void containerEvent(ContainerEvent event);
-
+	/**
+	 * Acknowledge the occurrence of the specified event.
+	 *
+	 * @param event
+	 *            ContainerEvent that has occurred
+	 */
+	public void containerEvent(ContainerEvent event);
 
 }

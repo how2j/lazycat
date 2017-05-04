@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.loader;
 
 import java.net.URL;
@@ -29,49 +28,40 @@ import java.util.jar.Manifest;
  */
 public class ResourceEntry {
 
+	/**
+	 * The "last modified" time of the origin file at the time this class was
+	 * loaded, in milliseconds since the epoch.
+	 */
+	public long lastModified = -1;
 
-    /**
-     * The "last modified" time of the origin file at the time this class
-     * was loaded, in milliseconds since the epoch.
-     */
-    public long lastModified = -1;
+	/**
+	 * Binary content of the resource.
+	 */
+	public byte[] binaryContent = null;
 
+	/**
+	 * Loaded class.
+	 */
+	public volatile Class<?> loadedClass = null;
 
-    /**
-     * Binary content of the resource.
-     */
-    public byte[] binaryContent = null;
+	/**
+	 * URL source from where the object was loaded.
+	 */
+	public URL source = null;
 
+	/**
+	 * URL of the codebase from where the object was loaded.
+	 */
+	public URL codeBase = null;
 
-    /**
-     * Loaded class.
-     */
-    public volatile Class<?> loadedClass = null;
+	/**
+	 * Manifest (if the resource was loaded from a JAR).
+	 */
+	public Manifest manifest = null;
 
-
-    /**
-     * URL source from where the object was loaded.
-     */
-    public URL source = null;
-
-
-    /**
-     * URL of the codebase from where the object was loaded.
-     */
-    public URL codeBase = null;
-
-
-    /**
-     * Manifest (if the resource was loaded from a JAR).
-     */
-    public Manifest manifest = null;
-
-
-    /**
-     * Certificates (if the resource was loaded from a JAR).
-     */
-    public Certificate[] certificates = null;
-
+	/**
+	 * Certificates (if the resource was loaded from a JAR).
+	 */
+	public Certificate[] certificates = null;
 
 }
-

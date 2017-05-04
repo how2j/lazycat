@@ -23,45 +23,44 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Default server socket factory. Doesn't do much except give us
- * plain old server sockets.
+ * Default server socket factory. Doesn't do much except give us plain old
+ * server sockets.
  *
  * @author db@eng.sun.com
  * @author Harish Prabandham
  */
 public class DefaultServerSocketFactory implements ServerSocketFactory {
 
-    /**
-     *
-     * @param endpoint  Unused in this implementation.
-     */
-    public DefaultServerSocketFactory(AbstractEndpoint<?> endpoint) {
-    }
+	/**
+	 *
+	 * @param endpoint
+	 *            Unused in this implementation.
+	 */
+	public DefaultServerSocketFactory(AbstractEndpoint<?> endpoint) {
+	}
 
-    @Override
-    public ServerSocket createSocket (int port) throws IOException {
-        return  new ServerSocket (port);
-    }
+	@Override
+	public ServerSocket createSocket(int port) throws IOException {
+		return new ServerSocket(port);
+	}
 
-    @Override
-    public ServerSocket createSocket (int port, int backlog)
-            throws IOException {
-        return new ServerSocket (port, backlog);
-    }
+	@Override
+	public ServerSocket createSocket(int port, int backlog) throws IOException {
+		return new ServerSocket(port, backlog);
+	}
 
-    @Override
-    public ServerSocket createSocket (int port, int backlog,
-            InetAddress ifAddress) throws IOException {
-        return new ServerSocket (port, backlog, ifAddress);
-    }
+	@Override
+	public ServerSocket createSocket(int port, int backlog, InetAddress ifAddress) throws IOException {
+		return new ServerSocket(port, backlog, ifAddress);
+	}
 
-    @Override
-    public Socket acceptSocket(ServerSocket socket) throws IOException {
-        return socket.accept();
-    }
+	@Override
+	public Socket acceptSocket(ServerSocket socket) throws IOException {
+		return socket.accept();
+	}
 
-    @Override
-    public void handshake(Socket sock) throws IOException {
-        // NOOP
-    }
+	@Override
+	public void handshake(Socket sock) throws IOException {
+		// NOOP
+	}
 }

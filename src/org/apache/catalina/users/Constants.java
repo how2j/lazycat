@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.users;
-
 
 /**
  * Manifest constants for this Java package.
@@ -28,6 +26,6 @@ package org.apache.catalina.users;
  */
 public final class Constants {
 
-    public static final String Package = "org.apache.catalina.users";
+	public static final String Package = "org.apache.catalina.users";
 
 }

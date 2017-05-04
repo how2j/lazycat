@@ -14,66 +14,69 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
- 
+
 package javax.servlet.jsp.tagext;
 
 /**
- * Information for a function in a Tag Library.
- * This class is instantiated from the Tag Library Descriptor file (TLD)
- * and is available only at translation time.
+ * Information for a function in a Tag Library. This class is instantiated from
+ * the Tag Library Descriptor file (TLD) and is available only at translation
+ * time.
  * 
  * @since 2.0
  */
 public class FunctionInfo {
 
-    /**
-     * Constructor for FunctionInfo.
-     *
-     * @param name The name of the function
-     * @param klass The class of the function
-     * @param signature The signature of the function
-     */
+	/**
+	 * Constructor for FunctionInfo.
+	 *
+	 * @param name
+	 *            The name of the function
+	 * @param klass
+	 *            The class of the function
+	 * @param signature
+	 *            The signature of the function
+	 */
 
-    public FunctionInfo(String name, String klass, String signature) {
-        this.name = name;
-        this.functionClass = klass;
-        this.functionSignature = signature;
-    }
+	public FunctionInfo(String name, String klass, String signature) {
+		this.name = name;
+		this.functionClass = klass;
+		this.functionSignature = signature;
+	}
 
-    /**
-     * The name of the function.
-     *
-     * @return The name of the function
-     */
+	/**
+	 * The name of the function.
+	 *
+	 * @return The name of the function
+	 */
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * The class of the function.
-     *
-     * @return The class of the function
-     */
+	/**
+	 * The class of the function.
+	 *
+	 * @return The class of the function
+	 */
 
-    public String getFunctionClass() {
-        return functionClass;
-    }
+	public String getFunctionClass() {
+		return functionClass;
+	}
 
-    /**
-     * The signature of the function.
-     *
-     * @return The signature of the function
-     */
+	/**
+	 * The signature of the function.
+	 *
+	 * @return The signature of the function
+	 */
 
-    public String getFunctionSignature() {
-        return functionSignature;
-    }
+	public String getFunctionSignature() {
+		return functionSignature;
+	}
 
-    /*
-     * fields
-     */
-    private final String name;
-    private final String functionClass;
-    private final String functionSignature;
+	/*
+	 * fields
+	 */
+	private final String name;
+	private final String functionClass;
+	private final String functionSignature;
 }

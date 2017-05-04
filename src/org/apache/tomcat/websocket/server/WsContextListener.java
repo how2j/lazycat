@@ -30,22 +30,22 @@ import javax.servlet.ServletContextListener;
  */
 public class WsContextListener implements ServletContextListener {
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        ServletContext sc = sce.getServletContext();
-        // Don't trigger WebSocket initialization if a WebSocket Server
-        // Container is already present
-        if (sc.getAttribute(Constants.SERVER_CONTAINER_SERVLET_CONTEXT_ATTRIBUTE) == null) {
-            WsSci.init(sce.getServletContext(), false);
-        }
-    }
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		ServletContext sc = sce.getServletContext();
+		// Don't trigger WebSocket initialization if a WebSocket Server
+		// Container is already present
+		if (sc.getAttribute(Constants.SERVER_CONTAINER_SERVLET_CONTEXT_ATTRIBUTE) == null) {
+			WsSci.init(sce.getServletContext(), false);
+		}
+	}
 
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        ServletContext sc = sce.getServletContext();
-        Object obj = sc.getAttribute(Constants.SERVER_CONTAINER_SERVLET_CONTEXT_ATTRIBUTE);
-        if (obj instanceof WsServerContainer) {
-            ((WsServerContainer) obj).destroy();
-        }
-    }
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
+		ServletContext sc = sce.getServletContext();
+		Object obj = sc.getAttribute(Constants.SERVER_CONTAINER_SERVLET_CONTEXT_ATTRIBUTE);
+		if (obj instanceof WsServerContainer) {
+			((WsServerContainer) obj).destroy();
+		}
+	}
 }

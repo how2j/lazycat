@@ -27,114 +27,105 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class NioServletOutputStream extends AbstractServletOutputStream {
 
-    private final NioChannel channel;
-    private final NioSelectorPool pool;
-    private final int maxWrite;
+	private final NioChannel channel;
+	private final NioSelectorPool pool;
+	private final int maxWrite;
 
+	public NioServletOutputStream(SocketWrapper<NioChannel> socketWrapper, int asyncWriteBufferSize,
+			NioSelectorPool pool) {
+		super(asyncWriteBufferSize);
+		channel = socketWrapper.getSocket();
+		this.pool = pool;
+		maxWrite = channel.getBufHandler().getWriteBuffer().capacity();
+	}
 
-    public NioServletOutputStream(SocketWrapper<NioChannel> socketWrapper,
-            int asyncWriteBufferSize, NioSelectorPool pool) {
-        super(asyncWriteBufferSize);
-        channel = socketWrapper.getSocket();
-        this.pool = pool;
-        maxWrite = channel.getBufHandler().getWriteBuffer().capacity();
-    }
+	@Override
+	protected int doWrite(boolean block, byte[] b, int off, int len) throws IOException {
+		int leftToWrite = len;
+		int count = 0;
+		int offset = off;
 
+		while (leftToWrite > 0) {
+			int writeThisLoop;
+			int writtenThisLoop;
 
-    @Override
-    protected int doWrite(boolean block, byte[] b, int off, int len)
-            throws IOException {
-        int leftToWrite = len;
-        int count = 0;
-        int offset = off;
+			if (leftToWrite > maxWrite) {
+				writeThisLoop = maxWrite;
+			} else {
+				writeThisLoop = leftToWrite;
+			}
 
-        while (leftToWrite > 0) {
-            int writeThisLoop;
-            int writtenThisLoop;
+			writtenThisLoop = doWriteInternal(block, b, offset, writeThisLoop);
+			count += writtenThisLoop;
+			offset += writtenThisLoop;
+			leftToWrite -= writtenThisLoop;
 
-            if (leftToWrite > maxWrite) {
-                writeThisLoop = maxWrite;
-            } else {
-                writeThisLoop = leftToWrite;
-            }
+			if (writtenThisLoop < writeThisLoop) {
+				break;
+			}
+		}
 
-            writtenThisLoop = doWriteInternal(block, b, offset, writeThisLoop);
-            count += writtenThisLoop;
-            offset += writtenThisLoop;
-            leftToWrite -= writtenThisLoop;
+		return count;
+	}
 
-            if (writtenThisLoop < writeThisLoop) {
-                break;
-            }
-        }
+	private int doWriteInternal(boolean block, byte[] b, int off, int len) throws IOException {
+		channel.getBufHandler().getWriteBuffer().clear();
+		channel.getBufHandler().getWriteBuffer().put(b, off, len);
+		channel.getBufHandler().getWriteBuffer().flip();
 
-        return count;
-    }
+		int written = 0;
+		NioEndpoint.KeyAttachment att = (NioEndpoint.KeyAttachment) channel.getAttachment();
+		if (att == null) {
+			throw new IOException("Key must be cancelled");
+		}
+		long writeTimeout = att.getWriteTimeout();
+		Selector selector = null;
+		try {
+			selector = pool.get();
+		} catch (IOException x) {
+			// ignore
+		}
+		try {
+			written = pool.write(channel.getBufHandler().getWriteBuffer(), channel, selector, writeTimeout, block);
+		} finally {
+			if (selector != null) {
+				pool.put(selector);
+			}
+		}
+		if (written < len) {
+			channel.getPoller().add(channel, SelectionKey.OP_WRITE);
+		}
+		return written;
+	}
 
-    private int doWriteInternal (boolean block, byte[] b, int off, int len)
-            throws IOException {
-        channel.getBufHandler().getWriteBuffer().clear();
-        channel.getBufHandler().getWriteBuffer().put(b, off, len);
-        channel.getBufHandler().getWriteBuffer().flip();
+	@Override
+	protected void doFlush() throws IOException {
+		NioEndpoint.KeyAttachment att = (NioEndpoint.KeyAttachment) channel.getAttachment();
+		if (att == null) {
+			throw new IOException("Key must be cancelled");
+		}
+		long writeTimeout = att.getWriteTimeout();
+		Selector selector = null;
+		try {
+			selector = pool.get();
+		} catch (IOException x) {
+			// ignore
+		}
+		try {
+			do {
+				if (channel.flush(true, selector, writeTimeout)) {
+					break;
+				}
+			} while (true);
+		} finally {
+			if (selector != null) {
+				pool.put(selector);
+			}
+		}
+	}
 
-        int written = 0;
-        NioEndpoint.KeyAttachment att =
-                (NioEndpoint.KeyAttachment) channel.getAttachment();
-        if (att == null) {
-            throw new IOException("Key must be cancelled");
-        }
-        long writeTimeout = att.getWriteTimeout();
-        Selector selector = null;
-        try {
-            selector = pool.get();
-        } catch ( IOException x ) {
-            //ignore
-        }
-        try {
-            written = pool.write(channel.getBufHandler().getWriteBuffer(),
-                    channel, selector, writeTimeout, block);
-        } finally {
-            if (selector != null) {
-                pool.put(selector);
-            }
-        }
-        if (written < len) {
-            channel.getPoller().add(channel, SelectionKey.OP_WRITE);
-        }
-        return written;
-    }
-
-
-    @Override
-    protected void doFlush() throws IOException {
-        NioEndpoint.KeyAttachment att =
-                (NioEndpoint.KeyAttachment) channel.getAttachment();
-        if (att == null) {
-            throw new IOException("Key must be cancelled");
-        }
-        long writeTimeout = att.getWriteTimeout();
-        Selector selector = null;
-        try {
-            selector = pool.get();
-        } catch ( IOException x ) {
-            //ignore
-        }
-        try {
-            do {
-                if (channel.flush(true, selector, writeTimeout)) {
-                    break;
-                }
-            } while (true);
-        } finally {
-            if (selector != null) {
-                pool.put(selector);
-            }
-        }
-    }
-
-
-    @Override
-    protected void doClose() throws IOException {
-        channel.close(true);
-    }
+	@Override
+	protected void doClose() throws IOException {
+		channel.close(true);
+	}
 }

@@ -26,88 +26,65 @@ import javax.servlet.ServletOutputStream;
  * @author Costin Manolache
  * @author Remy Maucherat
  */
-public class CoyoteOutputStream
-    extends ServletOutputStream {
+public class CoyoteOutputStream extends ServletOutputStream {
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	protected OutputBuffer ob;
 
+	// ----------------------------------------------------------- Constructors
 
-    protected OutputBuffer ob;
+	protected CoyoteOutputStream(OutputBuffer ob) {
+		this.ob = ob;
+	}
 
+	// --------------------------------------------------------- Public Methods
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * Prevent cloning the facade.
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
+	// -------------------------------------------------------- Package Methods
 
-    protected CoyoteOutputStream(OutputBuffer ob) {
-        this.ob = ob;
-    }
+	/**
+	 * Clear facade.
+	 */
+	void clear() {
+		ob = null;
+	}
 
+	// --------------------------------------------------- OutputStream Methods
 
-    // --------------------------------------------------------- Public Methods
+	@Override
+	public void write(int i) throws IOException {
+		ob.writeByte(i);
+	}
 
+	@Override
+	public void write(byte[] b) throws IOException {
+		write(b, 0, b.length);
+	}
 
-    /**
-     * Prevent cloning the facade.
-     */
-    @Override
-    protected Object clone()
-        throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
-    }
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		ob.write(b, off, len);
+	}
 
+	/**
+	 * Will send the buffer to the client.
+	 */
+	@Override
+	public void flush() throws IOException {
+		ob.flush();
+	}
 
-    // -------------------------------------------------------- Package Methods
-
-
-    /**
-     * Clear facade.
-     */
-    void clear() {
-        ob = null;
-    }
-
-
-    // --------------------------------------------------- OutputStream Methods
-
-
-    @Override
-    public void write(int i)
-        throws IOException {
-        ob.writeByte(i);
-    }
-
-
-    @Override
-    public void write(byte[] b)
-        throws IOException {
-        write(b, 0, b.length);
-    }
-
-
-    @Override
-    public void write(byte[] b, int off, int len)
-        throws IOException {
-        ob.write(b, off, len);
-    }
-
-
-    /**
-     * Will send the buffer to the client.
-     */
-    @Override
-    public void flush()
-        throws IOException {
-        ob.flush();
-    }
-
-
-    @Override
-    public void close()
-        throws IOException {
-        ob.close();
-    }
-
+	@Override
+	public void close() throws IOException {
+		ob.close();
+	}
 
 }
-

@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.naming;
 
@@ -33,146 +32,125 @@ import javax.naming.StringRefAddr;
 
 public class HandlerRef extends Reference {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    
-    // -------------------------------------------------------------- Constants
-    /**
-     * Default factory for this reference.
-     */
-    public static final String DEFAULT_FACTORY = 
-        org.apache.naming.factory.Constants.DEFAULT_HANDLER_FACTORY;
+	// -------------------------------------------------------------- Constants
+	/**
+	 * Default factory for this reference.
+	 */
+	public static final String DEFAULT_FACTORY = org.apache.naming.factory.Constants.DEFAULT_HANDLER_FACTORY;
 
+	/**
+	 * HandlerName address type.
+	 */
+	public static final String HANDLER_NAME = "handlername";
 
-    /**
-     * HandlerName address type.
-     */
-    public static final String HANDLER_NAME  = "handlername";
+	/**
+	 * Handler Classname address type.
+	 */
+	public static final String HANDLER_CLASS = "handlerclass";
 
+	/**
+	 * Handler Classname address type.
+	 */
+	public static final String HANDLER_LOCALPART = "handlerlocalpart";
 
-    /**
-     * Handler Classname address type.
-     */
-    public static final String HANDLER_CLASS  = "handlerclass";
+	/**
+	 * Handler Classname address type.
+	 */
+	public static final String HANDLER_NAMESPACE = "handlernamespace";
 
+	/**
+	 * Handler Classname address type.
+	 */
+	public static final String HANDLER_PARAMNAME = "handlerparamname";
 
-    /**
-     * Handler Classname address type.
-     */
-    public static final String HANDLER_LOCALPART  = "handlerlocalpart";
+	/**
+	 * Handler Classname address type.
+	 */
+	public static final String HANDLER_PARAMVALUE = "handlerparamvalue";
 
+	/**
+	 * Handler SoapRole address type.
+	 */
+	public static final String HANDLER_SOAPROLE = "handlersoaprole";
 
-    /**
-     * Handler Classname address type.
-     */
-    public static final String HANDLER_NAMESPACE  = "handlernamespace";
+	/**
+	 * Handler PortName address type.
+	 */
+	public static final String HANDLER_PORTNAME = "handlerportname";
 
+	// ----------------------------------------------------------- Constructors
 
-    /**
-     * Handler Classname address type.
-     */
-    public static final String HANDLER_PARAMNAME  = "handlerparamname";
+	public HandlerRef(String refname, String handlerClass) {
+		this(refname, handlerClass, null, null);
+	}
 
+	public HandlerRef(String refname, String handlerClass, String factory, String factoryLocation) {
+		super(refname, factory, factoryLocation);
+		StringRefAddr refAddr = null;
+		if (refname != null) {
+			refAddr = new StringRefAddr(HANDLER_NAME, refname);
+			add(refAddr);
+		}
+		if (handlerClass != null) {
+			refAddr = new StringRefAddr(HANDLER_CLASS, handlerClass);
+			add(refAddr);
+		}
+	}
 
-    /**
-     * Handler Classname address type.
-     */
-    public static final String HANDLER_PARAMVALUE  = "handlerparamvalue";
+	// ----------------------------------------------------- Instance Variables
 
+	// ------------------------------------------------------ Reference Methods
 
-    /**
-     * Handler SoapRole address type.
-     */
-    public static final String HANDLER_SOAPROLE  = "handlersoaprole";
+	/**
+	 * Retrieves the class name of the factory of the object to which this
+	 * reference refers.
+	 */
+	@Override
+	public String getFactoryClassName() {
+		String factory = super.getFactoryClassName();
+		if (factory != null) {
+			return factory;
+		} else {
+			factory = System.getProperty(Context.OBJECT_FACTORIES);
+			if (factory != null) {
+				return null;
+			} else {
+				return DEFAULT_FACTORY;
+			}
+		}
+	}
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * Handler PortName address type.
-     */
-    public static final String HANDLER_PORTNAME  = "handlerportname";
+	/**
+	 * Return a String rendering of this object.
+	 */
+	@Override
+	public String toString() {
 
+		StringBuilder sb = new StringBuilder("HandlerRef[");
+		sb.append("className=");
+		sb.append(getClassName());
+		sb.append(",factoryClassLocation=");
+		sb.append(getFactoryClassLocation());
+		sb.append(",factoryClassName=");
+		sb.append(getFactoryClassName());
+		Enumeration<RefAddr> refAddrs = getAll();
+		while (refAddrs.hasMoreElements()) {
+			RefAddr refAddr = refAddrs.nextElement();
+			sb.append(",{type=");
+			sb.append(refAddr.getType());
+			sb.append(",content=");
+			sb.append(refAddr.getContent());
+			sb.append("}");
+		}
+		sb.append("]");
+		return (sb.toString());
 
-    // ----------------------------------------------------------- Constructors
+	}
 
-
-    public HandlerRef(String refname, String handlerClass) {
-        this(refname, handlerClass, null, null);
-    }
-
-
-    public HandlerRef(String refname, String handlerClass,
-                    String factory, String factoryLocation) {
-        super(refname, factory, factoryLocation);
-        StringRefAddr refAddr = null;
-        if (refname != null) {
-            refAddr = new StringRefAddr(HANDLER_NAME, refname);
-            add(refAddr);
-        }
-        if (handlerClass != null) {
-            refAddr = new StringRefAddr(HANDLER_CLASS, handlerClass);
-            add(refAddr);
-        }
-    }
-
-
-    // ----------------------------------------------------- Instance Variables
-
-
-    // ------------------------------------------------------ Reference Methods
-
-
-    /**
-     * Retrieves the class name of the factory of the object to which this 
-     * reference refers.
-     */
-    @Override
-    public String getFactoryClassName() {
-        String factory = super.getFactoryClassName();
-        if (factory != null) {
-            return factory;
-        } else {
-            factory = System.getProperty(Context.OBJECT_FACTORIES);
-            if (factory != null) {
-                return null;
-            } else {
-                return DEFAULT_FACTORY;
-            }
-        }
-    }
-
-
-    // --------------------------------------------------------- Public Methods
-
-
-    /**
-     * Return a String rendering of this object.
-     */
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder("HandlerRef[");
-        sb.append("className=");
-        sb.append(getClassName());
-        sb.append(",factoryClassLocation=");
-        sb.append(getFactoryClassLocation());
-        sb.append(",factoryClassName=");
-        sb.append(getFactoryClassName());
-        Enumeration<RefAddr> refAddrs = getAll();
-        while (refAddrs.hasMoreElements()) {
-            RefAddr refAddr = refAddrs.nextElement();
-            sb.append(",{type=");
-            sb.append(refAddr.getType());
-            sb.append(",content=");
-            sb.append(refAddr.getContent());
-            sb.append("}");
-        }
-        sb.append("]");
-        return (sb.toString());
-
-    }
-
-
-    // ------------------------------------------------------------- Properties
-
+	// ------------------------------------------------------------- Properties
 
 }

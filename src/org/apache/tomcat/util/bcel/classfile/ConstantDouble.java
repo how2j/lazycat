@@ -23,32 +23,31 @@ import java.io.IOException;
 import org.apache.tomcat.util.bcel.Const;
 
 /**
- * This class is derived from the abstract  {@link Constant}
- * and represents a reference to a Double object.
+ * This class is derived from the abstract {@link Constant} and represents a
+ * reference to a Double object.
  *
- * @see     Constant
+ * @see Constant
  */
 public final class ConstantDouble extends Constant {
 
-    private final double bytes;
+	private final double bytes;
 
+	/**
+	 * Initialize instance from file data.
+	 *
+	 * @param file
+	 *            Input stream
+	 * @throws IOException
+	 */
+	ConstantDouble(final DataInput file) throws IOException {
+		super(Const.CONSTANT_Double);
+		this.bytes = file.readDouble();
+	}
 
-    /**
-     * Initialize instance from file data.
-     *
-     * @param file Input stream
-     * @throws IOException
-     */
-    ConstantDouble(final DataInput file) throws IOException {
-        super(Const.CONSTANT_Double);
-        this.bytes = file.readDouble();
-    }
-
-
-    /**
-     * @return data, i.e., 8 bytes.
-     */
-    public final double getBytes() {
-        return bytes;
-    }
+	/**
+	 * @return data, i.e., 8 bytes.
+	 */
+	public final double getBytes() {
+		return bytes;
+	}
 }

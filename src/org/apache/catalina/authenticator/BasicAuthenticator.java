@@ -31,129 +31,115 @@ import org.apache.tomcat.util.codec.binary.Base64;
 
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of HTTP BASIC
- * Authentication, as outlined in RFC 2617:  "HTTP Authentication: Basic
- * and Digest Access Authentication."
+ * Authentication, as outlined in RFC 2617: "HTTP Authentication: Basic and
+ * Digest Access Authentication."
  *
  * @author Craig R. McClanahan
  */
 public class BasicAuthenticator extends AuthenticatorBase {
 
-   // ----------------------------------------------------- Instance Variables
+	// ----------------------------------------------------- Instance Variables
 
+	/**
+	 * Descriptive information about this implementation.
+	 */
+	protected static final String info = "org.apache.catalina.authenticator.BasicAuthenticator/1.0";
 
-    /**
-     * Descriptive information about this implementation.
-     */
-    protected static final String info =
-        "org.apache.catalina.authenticator.BasicAuthenticator/1.0";
+	// ------------------------------------------------------------- Properties
 
+	/**
+	 * Return descriptive information about this Valve implementation.
+	 */
+	@Override
+	public String getInfo() {
 
-    // ------------------------------------------------------------- Properties
+		return (info);
 
+	}
 
-    /**
-     * Return descriptive information about this Valve implementation.
-     */
-    @Override
-    public String getInfo() {
+	// --------------------------------------------------------- Public Methods
 
-        return (info);
+	/**
+	 * Authenticate the user making this request, based on the specified login
+	 * configuration. Return <code>true</code> if any specified constraint has
+	 * been satisfied, or <code>false</code> if we have created a response
+	 * challenge already.
+	 *
+	 * @param request
+	 *            Request we are processing
+	 * @param response
+	 *            Response we are creating
+	 * @param config
+	 *            Login configuration describing how authentication should be
+	 *            performed
+	 *
+	 * @exception IOException
+	 *                if an input/output error occurs
+	 */
+	@Override
+	public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException {
 
-    }
+		if (checkForCachedAuthentication(request, response, true)) {
+			return true;
+		}
 
+		// Validate any credentials already included with this request
+		String username = null;
+		String password = null;
 
-    // --------------------------------------------------------- Public Methods
+		MessageBytes authorization = request.getCoyoteRequest().getMimeHeaders().getValue("authorization");
 
+		if (authorization != null) {
+			authorization.toBytes();
+			ByteChunk authorizationBC = authorization.getByteChunk();
+			if (authorizationBC.startsWithIgnoreCase("basic ", 0)) {
+				authorizationBC.setOffset(authorizationBC.getOffset() + 6);
 
-    /**
-     * Authenticate the user making this request, based on the specified
-     * login configuration.  Return <code>true</code> if any specified
-     * constraint has been satisfied, or <code>false</code> if we have
-     * created a response challenge already.
-     *
-     * @param request Request we are processing
-     * @param response Response we are creating
-     * @param config    Login configuration describing how authentication
-     *              should be performed
-     *
-     * @exception IOException if an input/output error occurs
-     */
-    @Override
-    public boolean authenticate(Request request,
-                                HttpServletResponse response,
-                                LoginConfig config)
-        throws IOException {
+				byte[] decoded = Base64.decodeBase64(authorizationBC.getBuffer(), authorizationBC.getOffset(),
+						authorizationBC.getLength());
 
-        if (checkForCachedAuthentication(request, response, true)) {
-            return true;
-        }
+				// Get username and password
+				int colon = -1;
+				for (int i = 0; i < decoded.length; i++) {
+					if (decoded[i] == ':') {
+						colon = i;
+						break;
+					}
+				}
 
-        // Validate any credentials already included with this request
-        String username = null;
-        String password = null;
+				if (colon < 0) {
+					username = new String(decoded, B2CConverter.ISO_8859_1);
+				} else {
+					username = new String(decoded, 0, colon, B2CConverter.ISO_8859_1);
+					password = new String(decoded, colon + 1, decoded.length - colon - 1, B2CConverter.ISO_8859_1);
+				}
 
-        MessageBytes authorization = 
-            request.getCoyoteRequest().getMimeHeaders()
-            .getValue("authorization");
-        
-        if (authorization != null) {
-            authorization.toBytes();
-            ByteChunk authorizationBC = authorization.getByteChunk();
-            if (authorizationBC.startsWithIgnoreCase("basic ", 0)) {
-                authorizationBC.setOffset(authorizationBC.getOffset() + 6);
-                
-                byte[] decoded = Base64.decodeBase64(
-                        authorizationBC.getBuffer(),
-                        authorizationBC.getOffset(),
-                        authorizationBC.getLength());
-                
-                // Get username and password
-                int colon = -1;
-                for (int i = 0; i < decoded.length; i++) {
-                    if (decoded[i] == ':') {
-                        colon = i;
-                        break;
-                    }
-                }
+				authorizationBC.setOffset(authorizationBC.getOffset() - 6);
+			}
 
-                if (colon < 0) {
-                    username = new String(decoded, B2CConverter.ISO_8859_1);
-                } else {
-                    username = new String(
-                            decoded, 0, colon, B2CConverter.ISO_8859_1);
-                    password = new String(
-                            decoded, colon + 1, decoded.length - colon - 1,
-                            B2CConverter.ISO_8859_1);
-                }
-                
-                authorizationBC.setOffset(authorizationBC.getOffset() - 6);
-            }
+			Principal principal = context.getRealm().authenticate(username, password);
+			if (principal != null) {
+				register(request, response, principal, HttpServletRequest.BASIC_AUTH, username, password);
+				return (true);
+			}
+		}
 
-            Principal principal = context.getRealm().authenticate(username, password);
-            if (principal != null) {
-                register(request, response, principal,
-                        HttpServletRequest.BASIC_AUTH, username, password);
-                return (true);
-            }
-        }
-        
-        StringBuilder value = new StringBuilder(16);
-        value.append("Basic realm=\"");
-        if (config.getRealmName() == null) {
-            value.append(REALM_NAME);
-        } else {
-            value.append(config.getRealmName());
-        }
-        value.append('\"');        
-        response.setHeader(AUTH_HEADER_NAME, value.toString());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        return (false);
+		StringBuilder value = new StringBuilder(16);
+		value.append("Basic realm=\"");
+		if (config.getRealmName() == null) {
+			value.append(REALM_NAME);
+		} else {
+			value.append(config.getRealmName());
+		}
+		value.append('\"');
+		response.setHeader(AUTH_HEADER_NAME, value.toString());
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+		return (false);
 
-    }
+	}
 
-
-    @Override
-    protected String getAuthMethod() {
-        return HttpServletRequest.BASIC_AUTH;
-    }
+	@Override
+	protected String getAuthMethod() {
+		return HttpServletRequest.BASIC_AUTH;
+	}
 }

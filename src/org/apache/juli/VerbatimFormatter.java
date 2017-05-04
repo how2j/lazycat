@@ -29,17 +29,17 @@ import java.util.logging.LogRecord;
  */
 public class VerbatimFormatter extends Formatter {
 
-    private static final String LINE_SEP = System.getProperty("line.separator");
+	private static final String LINE_SEP = System.getProperty("line.separator");
 
-    @Override
-    public String format(LogRecord record) {
-        // Timestamp
-        StringBuilder sb = new StringBuilder(record.getMessage());
-        
-        // New line for next record
-        sb.append(LINE_SEP);
+	@Override
+	public String format(LogRecord record) {
+		// Timestamp
+		StringBuilder sb = new StringBuilder(record.getMessage());
 
-        return sb.toString();
-    }
+		// New line for next record
+		sb.append(LINE_SEP);
+
+		return sb.toString();
+	}
 
 }

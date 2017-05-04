@@ -21,56 +21,48 @@ import java.nio.ByteBuffer;
 import javax.websocket.SendHandler;
 
 class MessagePart {
-    private final boolean fin;
-    private final int rsv;
-    private final byte opCode;
-    private final ByteBuffer payload;
-    private final SendHandler intermediateHandler;
-    private volatile SendHandler endHandler;
+	private final boolean fin;
+	private final int rsv;
+	private final byte opCode;
+	private final ByteBuffer payload;
+	private final SendHandler intermediateHandler;
+	private volatile SendHandler endHandler;
 
-    public MessagePart( boolean fin, int rsv, byte opCode, ByteBuffer payload,
-            SendHandler intermediateHandler, SendHandler endHandler) {
-        this.fin = fin;
-        this.rsv = rsv;
-        this.opCode = opCode;
-        this.payload = payload;
-        this.intermediateHandler = intermediateHandler;
-        this.endHandler = endHandler;
-    }
+	public MessagePart(boolean fin, int rsv, byte opCode, ByteBuffer payload, SendHandler intermediateHandler,
+			SendHandler endHandler) {
+		this.fin = fin;
+		this.rsv = rsv;
+		this.opCode = opCode;
+		this.payload = payload;
+		this.intermediateHandler = intermediateHandler;
+		this.endHandler = endHandler;
+	}
 
+	public boolean isFin() {
+		return fin;
+	}
 
-    public boolean isFin() {
-        return fin;
-    }
+	public int getRsv() {
+		return rsv;
+	}
 
+	public byte getOpCode() {
+		return opCode;
+	}
 
-    public int getRsv() {
-        return rsv;
-    }
+	public ByteBuffer getPayload() {
+		return payload;
+	}
 
+	public SendHandler getIntermediateHandler() {
+		return intermediateHandler;
+	}
 
-    public byte getOpCode() {
-        return opCode;
-    }
+	public SendHandler getEndHandler() {
+		return endHandler;
+	}
 
-
-    public ByteBuffer getPayload() {
-        return payload;
-    }
-
-
-    public SendHandler getIntermediateHandler() {
-        return intermediateHandler;
-    }
-
-
-    public SendHandler getEndHandler() {
-        return endHandler;
-    }
-
-    public void setEndHandler(SendHandler endHandler) {
-        this.endHandler = endHandler;
-    }
+	public void setEndHandler(SendHandler endHandler) {
+		this.endHandler = endHandler;
+	}
 }
-
-

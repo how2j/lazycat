@@ -25,25 +25,26 @@ import java.io.IOException;
  */
 public class Annotations {
 
-    private final AnnotationEntry[] annotation_table;
+	private final AnnotationEntry[] annotation_table;
 
-    /**
-     * @param input Input stream
-     * @param constant_pool Array of constants
-     */
-    Annotations(final DataInput input, final ConstantPool constant_pool) throws IOException {
-        final int annotation_table_length = input.readUnsignedShort();
-        annotation_table = new AnnotationEntry[annotation_table_length];
-        for (int i = 0; i < annotation_table_length; i++) {
-            annotation_table[i] = new AnnotationEntry(input, constant_pool);
-        }
-    }
+	/**
+	 * @param input
+	 *            Input stream
+	 * @param constant_pool
+	 *            Array of constants
+	 */
+	Annotations(final DataInput input, final ConstantPool constant_pool) throws IOException {
+		final int annotation_table_length = input.readUnsignedShort();
+		annotation_table = new AnnotationEntry[annotation_table_length];
+		for (int i = 0; i < annotation_table_length; i++) {
+			annotation_table[i] = new AnnotationEntry(input, constant_pool);
+		}
+	}
 
-
-    /**
-     * @return the array of annotation entries in this annotation
-     */
-    public AnnotationEntry[] getAnnotationEntries() {
-        return annotation_table;
-    }
+	/**
+	 * @return the array of annotation entries in this annotation
+	 */
+	public AnnotationEntry[] getAnnotationEntries() {
+		return annotation_table;
+	}
 }

@@ -26,21 +26,21 @@ import java.util.EventListener;
  */
 public interface HttpSessionAttributeListener extends EventListener {
 
-    /**
-     * Notification that an attribute has been added to a session. Called after
-     * the attribute is added.
-     */
-    public void attributeAdded(HttpSessionBindingEvent se);
+	/**
+	 * Notification that an attribute has been added to a session. Called after
+	 * the attribute is added.
+	 */
+	public void attributeAdded(HttpSessionBindingEvent se);
 
-    /**
-     * Notification that an attribute has been removed from a session. Called
-     * after the attribute is removed.
-     */
-    public void attributeRemoved(HttpSessionBindingEvent se);
+	/**
+	 * Notification that an attribute has been removed from a session. Called
+	 * after the attribute is removed.
+	 */
+	public void attributeRemoved(HttpSessionBindingEvent se);
 
-    /**
-     * Notification that an attribute has been replaced in a session. Called
-     * after the attribute is replaced.
-     */
-    public void attributeReplaced(HttpSessionBindingEvent se);
+	/**
+	 * Notification that an attribute has been replaced in a session. Called
+	 * after the attribute is replaced.
+	 */
+	public void attributeReplaced(HttpSessionBindingEvent se);
 }

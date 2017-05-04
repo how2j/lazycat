@@ -29,43 +29,45 @@ import org.apache.tomcat.util.bcel.Const;
  */
 public class AnnotationEntry {
 
-    private final int type_index;
-    private final ConstantPool constant_pool;
+	private final int type_index;
+	private final ConstantPool constant_pool;
 
-    private final List<ElementValuePair> element_value_pairs;
+	private final List<ElementValuePair> element_value_pairs;
 
-    /*
-     * Creates an AnnotationEntry from a DataInputStream
-     *
-     * @param input
-     * @param constant_pool
-     * @throws IOException
-     */
-    AnnotationEntry(final DataInput input, final ConstantPool constant_pool) throws IOException {
+	/*
+	 * Creates an AnnotationEntry from a DataInputStream
+	 *
+	 * @param input
+	 * 
+	 * @param constant_pool
+	 * 
+	 * @throws IOException
+	 */
+	AnnotationEntry(final DataInput input, final ConstantPool constant_pool) throws IOException {
 
-        this.constant_pool = constant_pool;
+		this.constant_pool = constant_pool;
 
-        type_index = input.readUnsignedShort();
-        final int num_element_value_pairs = input.readUnsignedShort();
+		type_index = input.readUnsignedShort();
+		final int num_element_value_pairs = input.readUnsignedShort();
 
-        element_value_pairs = new ArrayList<ElementValuePair>(num_element_value_pairs);
-        for (int i = 0; i < num_element_value_pairs; i++) {
-            element_value_pairs.add(new ElementValuePair(input, constant_pool));
-        }
-    }
+		element_value_pairs = new ArrayList<ElementValuePair>(num_element_value_pairs);
+		for (int i = 0; i < num_element_value_pairs; i++) {
+			element_value_pairs.add(new ElementValuePair(input, constant_pool));
+		}
+	}
 
-    /**
-     * @return the annotation type name
-     */
-    public String getAnnotationType() {
-        final ConstantUtf8 c = (ConstantUtf8) constant_pool.getConstant(type_index, Const.CONSTANT_Utf8);
-        return c.getBytes();
-    }
+	/**
+	 * @return the annotation type name
+	 */
+	public String getAnnotationType() {
+		final ConstantUtf8 c = (ConstantUtf8) constant_pool.getConstant(type_index, Const.CONSTANT_Utf8);
+		return c.getBytes();
+	}
 
-    /**
-     * @return the element value pairs in this annotation entry
-     */
-    public List<ElementValuePair> getElementValuePairs() {
-        return element_value_pairs;
-    }
+	/**
+	 * @return the element value pairs in this annotation entry
+	 */
+	public List<ElementValuePair> getElementValuePairs() {
+		return element_value_pairs;
+	}
 }

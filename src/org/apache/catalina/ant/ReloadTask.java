@@ -15,13 +15,9 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ant;
 
-
-
 import org.apache.tools.ant.BuildException;
-
 
 /**
  * Ant task that implements the <code>/reload</code> command, supported by the
@@ -32,18 +28,18 @@ import org.apache.tools.ant.BuildException;
  */
 public class ReloadTask extends AbstractCatalinaCommandTask {
 
-    /**
-     * Execute the requested operation.
-     *
-     * @exception BuildException if an error occurs
-     */
-    @Override
-    public void execute() throws BuildException {
+	/**
+	 * Execute the requested operation.
+	 *
+	 * @exception BuildException
+	 *                if an error occurs
+	 */
+	@Override
+	public void execute() throws BuildException {
 
-        super.execute();
-        execute(createQueryString("/reload").toString());
+		super.execute();
+		execute(createQueryString("/reload").toString());
 
-    }
-
+	}
 
 }

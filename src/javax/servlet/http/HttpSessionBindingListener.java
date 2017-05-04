@@ -32,23 +32,23 @@ import java.util.EventListener;
  */
 public interface HttpSessionBindingListener extends EventListener {
 
-    /**
-     * Notifies the object that it is being bound to a session and identifies
-     * the session.
-     * 
-     * @param event
-     *            the event that identifies the session
-     * @see #valueUnbound
-     */
-    public void valueBound(HttpSessionBindingEvent event);
+	/**
+	 * Notifies the object that it is being bound to a session and identifies
+	 * the session.
+	 * 
+	 * @param event
+	 *            the event that identifies the session
+	 * @see #valueUnbound
+	 */
+	public void valueBound(HttpSessionBindingEvent event);
 
-    /**
-     * Notifies the object that it is being unbound from a session and
-     * identifies the session.
-     * 
-     * @param event
-     *            the event that identifies the session
-     * @see #valueBound
-     */
-    public void valueUnbound(HttpSessionBindingEvent event);
+	/**
+	 * Notifies the object that it is being unbound from a session and
+	 * identifies the session.
+	 * 
+	 * @param event
+	 *            the event that identifies the session
+	 * @see #valueBound
+	 */
+	public void valueUnbound(HttpSessionBindingEvent event);
 }

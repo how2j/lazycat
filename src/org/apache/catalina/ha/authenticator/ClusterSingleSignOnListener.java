@@ -24,12 +24,11 @@ import org.apache.catalina.ha.session.ReplicatedSessionListener;
  * interface {@link ReplicatedSessionListener} which allows the listener to be
  * replicated across the cluster along with the session.
  */
-public class ClusterSingleSignOnListener extends SingleSignOnListener implements
-        ReplicatedSessionListener {
+public class ClusterSingleSignOnListener extends SingleSignOnListener implements ReplicatedSessionListener {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public ClusterSingleSignOnListener(String ssoId) {
-        super(ssoId);
-    }
+	public ClusterSingleSignOnListener(String ssoId) {
+		super(ssoId);
+	}
 }

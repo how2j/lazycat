@@ -18,7 +18,6 @@ package javax.servlet.jsp.tagext;
 
 import javax.servlet.jsp.JspException;
 
-
 /**
  * The BodyTag interface extends IterationTag by defining additional methods
  * that let a tag handler manipulate the content of evaluating its body.
@@ -69,8 +68,8 @@ import javax.servlet.jsp.JspException;
  * propagated up the stack, unless the tag handler implements the
  * TryCatchFinally interface; see that interface for details.
  * <p>
- * <IMG src="doc-files/BodyTagProtocol.gif"
- * alt="Lifecycle Details Transition Diagram for BodyTag"/>
+ * <IMG src="doc-files/BodyTagProtocol.gif" alt=
+ * "Lifecycle Details Transition Diagram for BodyTag"/>
  * <p>
  * <B>Empty and Non-Empty Action</B>
  * <p>
@@ -100,63 +99,63 @@ import javax.servlet.jsp.JspException;
  */
 public interface BodyTag extends IterationTag {
 
-    /**
-     * Deprecated constant that has the same value as EVAL_BODY_BUFFERED and
-     * EVAL_BODY_AGAIN. This name has been marked as deprecated to encourage the
-     * use of the two different terms, which are much more descriptive.
-     * 
-     * @deprecated As of Java JSP API 1.2, use BodyTag.EVAL_BODY_BUFFERED or
-     *             IterationTag.EVAL_BODY_AGAIN.
-     */
-    @SuppressWarnings("dep-ann")
-    // TCK signature test fails with annotation
-    public static final int EVAL_BODY_TAG = 2;
+	/**
+	 * Deprecated constant that has the same value as EVAL_BODY_BUFFERED and
+	 * EVAL_BODY_AGAIN. This name has been marked as deprecated to encourage the
+	 * use of the two different terms, which are much more descriptive.
+	 * 
+	 * @deprecated As of Java JSP API 1.2, use BodyTag.EVAL_BODY_BUFFERED or
+	 *             IterationTag.EVAL_BODY_AGAIN.
+	 */
+	@SuppressWarnings("dep-ann")
+	// TCK signature test fails with annotation
+	public static final int EVAL_BODY_TAG = 2;
 
-    /**
-     * Request the creation of new buffer, a BodyContent on which to evaluate
-     * the body of this tag. Returned from doStartTag when it implements
-     * BodyTag. This is an illegal return value for doStartTag when the class
-     * does not implement BodyTag.
-     */
-    public static final int EVAL_BODY_BUFFERED = 2;
+	/**
+	 * Request the creation of new buffer, a BodyContent on which to evaluate
+	 * the body of this tag. Returned from doStartTag when it implements
+	 * BodyTag. This is an illegal return value for doStartTag when the class
+	 * does not implement BodyTag.
+	 */
+	public static final int EVAL_BODY_BUFFERED = 2;
 
-    /**
-     * Set the bodyContent property. This method is invoked by the JSP page
-     * implementation object at most once per action invocation. This method
-     * will be invoked before doInitBody. This method will not be invoked for
-     * empty tags or for non-empty tags whose doStartTag() method returns
-     * SKIP_BODY or EVAL_BODY_INCLUDE.
-     * <p>
-     * When setBodyContent is invoked, the value of the implicit object out has
-     * already been changed in the pageContext object. The BodyContent object
-     * passed will have not data on it but may have been reused (and cleared)
-     * from some previous invocation.
-     * <p>
-     * The BodyContent object is available and with the appropriate content
-     * until after the invocation of the doEndTag method, at which case it may
-     * be reused.
-     * 
-     * @param b
-     *            the BodyContent
-     * @see #doInitBody
-     * @see #doAfterBody
-     */
-    void setBodyContent(BodyContent b);
+	/**
+	 * Set the bodyContent property. This method is invoked by the JSP page
+	 * implementation object at most once per action invocation. This method
+	 * will be invoked before doInitBody. This method will not be invoked for
+	 * empty tags or for non-empty tags whose doStartTag() method returns
+	 * SKIP_BODY or EVAL_BODY_INCLUDE.
+	 * <p>
+	 * When setBodyContent is invoked, the value of the implicit object out has
+	 * already been changed in the pageContext object. The BodyContent object
+	 * passed will have not data on it but may have been reused (and cleared)
+	 * from some previous invocation.
+	 * <p>
+	 * The BodyContent object is available and with the appropriate content
+	 * until after the invocation of the doEndTag method, at which case it may
+	 * be reused.
+	 * 
+	 * @param b
+	 *            the BodyContent
+	 * @see #doInitBody
+	 * @see #doAfterBody
+	 */
+	void setBodyContent(BodyContent b);
 
-    /**
-     * Prepare for evaluation of the body. This method is invoked by the JSP
-     * page implementation object after setBodyContent and before the first time
-     * the body is to be evaluated. This method will not be invoked for empty
-     * tags or for non-empty tags whose doStartTag() method returns SKIP_BODY or
-     * EVAL_BODY_INCLUDE.
-     * <p>
-     * The JSP container will resynchronize the values of any AT_BEGIN and
-     * NESTED variables (defined by the associated TagExtraInfo or TLD) after
-     * the invocation of doInitBody().
-     * 
-     * @throws JspException
-     *             if an error occurred while processing this tag
-     * @see #doAfterBody
-     */
-    void doInitBody() throws JspException;
+	/**
+	 * Prepare for evaluation of the body. This method is invoked by the JSP
+	 * page implementation object after setBodyContent and before the first time
+	 * the body is to be evaluated. This method will not be invoked for empty
+	 * tags or for non-empty tags whose doStartTag() method returns SKIP_BODY or
+	 * EVAL_BODY_INCLUDE.
+	 * <p>
+	 * The JSP container will resynchronize the values of any AT_BEGIN and
+	 * NESTED variables (defined by the associated TagExtraInfo or TLD) after
+	 * the invocation of doInitBody().
+	 * 
+	 * @throws JspException
+	 *             if an error occurred while processing this tag
+	 * @see #doAfterBody
+	 */
+	void doInitBody() throws JspException;
 }

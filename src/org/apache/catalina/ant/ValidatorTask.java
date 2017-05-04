@@ -29,96 +29,87 @@ import org.apache.tomcat.util.digester.Digester;
 import org.apache.tools.ant.BuildException;
 import org.xml.sax.InputSource;
 
-
 /**
- * Task for validating a web application deployment descriptor, using XML 
- * schema validation.
+ * Task for validating a web application deployment descriptor, using XML schema
+ * validation.
  *
  * @author Remy Maucherat
  * @since 5.0
  */
 public class ValidatorTask extends BaseRedirectorHelperTask {
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	// ------------------------------------------------------------- Properties
 
+	/**
+	 * The path to the webapp directory.
+	 */
+	protected String path = null;
 
-    // ------------------------------------------------------------- Properties
+	public String getPath() {
+		return (this.path);
+	}
 
+	public void setPath(String path) {
+		this.path = path;
+	}
 
-    /**
-     * The path to the webapp directory.
-     */
-    protected String path = null;
+	// --------------------------------------------------------- Public Methods
 
-    public String getPath() {
-        return (this.path);
-    }
+	/**
+	 * Execute the specified command. This logic only performs the common
+	 * attribute validation required by all subclasses; it does not perform any
+	 * functional logic directly.
+	 *
+	 * @exception BuildException
+	 *                if a validation error occurs
+	 */
+	@Override
+	public void execute() throws BuildException {
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+		if (path == null) {
+			throw new BuildException("Must specify 'path'");
+		}
 
+		File file = new File(path, Constants.ApplicationWebXml);
+		if ((!file.exists()) || (!file.canRead())) {
+			throw new BuildException("Cannot find web.xml");
+		}
 
-    // --------------------------------------------------------- Public Methods
+		// Commons-logging likes having the context classloader set
+		ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(ValidatorTask.class.getClassLoader());
 
+		// Called through trusted manager interface. If running under a
+		// SecurityManager assume that untrusted applications may be deployed.
+		Digester digester = DigesterFactory.newDigester(true, true, null, Globals.IS_SECURITY_ENABLED);
+		InputStream stream = null;
+		try {
+			file = file.getCanonicalFile();
+			stream = new BufferedInputStream(new FileInputStream(file));
+			InputSource is = new InputSource(file.toURI().toURL().toExternalForm());
+			is.setByteStream(stream);
+			digester.parse(is);
+			handleOutput("web.xml validated");
+		} catch (Exception e) {
+			if (isFailOnError()) {
+				throw new BuildException("Validation failure", e);
+			} else {
+				handleErrorOutput("Validation failure: " + e);
+			}
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					// Ignore
+				}
+			}
+			Thread.currentThread().setContextClassLoader(oldCL);
+			closeRedirector();
+		}
 
-    /**
-     * Execute the specified command.  This logic only performs the common
-     * attribute validation required by all subclasses; it does not perform
-     * any functional logic directly.
-     *
-     * @exception BuildException if a validation error occurs
-     */
-    @Override
-    public void execute() throws BuildException {
-
-        if (path == null) {
-            throw new BuildException("Must specify 'path'");
-        }
-
-        File file = new File(path, Constants.ApplicationWebXml);
-        if ((!file.exists()) || (!file.canRead())) {
-            throw new BuildException("Cannot find web.xml");
-        }
-
-        // Commons-logging likes having the context classloader set
-        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader
-            (ValidatorTask.class.getClassLoader());
-
-        // Called through trusted manager interface. If running under a
-        // SecurityManager assume that untrusted applications may be deployed.
-        Digester digester = DigesterFactory.newDigester(
-                true, true, null, Globals.IS_SECURITY_ENABLED);
-        InputStream stream = null;
-        try {
-            file = file.getCanonicalFile();
-            stream = new BufferedInputStream(new FileInputStream(file));
-            InputSource is =
-                new InputSource(file.toURI().toURL().toExternalForm());
-            is.setByteStream(stream);
-            digester.parse(is);
-            handleOutput("web.xml validated");
-        } catch (Exception e) {
-            if (isFailOnError()) {
-                throw new BuildException("Validation failure", e);
-            } else {
-                handleErrorOutput("Validation failure: " + e);
-            }
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                 // Ignore
-                }
-            }
-            Thread.currentThread().setContextClassLoader(oldCL);
-            closeRedirector();
-        }
-
-    }
-
+	}
 
 }

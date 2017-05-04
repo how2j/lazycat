@@ -16,7 +16,6 @@
  */
 package org.apache.catalina.valves;
 
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -26,90 +25,80 @@ import org.apache.catalina.connector.Response;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-
 /**
- * Concrete implementation of <code>RequestFilterValve</code> that filters
- * based on the string representation of the remote client's IP address
- * optionally combined with the server connector port number.
+ * Concrete implementation of <code>RequestFilterValve</code> that filters based
+ * on the string representation of the remote client's IP address optionally
+ * combined with the server connector port number.
  *
  * @author Craig R. McClanahan
  */
 
 public final class RemoteAddrValve extends RequestFilterValve {
 
-    private static final Log log = LogFactory.getLog(RemoteAddrValve.class);
+	private static final Log log = LogFactory.getLog(RemoteAddrValve.class);
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * The descriptive information related to this implementation.
+	 */
+	private static final String info = "org.apache.catalina.valves.RemoteAddrValve/1.0";
 
-    /**
-     * The descriptive information related to this implementation.
-     */
-    private static final String info =
-        "org.apache.catalina.valves.RemoteAddrValve/1.0";
+	/**
+	 * Flag deciding whether we add the server connector port to the property
+	 * compared in the filtering method. The port will be appended using a ";"
+	 * as a separator.
+	 */
+	volatile boolean addConnectorPort = false;
 
+	// ------------------------------------------------------------- Properties
 
-    /**
-     * Flag deciding whether we add the server connector port to the property
-     * compared in the filtering method. The port will be appended
-     * using a ";" as a separator.
-     */
-    volatile boolean addConnectorPort = false;
+	/**
+	 * Return descriptive information about this Valve implementation.
+	 */
+	@Override
+	public String getInfo() {
 
+		return (info);
 
-    // ------------------------------------------------------------- Properties
+	}
 
+	/**
+	 * Get the flag deciding whether we add the server connector port to the
+	 * property compared in the filtering method. The port will be appended
+	 * using a ";" as a separator.
+	 */
+	public boolean getAddConnectorPort() {
+		return addConnectorPort;
+	}
 
-    /**
-     * Return descriptive information about this Valve implementation.
-     */
-    @Override
-    public String getInfo() {
+	/**
+	 * Set the flag deciding whether we add the server connector port to the
+	 * property compared in the filtering method. The port will be appended
+	 * using a ";" as a separator.
+	 *
+	 * @param addConnectorPort
+	 *            The new flag
+	 */
+	public void setAddConnectorPort(boolean addConnectorPort) {
+		this.addConnectorPort = addConnectorPort;
+	}
 
-        return (info);
+	// --------------------------------------------------------- Public Methods
 
-    }
+	@Override
+	public void invoke(Request request, Response response) throws IOException, ServletException {
+		String property;
+		if (addConnectorPort) {
+			property = request.getRequest().getRemoteAddr() + ";" + request.getConnector().getPort();
+		} else {
+			property = request.getRequest().getRemoteAddr();
+		}
+		process(property, request, response);
+	}
 
-
-    /**
-     * Get the flag deciding whether we add the server connector port to the
-     * property compared in the filtering method. The port will be appended
-     * using a ";" as a separator.
-     */
-    public boolean getAddConnectorPort() {
-        return addConnectorPort;
-    }
-
-
-    /**
-     * Set the flag deciding whether we add the server connector port to the
-     * property compared in the filtering method. The port will be appended
-     * using a ";" as a separator.
-     *
-     * @param addConnectorPort The new flag
-     */
-    public void setAddConnectorPort(boolean addConnectorPort) {
-        this.addConnectorPort = addConnectorPort;
-    }
-
-
-    // --------------------------------------------------------- Public Methods
-
-    @Override
-    public void invoke(Request request, Response response) throws IOException, ServletException {
-        String property;
-        if (addConnectorPort) {
-            property = request.getRequest().getRemoteAddr() + ";" + request.getConnector().getPort();
-        } else {
-            property = request.getRequest().getRemoteAddr();
-        }
-        process(property, request, response);
-    }
-
-
-
-    @Override
-    protected Log getLog() {
-        return log;
-    }
+	@Override
+	protected Log getLog() {
+		return log;
+	}
 }

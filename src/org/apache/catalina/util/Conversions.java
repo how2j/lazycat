@@ -20,23 +20,23 @@ import java.io.IOException;
 
 public class Conversions {
 
-    private Conversions() {
-        // Utility class. Hide default constructor.
-    }
+	private Conversions() {
+		// Utility class. Hide default constructor.
+	}
 
-    public static long byteArrayToLong(byte[] input) throws IOException {
-        if (input.length > 8) {
-            // TODO: Better message
-            throw new IOException();
-        }
+	public static long byteArrayToLong(byte[] input) throws IOException {
+		if (input.length > 8) {
+			// TODO: Better message
+			throw new IOException();
+		}
 
-        int shift = 0;
-        long result = 0;
-        for (int i = input.length - 1; i >= 0; i--) {
-            result = result + ((input[i] & 0xFF) << shift);
-            shift += 8;
-        }
+		int shift = 0;
+		long result = 0;
+		for (int i = input.length - 1; i >= 0; i--) {
+			result = result + ((input[i] & 0xFF) << shift);
+			shift += 8;
+		}
 
-        return result;
-    }
+		return result;
+	}
 }

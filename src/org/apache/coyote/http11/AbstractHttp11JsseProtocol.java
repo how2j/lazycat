@@ -18,104 +18,187 @@ package org.apache.coyote.http11;
 
 import org.apache.tomcat.util.net.SSLImplementation;
 
-public abstract class AbstractHttp11JsseProtocol<S>
-        extends AbstractHttp11Protocol<S> {
+public abstract class AbstractHttp11JsseProtocol<S> extends AbstractHttp11Protocol<S> {
 
-    protected SSLImplementation sslImplementation = null;
+	protected SSLImplementation sslImplementation = null;
 
-    public String getAlgorithm() { return endpoint.getAlgorithm();}
-    public void setAlgorithm(String s ) { endpoint.setAlgorithm(s);}
-    
-    public String getClientAuth() { return endpoint.getClientAuth();}
-    public void setClientAuth(String s ) { endpoint.setClientAuth(s);}
+	public String getAlgorithm() {
+		return endpoint.getAlgorithm();
+	}
 
-    public String getKeystoreFile() { return endpoint.getKeystoreFile();}
-    public void setKeystoreFile(String s ) { endpoint.setKeystoreFile(s);}
+	public void setAlgorithm(String s) {
+		endpoint.setAlgorithm(s);
+	}
 
-    public String getKeystorePass() { return endpoint.getKeystorePass();}
-    public void setKeystorePass(String s ) { endpoint.setKeystorePass(s);}
-    
-    public String getKeystoreType() { return endpoint.getKeystoreType();}
-    public void setKeystoreType(String s ) { endpoint.setKeystoreType(s);}
+	public String getClientAuth() {
+		return endpoint.getClientAuth();
+	}
 
-    public String getKeystoreProvider() {
-        return endpoint.getKeystoreProvider();
-    }
-    public void setKeystoreProvider(String s ) {
-        endpoint.setKeystoreProvider(s);
-    }
+	public void setClientAuth(String s) {
+		endpoint.setClientAuth(s);
+	}
 
-    public String getSslProtocol() { return endpoint.getSslProtocol();}
-    public void setSslProtocol(String s) { endpoint.setSslProtocol(s);}
-    
-    public String getCiphers() { return endpoint.getCiphers();}
-    public void setCiphers(String s) { endpoint.setCiphers(s);}
+	public String getKeystoreFile() {
+		return endpoint.getKeystoreFile();
+	}
 
-    public String getKeyAlias() { return endpoint.getKeyAlias();}
-    public void setKeyAlias(String s ) { endpoint.setKeyAlias(s);}
+	public void setKeystoreFile(String s) {
+		endpoint.setKeystoreFile(s);
+	}
 
-    public String getKeyPass() { return endpoint.getKeyPass();}
-    public void setKeyPass(String s ) { endpoint.setKeyPass(s);}
-    
-    public void setTruststoreFile(String f){ endpoint.setTruststoreFile(f);}
-    public String getTruststoreFile(){ return endpoint.getTruststoreFile();}
+	public String getKeystorePass() {
+		return endpoint.getKeystorePass();
+	}
 
-    public void setTruststorePass(String p){ endpoint.setTruststorePass(p);}
-    public String getTruststorePass(){return endpoint.getTruststorePass();}
+	public void setKeystorePass(String s) {
+		endpoint.setKeystorePass(s);
+	}
 
-    public void setTruststoreType(String t){ endpoint.setTruststoreType(t);}
-    public String getTruststoreType(){ return endpoint.getTruststoreType();}
+	public String getKeystoreType() {
+		return endpoint.getKeystoreType();
+	}
 
-    public void setTruststoreProvider(String t){
-        endpoint.setTruststoreProvider(t);
-    }
-    public String getTruststoreProvider(){
-        return endpoint.getTruststoreProvider();
-    }
+	public void setKeystoreType(String s) {
+		endpoint.setKeystoreType(s);
+	}
 
-    public void setTruststoreAlgorithm(String a){
-        endpoint.setTruststoreAlgorithm(a);
-    }
-    public String getTruststoreAlgorithm(){
-        return endpoint.getTruststoreAlgorithm();
-    }
-    
-    public void setTrustMaxCertLength(String s){
-        endpoint.setTrustMaxCertLength(s);
-    }
-    public String getTrustMaxCertLength(){
-        return endpoint.getTrustMaxCertLength();
-    }
-    
-    public void setCrlFile(String s){endpoint.setCrlFile(s);}
-    public String getCrlFile(){ return endpoint.getCrlFile();}
-    
-    public void setSessionCacheSize(String s){endpoint.setSessionCacheSize(s);}
-    public String getSessionCacheSize(){ return endpoint.getSessionCacheSize();}
+	public String getKeystoreProvider() {
+		return endpoint.getKeystoreProvider();
+	}
 
-    public void setSessionTimeout(String s){endpoint.setSessionTimeout(s);}
-    public String getSessionTimeout(){ return endpoint.getSessionTimeout();}
-    
-    public void setAllowUnsafeLegacyRenegotiation(String s) {
-        endpoint.setAllowUnsafeLegacyRenegotiation(s);
-    }
-    public String getAllowUnsafeLegacyRenegotiation() {
-        return endpoint.getAllowUnsafeLegacyRenegotiation();
-    }
+	public void setKeystoreProvider(String s) {
+		endpoint.setKeystoreProvider(s);
+	}
 
-    private String sslImplementationName = null;
-    public String getSslImplementationName() { return sslImplementationName; }
-    public void setSslImplementationName(String s) {
-        this.sslImplementationName = s;
-    }
+	public String getSslProtocol() {
+		return endpoint.getSslProtocol();
+	}
 
-    // ------------------------------------------------------- Lifecycle methods
+	public void setSslProtocol(String s) {
+		endpoint.setSslProtocol(s);
+	}
 
-    @Override
-    public void init() throws Exception {
-        // SSL implementation needs to be in place before end point is
-        // initialized
-        sslImplementation = SSLImplementation.getInstance(sslImplementationName);
-        super.init();
-    }
+	public String getCiphers() {
+		return endpoint.getCiphers();
+	}
+
+	public void setCiphers(String s) {
+		endpoint.setCiphers(s);
+	}
+
+	public String getKeyAlias() {
+		return endpoint.getKeyAlias();
+	}
+
+	public void setKeyAlias(String s) {
+		endpoint.setKeyAlias(s);
+	}
+
+	public String getKeyPass() {
+		return endpoint.getKeyPass();
+	}
+
+	public void setKeyPass(String s) {
+		endpoint.setKeyPass(s);
+	}
+
+	public void setTruststoreFile(String f) {
+		endpoint.setTruststoreFile(f);
+	}
+
+	public String getTruststoreFile() {
+		return endpoint.getTruststoreFile();
+	}
+
+	public void setTruststorePass(String p) {
+		endpoint.setTruststorePass(p);
+	}
+
+	public String getTruststorePass() {
+		return endpoint.getTruststorePass();
+	}
+
+	public void setTruststoreType(String t) {
+		endpoint.setTruststoreType(t);
+	}
+
+	public String getTruststoreType() {
+		return endpoint.getTruststoreType();
+	}
+
+	public void setTruststoreProvider(String t) {
+		endpoint.setTruststoreProvider(t);
+	}
+
+	public String getTruststoreProvider() {
+		return endpoint.getTruststoreProvider();
+	}
+
+	public void setTruststoreAlgorithm(String a) {
+		endpoint.setTruststoreAlgorithm(a);
+	}
+
+	public String getTruststoreAlgorithm() {
+		return endpoint.getTruststoreAlgorithm();
+	}
+
+	public void setTrustMaxCertLength(String s) {
+		endpoint.setTrustMaxCertLength(s);
+	}
+
+	public String getTrustMaxCertLength() {
+		return endpoint.getTrustMaxCertLength();
+	}
+
+	public void setCrlFile(String s) {
+		endpoint.setCrlFile(s);
+	}
+
+	public String getCrlFile() {
+		return endpoint.getCrlFile();
+	}
+
+	public void setSessionCacheSize(String s) {
+		endpoint.setSessionCacheSize(s);
+	}
+
+	public String getSessionCacheSize() {
+		return endpoint.getSessionCacheSize();
+	}
+
+	public void setSessionTimeout(String s) {
+		endpoint.setSessionTimeout(s);
+	}
+
+	public String getSessionTimeout() {
+		return endpoint.getSessionTimeout();
+	}
+
+	public void setAllowUnsafeLegacyRenegotiation(String s) {
+		endpoint.setAllowUnsafeLegacyRenegotiation(s);
+	}
+
+	public String getAllowUnsafeLegacyRenegotiation() {
+		return endpoint.getAllowUnsafeLegacyRenegotiation();
+	}
+
+	private String sslImplementationName = null;
+
+	public String getSslImplementationName() {
+		return sslImplementationName;
+	}
+
+	public void setSslImplementationName(String s) {
+		this.sslImplementationName = s;
+	}
+
+	// ------------------------------------------------------- Lifecycle methods
+
+	@Override
+	public void init() throws Exception {
+		// SSL implementation needs to be in place before end point is
+		// initialized
+		sslImplementation = SSLImplementation.getInstance(sslImplementationName);
+		super.init();
+	}
 }

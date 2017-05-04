@@ -36,42 +36,42 @@ package javax.servlet.jsp.tagext;
  */
 public class ValidationMessage {
 
-    /**
-     * Create a ValidationMessage. The message String should be non-null. The
-     * value of id may be null, if the message is not specific to any XML
-     * element, or if no jsp:id attributes were passed on. If non-null, the
-     * value of id must be the value of a jsp:id attribute for the PageData
-     * passed into the validate() method.
-     * 
-     * @param id
-     *            Either null, or the value of a jsp:id attribute.
-     * @param message
-     *            A localized validation message.
-     */
-    public ValidationMessage(String id, String message) {
-        this.id = id;
-        this.message = message;
-    }
+	/**
+	 * Create a ValidationMessage. The message String should be non-null. The
+	 * value of id may be null, if the message is not specific to any XML
+	 * element, or if no jsp:id attributes were passed on. If non-null, the
+	 * value of id must be the value of a jsp:id attribute for the PageData
+	 * passed into the validate() method.
+	 * 
+	 * @param id
+	 *            Either null, or the value of a jsp:id attribute.
+	 * @param message
+	 *            A localized validation message.
+	 */
+	public ValidationMessage(String id, String message) {
+		this.id = id;
+		this.message = message;
+	}
 
-    /**
-     * Get the jsp:id. Null means that there is no information available.
-     * 
-     * @return The jsp:id information.
-     */
-    public String getId() {
-        return id;
-    }
+	/**
+	 * Get the jsp:id. Null means that there is no information available.
+	 * 
+	 * @return The jsp:id information.
+	 */
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * Get the localized validation message.
-     * 
-     * @return A validation message
-     */
-    public String getMessage() {
-        return message;
-    }
+	/**
+	 * Get the localized validation message.
+	 * 
+	 * @return A validation message
+	 */
+	public String getMessage() {
+		return message;
+	}
 
-    // Private data
-    private final String id;
-    private final String message;
+	// Private data
+	private final String id;
+	private final String message;
 }

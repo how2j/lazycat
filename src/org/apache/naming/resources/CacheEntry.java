@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
+ */
 
 package org.apache.naming.resources;
 
@@ -25,44 +25,35 @@ import javax.naming.directory.DirContext;
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  */
 public class CacheEntry {
-    
-    
-    // ------------------------------------------------- Instance Variables
 
+	// ------------------------------------------------- Instance Variables
 
-    public long timestamp = -1;
-    public String name = null;
-    public ResourceAttributes attributes = null;
-    public Resource resource = null;
-    public DirContext context = null;
-    public boolean exists = true;
-    public long accessCount = 0;
-    public int size = 1;
+	public long timestamp = -1;
+	public String name = null;
+	public ResourceAttributes attributes = null;
+	public Resource resource = null;
+	public DirContext context = null;
+	public boolean exists = true;
+	public long accessCount = 0;
+	public int size = 1;
 
+	// ----------------------------------------------------- Public Methods
 
-    // ----------------------------------------------------- Public Methods
+	public void recycle() {
+		timestamp = -1;
+		name = null;
+		attributes = null;
+		resource = null;
+		context = null;
+		exists = true;
+		accessCount = 0;
+		size = 1;
+	}
 
-
-    public void recycle() {
-        timestamp = -1;
-        name = null;
-        attributes = null;
-        resource = null;
-        context = null;
-        exists = true;
-        accessCount = 0;
-        size = 1;
-    }
-
-
-    @Override
-    public String toString() {
-        return ("Cache entry: " + name + "\n"
-                + "Exists: " + exists + "\n"
-                + "Attributes: " + attributes + "\n"
-                + "Resource: " + resource + "\n"
-                + "Context: " + context);
-    }
-
+	@Override
+	public String toString() {
+		return ("Cache entry: " + name + "\n" + "Exists: " + exists + "\n" + "Attributes: " + attributes + "\n"
+				+ "Resource: " + resource + "\n" + "Context: " + context);
+	}
 
 }

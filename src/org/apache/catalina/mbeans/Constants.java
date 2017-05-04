@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.mbeans;
-
 
 public class Constants {
 
-    public static final String Package = "org.apache.catalina.mbeans";
+	public static final String Package = "org.apache.catalina.mbeans";
 
 }
-

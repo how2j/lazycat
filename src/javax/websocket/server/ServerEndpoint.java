@@ -28,19 +28,19 @@ import javax.websocket.Encoder;
 @Target(ElementType.TYPE)
 public @interface ServerEndpoint {
 
-    /**
-     * URI or URI-template that the annotated class should be mapped to.
-     * @return The URI or URI-template that the annotated class should be mapped
-     *         to.
-     */
-    String value();
+	/**
+	 * URI or URI-template that the annotated class should be mapped to.
+	 * 
+	 * @return The URI or URI-template that the annotated class should be mapped
+	 *         to.
+	 */
+	String value();
 
-    String[] subprotocols() default {};
+	String[] subprotocols() default {};
 
-    Class<? extends Decoder>[] decoders() default {};
+	Class<? extends Decoder>[] decoders() default {};
 
-    Class<? extends Encoder>[] encoders() default {};
+	Class<? extends Encoder>[] encoders() default {};
 
-    public Class<? extends ServerEndpointConfig.Configurator> configurator()
-            default ServerEndpointConfig.Configurator.class;
+	public Class<? extends ServerEndpointConfig.Configurator> configurator() default ServerEndpointConfig.Configurator.class;
 }

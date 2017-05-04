@@ -31,216 +31,199 @@ import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.res.StringManager;
 
-public abstract class LifecycleMBeanBase extends LifecycleBase
-        implements MBeanRegistration {
+public abstract class LifecycleMBeanBase extends LifecycleBase implements MBeanRegistration {
 
-    private static Log log = LogFactory.getLog(LifecycleMBeanBase.class);
-    
-    private static StringManager sm =
-        StringManager.getManager("org.apache.catalina.util");
+	private static Log log = LogFactory.getLog(LifecycleMBeanBase.class);
 
-    
-    /* Cache components of the MBean registration. */
-    private String domain = null;
-    private ObjectName oname = null;
-    protected MBeanServer mserver = null;
-    
-    /**
-     * Sub-classes wishing to perform additional initialization should override
-     * this method, ensuring that super.initInternal() is the first call in the
-     * overriding method.
-     */
-    @Override
-    protected void initInternal() throws LifecycleException {
-        
-        // If oname is not null then registration has already happened via
-        // preRegister().
-        if (oname == null) {
-            mserver = Registry.getRegistry(null, null).getMBeanServer();
-            
-            oname = register(this, getObjectNameKeyProperties());
-        }
-    }
+	private static StringManager sm = StringManager.getManager("org.apache.catalina.util");
 
-    
-    /**
-     * Sub-classes wishing to perform additional clean-up should override this
-     * method, ensuring that super.destroyInternal() is the last call in the
-     * overriding method.
-     */
-    @Override
-    protected void destroyInternal() throws LifecycleException {
-        unregister(oname);
-    }
+	/* Cache components of the MBean registration. */
+	private String domain = null;
+	private ObjectName oname = null;
+	protected MBeanServer mserver = null;
 
-    
-    /**
-     * Specify the domain under which this component should be registered. Used
-     * with components that cannot (easily) navigate the component hierarchy to
-     * determine the correct domain to use. 
-     */
-    public final void setDomain(String domain) {
-        this.domain = domain;
-    }
+	/**
+	 * Sub-classes wishing to perform additional initialization should override
+	 * this method, ensuring that super.initInternal() is the first call in the
+	 * overriding method.
+	 */
+	@Override
+	protected void initInternal() throws LifecycleException {
 
-    
-    /**
-     * Obtain the domain under which this component will be / has been
-     * registered.
-     */
-    public final String getDomain() {
-        if (domain == null) {
-            domain = getDomainInternal();
-        }
+		// If oname is not null then registration has already happened via
+		// preRegister().
+		if (oname == null) {
+			mserver = Registry.getRegistry(null, null).getMBeanServer();
 
-        if (domain == null) {
-            domain = Globals.DEFAULT_MBEAN_DOMAIN;
-        }
-        
-        return domain;
-    }
+			oname = register(this, getObjectNameKeyProperties());
+		}
+	}
 
-    
-    /**
-     * Method implemented by sub-classes to identify the domain in which MBeans
-     * should be registered.
-     * 
-     * @return  The name of the domain to use to register MBeans.
-     */
-    protected abstract String getDomainInternal();
+	/**
+	 * Sub-classes wishing to perform additional clean-up should override this
+	 * method, ensuring that super.destroyInternal() is the last call in the
+	 * overriding method.
+	 */
+	@Override
+	protected void destroyInternal() throws LifecycleException {
+		unregister(oname);
+	}
 
-    
-    /**
-     * Obtain the name under which this component has been registered with JMX.
-     */
-    public final ObjectName getObjectName() {
-        return oname;
-    }
+	/**
+	 * Specify the domain under which this component should be registered. Used
+	 * with components that cannot (easily) navigate the component hierarchy to
+	 * determine the correct domain to use.
+	 */
+	public final void setDomain(String domain) {
+		this.domain = domain;
+	}
 
+	/**
+	 * Obtain the domain under which this component will be / has been
+	 * registered.
+	 */
+	public final String getDomain() {
+		if (domain == null) {
+			domain = getDomainInternal();
+		}
 
-    /**
-     * Allow sub-classes to specify the key properties component of the
-     * {@link ObjectName} that will be used to register this component.
-     * 
-     * @return  The string representation of the key properties component of the
-     *          desired {@link ObjectName}
-     */
-    protected abstract String getObjectNameKeyProperties();
-    
-    
-    /**
-     * Utility method to enable sub-classes to easily register additional
-     * components that don't implement {@link MBeanRegistration} with
-     * an MBean server.<br/>
-     * Note: This method should only be used once {@link #initInternal()} has
-     * been called and before {@link #destroyInternal()} has been called. 
-     * 
-     * @param obj                       The object the register
-     * @param objectNameKeyProperties   The key properties component of the
-     *                                  object name to use to register the
-     *                                  object
-     *
-     * @return  The name used to register the object
-     */
-    protected final ObjectName register(Object obj,
-            String objectNameKeyProperties) {
-        
-        // Construct an object name with the right domain
-        StringBuilder name = new StringBuilder(getDomain());
-        name.append(':');
-        name.append(objectNameKeyProperties);
+		if (domain == null) {
+			domain = Globals.DEFAULT_MBEAN_DOMAIN;
+		}
 
-        ObjectName on = null;
+		return domain;
+	}
 
-        try {
-            on = new ObjectName(name.toString());
-            
-            Registry.getRegistry(null, null).registerComponent(obj, on, null);
-        } catch (MalformedObjectNameException e) {
-            log.warn(sm.getString("lifecycleMBeanBase.registerFail", obj, name),
-                    e);
-        } catch (Exception e) {
-            log.warn(sm.getString("lifecycleMBeanBase.registerFail", obj, name),
-                    e);
-        }
+	/**
+	 * Method implemented by sub-classes to identify the domain in which MBeans
+	 * should be registered.
+	 * 
+	 * @return The name of the domain to use to register MBeans.
+	 */
+	protected abstract String getDomainInternal();
 
-        return on;
-    }
-    
-    
-    /**
-     * Utility method to enable sub-classes to easily unregister additional
-     * components that don't implement {@link MBeanRegistration} with
-     * an MBean server.<br/>
-     * Note: This method should only be used once {@link #initInternal()} has
-     * been called and before {@link #destroyInternal()} has been called. 
-     * 
-     * @param on    The name of the component to unregister
-     */
-    protected final void unregister(ObjectName on) {
-        
-        // If null ObjectName, just return without complaint
-        if (on == null) {
-            return;
-        }
-        
-        // If the MBeanServer is null, log a warning & return
-        if (mserver == null) {
-            log.warn(sm.getString("lifecycleMBeanBase.unregisterNoServer", on));
-            return;
-        }
-        
-        try {
-            mserver.unregisterMBean(on);
-        } catch (MBeanRegistrationException e) {
-            log.warn(sm.getString("lifecycleMBeanBase.unregisterFail", on), e);
-        } catch (InstanceNotFoundException e) {
-            log.warn(sm.getString("lifecycleMBeanBase.unregisterFail", on), e);
-        }
+	/**
+	 * Obtain the name under which this component has been registered with JMX.
+	 */
+	public final ObjectName getObjectName() {
+		return oname;
+	}
 
-    }
-    
-    
-    /**
-     * Not used - NOOP.
-     */
-    @Override
-    public final void postDeregister() {
-        // NOOP
-    }
+	/**
+	 * Allow sub-classes to specify the key properties component of the
+	 * {@link ObjectName} that will be used to register this component.
+	 * 
+	 * @return The string representation of the key properties component of the
+	 *         desired {@link ObjectName}
+	 */
+	protected abstract String getObjectNameKeyProperties();
 
-    
-    /**
-     * Not used - NOOP.
-     */
-    @Override
-    public final void postRegister(Boolean registrationDone) {
-        // NOOP
-    }
+	/**
+	 * Utility method to enable sub-classes to easily register additional
+	 * components that don't implement {@link MBeanRegistration} with an MBean
+	 * server.<br/>
+	 * Note: This method should only be used once {@link #initInternal()} has
+	 * been called and before {@link #destroyInternal()} has been called.
+	 * 
+	 * @param obj
+	 *            The object the register
+	 * @param objectNameKeyProperties
+	 *            The key properties component of the object name to use to
+	 *            register the object
+	 *
+	 * @return The name used to register the object
+	 */
+	protected final ObjectName register(Object obj, String objectNameKeyProperties) {
 
-    
-    /**
-     * Not used - NOOP.
-     */
-    @Override
-    public final void preDeregister() throws Exception {
-        // NOOP
-    }
+		// Construct an object name with the right domain
+		StringBuilder name = new StringBuilder(getDomain());
+		name.append(':');
+		name.append(objectNameKeyProperties);
 
+		ObjectName on = null;
 
-    /**
-     * Allows the object to be registered with an alternative
-     * {@link MBeanServer} and/or {@link ObjectName}.
-     */
-    @Override
-    public final ObjectName preRegister(MBeanServer server, ObjectName name)
-            throws Exception {
-        
-        this.mserver = server;
-        this.oname = name;
-        this.domain = name.getDomain();
+		try {
+			on = new ObjectName(name.toString());
 
-        return oname;
-    }
+			Registry.getRegistry(null, null).registerComponent(obj, on, null);
+		} catch (MalformedObjectNameException e) {
+			log.warn(sm.getString("lifecycleMBeanBase.registerFail", obj, name), e);
+		} catch (Exception e) {
+			log.warn(sm.getString("lifecycleMBeanBase.registerFail", obj, name), e);
+		}
+
+		return on;
+	}
+
+	/**
+	 * Utility method to enable sub-classes to easily unregister additional
+	 * components that don't implement {@link MBeanRegistration} with an MBean
+	 * server.<br/>
+	 * Note: This method should only be used once {@link #initInternal()} has
+	 * been called and before {@link #destroyInternal()} has been called.
+	 * 
+	 * @param on
+	 *            The name of the component to unregister
+	 */
+	protected final void unregister(ObjectName on) {
+
+		// If null ObjectName, just return without complaint
+		if (on == null) {
+			return;
+		}
+
+		// If the MBeanServer is null, log a warning & return
+		if (mserver == null) {
+			log.warn(sm.getString("lifecycleMBeanBase.unregisterNoServer", on));
+			return;
+		}
+
+		try {
+			mserver.unregisterMBean(on);
+		} catch (MBeanRegistrationException e) {
+			log.warn(sm.getString("lifecycleMBeanBase.unregisterFail", on), e);
+		} catch (InstanceNotFoundException e) {
+			log.warn(sm.getString("lifecycleMBeanBase.unregisterFail", on), e);
+		}
+
+	}
+
+	/**
+	 * Not used - NOOP.
+	 */
+	@Override
+	public final void postDeregister() {
+		// NOOP
+	}
+
+	/**
+	 * Not used - NOOP.
+	 */
+	@Override
+	public final void postRegister(Boolean registrationDone) {
+		// NOOP
+	}
+
+	/**
+	 * Not used - NOOP.
+	 */
+	@Override
+	public final void preDeregister() throws Exception {
+		// NOOP
+	}
+
+	/**
+	 * Allows the object to be registered with an alternative
+	 * {@link MBeanServer} and/or {@link ObjectName}.
+	 */
+	@Override
+	public final ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception {
+
+		this.mserver = server;
+		this.oname = name;
+		this.domain = name.getDomain();
+
+		return oname;
+	}
 
 }

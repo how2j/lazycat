@@ -25,42 +25,39 @@ import java.util.ServiceLoader;
  */
 public abstract class ContainerProvider {
 
-    private static final String DEFAULT_PROVIDER_CLASS_NAME =
-            "org.apache.tomcat.websocket.WsWebSocketContainer";
+	private static final String DEFAULT_PROVIDER_CLASS_NAME = "org.apache.tomcat.websocket.WsWebSocketContainer";
 
-    /**
-     * Create a new container used to create outgoing WebSocket connections.
-     *
-     * @return A newly created container.
-     */
-    public static WebSocketContainer getWebSocketContainer() {
-        WebSocketContainer result = null;
+	/**
+	 * Create a new container used to create outgoing WebSocket connections.
+	 *
+	 * @return A newly created container.
+	 */
+	public static WebSocketContainer getWebSocketContainer() {
+		WebSocketContainer result = null;
 
-        ServiceLoader<ContainerProvider> serviceLoader =
-                ServiceLoader.load(ContainerProvider.class);
-        Iterator<ContainerProvider> iter = serviceLoader.iterator();
-        while (result == null && iter.hasNext()) {
-            result = iter.next().getContainer();
-        }
+		ServiceLoader<ContainerProvider> serviceLoader = ServiceLoader.load(ContainerProvider.class);
+		Iterator<ContainerProvider> iter = serviceLoader.iterator();
+		while (result == null && iter.hasNext()) {
+			result = iter.next().getContainer();
+		}
 
-        // Fall-back. Also used by unit tests
-        if (result == null) {
-            try {
-                @SuppressWarnings("unchecked")
-                Class<WebSocketContainer> clazz =
-                        (Class<WebSocketContainer>) Class.forName(
-                                DEFAULT_PROVIDER_CLASS_NAME);
-                result = clazz.newInstance();
-            } catch (ClassNotFoundException e) {
-                // No options left. Just return null.
-            } catch (InstantiationException e) {
-                // No options left. Just return null.
-            } catch (IllegalAccessException e) {
-                // No options left. Just return null.
-            }
-        }
-        return result;
-    }
+		// Fall-back. Also used by unit tests
+		if (result == null) {
+			try {
+				@SuppressWarnings("unchecked")
+				Class<WebSocketContainer> clazz = (Class<WebSocketContainer>) Class
+						.forName(DEFAULT_PROVIDER_CLASS_NAME);
+				result = clazz.newInstance();
+			} catch (ClassNotFoundException e) {
+				// No options left. Just return null.
+			} catch (InstantiationException e) {
+				// No options left. Just return null.
+			} catch (IllegalAccessException e) {
+				// No options left. Just return null.
+			}
+		}
+		return result;
+	}
 
-    protected abstract WebSocketContainer getContainer();
+	protected abstract WebSocketContainer getContainer();
 }

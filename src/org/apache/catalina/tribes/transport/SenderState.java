@@ -21,7 +21,6 @@ import java.util.HashMap;
 
 import org.apache.catalina.tribes.Member;
 
-
 /**
  * 
  * @author Filip Hanik
@@ -30,82 +29,79 @@ import org.apache.catalina.tribes.Member;
  */
 
 public class SenderState {
-    
-    public static final int READY = 0;
-    public static final int SUSPECT = 1;
-    public static final int FAILING = 2;    
-    
-    protected static HashMap<Member, SenderState> memberStates = new HashMap<Member, SenderState>();
-    
-    public static SenderState getSenderState(Member member) {
-        return getSenderState(member,true);
-    }
 
-    public static SenderState getSenderState(Member member, boolean create) {
-        SenderState state = memberStates.get(member);
-        if ( state == null && create) {
-            synchronized ( memberStates ) {
-                state = memberStates.get(member);
-                if ( state == null ) {
-                    state = new SenderState();
-                    memberStates.put(member,state);
-                }
-            }
-        }
-        return state;
-    }
-    
-    public static void removeSenderState(Member member) {
-        synchronized ( memberStates ) {
-            memberStates.remove(member);
-        }
-    }
-    
+	public static final int READY = 0;
+	public static final int SUSPECT = 1;
+	public static final int FAILING = 2;
 
-    // ----------------------------------------------------- Instance Variables
+	protected static HashMap<Member, SenderState> memberStates = new HashMap<Member, SenderState>();
 
-    private int state = READY;
+	public static SenderState getSenderState(Member member) {
+		return getSenderState(member, true);
+	}
 
-    //  ----------------------------------------------------- Constructor
+	public static SenderState getSenderState(Member member, boolean create) {
+		SenderState state = memberStates.get(member);
+		if (state == null && create) {
+			synchronized (memberStates) {
+				state = memberStates.get(member);
+				if (state == null) {
+					state = new SenderState();
+					memberStates.put(member, state);
+				}
+			}
+		}
+		return state;
+	}
 
-    
-    private SenderState() {
-        this(READY);
-    }
+	public static void removeSenderState(Member member) {
+		synchronized (memberStates) {
+			memberStates.remove(member);
+		}
+	}
 
-    private SenderState(int state) {
-        this.state = state;
-    }
-    
-    /**
-     * 
-     * @return boolean
-     */
-    public boolean isSuspect() {
-        return (state == SUSPECT) || (state == FAILING);
-    }
+	// ----------------------------------------------------- Instance Variables
 
-    public void setSuspect() {
-        state = SUSPECT;
-    }
-    
-    public boolean isReady() {
-        return state == READY;
-    }
-    
-    public void setReady() {
-        state = READY;
-    }
-    
-    public boolean isFailing() {
-        return state == FAILING;
-    }
-    
-    public void setFailing() {
-        state = FAILING;
-    }
-    
+	private int state = READY;
 
-    //  ----------------------------------------------------- Public Properties
+	// ----------------------------------------------------- Constructor
+
+	private SenderState() {
+		this(READY);
+	}
+
+	private SenderState(int state) {
+		this.state = state;
+	}
+
+	/**
+	 * 
+	 * @return boolean
+	 */
+	public boolean isSuspect() {
+		return (state == SUSPECT) || (state == FAILING);
+	}
+
+	public void setSuspect() {
+		state = SUSPECT;
+	}
+
+	public boolean isReady() {
+		return state == READY;
+	}
+
+	public void setReady() {
+		state = READY;
+	}
+
+	public boolean isFailing() {
+		return state == FAILING;
+	}
+
+	public void setFailing() {
+		state = FAILING;
+	}
+
+	// ----------------------------------------------------- Public Properties
 
 }

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ha.backend;
 
 import java.net.InetAddress;
@@ -26,9 +25,11 @@ import java.net.InetAddress;
  */
 public class Proxy {
 
-  protected enum State { OK, ERROR, DOWN }
+	protected enum State {
+		OK, ERROR, DOWN
+	}
 
-  public InetAddress address = null;
-  public int port = 80;
-  public State state = State.OK;
+	public InetAddress address = null;
+	public int port = 80;
+	public State state = State.OK;
 }

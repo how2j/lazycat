@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ha.backend;
 
 /*
@@ -24,13 +23,13 @@ package org.apache.catalina.ha.backend;
  */
 public interface Sender {
 
-  /**
-   * Set the configuration parameters
-   */
-  public void init(HeartbeatListener config) throws Exception;
+	/**
+	 * Set the configuration parameters
+	 */
+	public void init(HeartbeatListener config) throws Exception;
 
-  /**
-   * Send the message to the proxies
-   */
-  public int send(String mess) throws Exception;
+	/**
+	 * Send the message to the proxies
+	 */
+	public int send(String mess) throws Exception;
 }

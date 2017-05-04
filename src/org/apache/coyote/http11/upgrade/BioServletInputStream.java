@@ -24,27 +24,25 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class BioServletInputStream extends AbstractServletInputStream {
 
-    private final InputStream inputStream;
+	private final InputStream inputStream;
 
-    public BioServletInputStream(SocketWrapper<Socket> wrapper)
-            throws IOException {
-        inputStream = wrapper.getSocket().getInputStream();
-    }
+	public BioServletInputStream(SocketWrapper<Socket> wrapper) throws IOException {
+		inputStream = wrapper.getSocket().getInputStream();
+	}
 
-    @Override
-    protected int doRead(boolean block, byte[] b, int off, int len)
-            throws IOException {
-        return inputStream.read(b, off, len);
-    }
+	@Override
+	protected int doRead(boolean block, byte[] b, int off, int len) throws IOException {
+		return inputStream.read(b, off, len);
+	}
 
-    @Override
-    protected boolean doIsReady() {
-        // Always returns true for BIO
-        return true;
-    }
+	@Override
+	protected boolean doIsReady() {
+		// Always returns true for BIO
+		return true;
+	}
 
-    @Override
-    protected void doClose() throws IOException {
-        inputStream.close();
-    }
+	@Override
+	protected void doClose() throws IOException {
+		inputStream.close();
+	}
 }

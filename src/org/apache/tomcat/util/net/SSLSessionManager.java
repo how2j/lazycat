@@ -22,8 +22,8 @@ package org.apache.tomcat.util.net;
  * single session.
  */
 public interface SSLSessionManager {
-    /**
-     * Invalidate the SSL session
-     */
-    public void invalidateSession();
+	/**
+	 * Invalidate the SSL session
+	 */
+	public void invalidateSession();
 }

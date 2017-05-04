@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.naming.java;
 
@@ -36,87 +35,69 @@ import org.apache.naming.SelectorContext;
  * <b>Important note</b> : This factory MUST be associated with the "java" URL
  * prefix, which can be done by either :
  * <ul>
- * <li>Adding a 
- * java.naming.factory.url.pkgs=org.apache.naming property
- * to the JNDI properties file</li>
- * <li>Setting an environment variable named Context.URL_PKG_PREFIXES with
- * its value including the org.apache.naming package name.
- * More detail about this can be found in the JNDI documentation :
- * {@link javax.naming.spi.NamingManager#getURLContext(java.lang.String, java.util.Hashtable)}.</li>
+ * <li>Adding a java.naming.factory.url.pkgs=org.apache.naming property to the
+ * JNDI properties file</li>
+ * <li>Setting an environment variable named Context.URL_PKG_PREFIXES with its
+ * value including the org.apache.naming package name. More detail about this
+ * can be found in the JNDI documentation :
+ * {@link javax.naming.spi.NamingManager#getURLContext(java.lang.String, java.util.Hashtable)}
+ * .</li>
  * </ul>
  * 
  * @author Remy Maucherat
  */
-public class javaURLContextFactory
-    implements ObjectFactory, InitialContextFactory {
+public class javaURLContextFactory implements ObjectFactory, InitialContextFactory {
 
+	// ----------------------------------------------------------- Constructors
 
-    // ----------------------------------------------------------- Constructors
+	// -------------------------------------------------------------- Constants
 
+	public static final String MAIN = "initialContext";
 
-    // -------------------------------------------------------------- Constants
+	// ----------------------------------------------------- Instance Variables
 
+	/**
+	 * Initial context.
+	 */
+	protected static volatile Context initialContext = null;
 
-    public static final String MAIN = "initialContext";
+	// --------------------------------------------------------- Public Methods
 
+	// -------------------------------------------------- ObjectFactory Methods
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * Crete a new Context's instance.
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+			throws NamingException {
+		if ((ContextBindings.isThreadBound()) || (ContextBindings.isClassLoaderBound())) {
+			return new SelectorContext((Hashtable<String, Object>) environment);
+		}
+		return null;
+	}
 
+	/**
+	 * Get a new (writable) initial context.
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+		if (ContextBindings.isThreadBound() || (ContextBindings.isClassLoaderBound())) {
+			// Redirect the request to the bound initial context
+			return new SelectorContext((Hashtable<String, Object>) environment, true);
+		}
 
-    /**
-     * Initial context.
-     */
-    protected static volatile Context initialContext = null;
-
-
-    // --------------------------------------------------------- Public Methods
-
-
-    // -------------------------------------------------- ObjectFactory Methods
-
-
-    /**
-     * Crete a new Context's instance.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable<?,?> environment)
-        throws NamingException {
-        if ((ContextBindings.isThreadBound()) || 
-            (ContextBindings.isClassLoaderBound())) {
-            return new SelectorContext((Hashtable<String,Object>)environment);
-        }
-        return null;
-    }
-
-
-    /**
-     * Get a new (writable) initial context.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Context getInitialContext(Hashtable<?,?> environment)
-        throws NamingException {
-        if (ContextBindings.isThreadBound() || 
-            (ContextBindings.isClassLoaderBound())) {
-            // Redirect the request to the bound initial context
-            return new SelectorContext(
-                    (Hashtable<String,Object>)environment, true);
-        }
-
-        // If the thread is not bound, return a shared writable context
-        if (initialContext == null) {
-            synchronized(javaURLContextFactory.class) {
-                if (initialContext == null) {
-                    initialContext = new NamingContext(
-                            (Hashtable<String,Object>)environment, MAIN);
-                }
-            }
-        }
-        return initialContext;
-    }
-
+		// If the thread is not bound, return a shared writable context
+		if (initialContext == null) {
+			synchronized (javaURLContextFactory.class) {
+				if (initialContext == null) {
+					initialContext = new NamingContext((Hashtable<String, Object>) environment, MAIN);
+				}
+			}
+		}
+		return initialContext;
+	}
 
 }
-

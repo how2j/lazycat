@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ant;
 
-
 import org.apache.tools.ant.BuildException;
-
 
 /**
  * Ant task that implements the <code>/list</code> command, supported by the
@@ -31,25 +28,22 @@ import org.apache.tools.ant.BuildException;
  */
 public class ListTask extends AbstractCatalinaTask {
 
+	// ------------------------------------------------------------- Properties
 
-    // ------------------------------------------------------------- Properties
+	// --------------------------------------------------------- Public Methods
 
+	/**
+	 * Execute the requested operation.
+	 *
+	 * @exception BuildException
+	 *                if an error occurs
+	 */
+	@Override
+	public void execute() throws BuildException {
 
-    // --------------------------------------------------------- Public Methods
+		super.execute();
+		execute("/list");
 
-
-    /**
-     * Execute the requested operation.
-     *
-     * @exception BuildException if an error occurs
-     */
-    @Override
-    public void execute() throws BuildException {
-
-        super.execute();
-        execute("/list");
-
-    }
-
+	}
 
 }

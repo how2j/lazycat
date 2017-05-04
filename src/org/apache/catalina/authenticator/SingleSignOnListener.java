@@ -27,35 +27,34 @@ import org.apache.catalina.SessionListener;
 
 public class SingleSignOnListener implements SessionListener, Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final String ssoId;
+	private final String ssoId;
 
-    public SingleSignOnListener(String ssoId) {
-        this.ssoId = ssoId;
-    }
+	public SingleSignOnListener(String ssoId) {
+		this.ssoId = ssoId;
+	}
 
+	@Override
+	public void sessionEvent(SessionEvent event) {
+		if (!Session.SESSION_DESTROYED_EVENT.equals(event.getType())) {
+			return;
+		}
 
-    @Override
-    public void sessionEvent(SessionEvent event) {
-        if (!Session.SESSION_DESTROYED_EVENT.equals(event.getType())) {
-            return;
-        }
-
-        Session session = event.getSession();
-        Manager manager = session.getManager();
-        if (manager == null) {
-            return;
-        }
-        Context context = (Context) manager.getContainer();
-        Authenticator authenticator = context.getAuthenticator();
-        if (!(authenticator instanceof AuthenticatorBase)) {
-            return;
-        }
-        SingleSignOn sso = ((AuthenticatorBase) authenticator).sso;
-        if (sso == null) {
-            return;
-        }
-        sso.sessionDestroyed(ssoId, session);
-    }
+		Session session = event.getSession();
+		Manager manager = session.getManager();
+		if (manager == null) {
+			return;
+		}
+		Context context = (Context) manager.getContainer();
+		Authenticator authenticator = context.getAuthenticator();
+		if (!(authenticator instanceof AuthenticatorBase)) {
+			return;
+		}
+		SingleSignOn sso = ((AuthenticatorBase) authenticator).sso;
+		if (sso == null) {
+			return;
+		}
+		sso.sessionDestroyed(ssoId, session);
+	}
 }

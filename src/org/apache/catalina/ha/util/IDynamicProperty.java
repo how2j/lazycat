@@ -24,33 +24,34 @@ import java.util.Iterator;
  */
 public interface IDynamicProperty {
 
-    /**
-     * set config attributes with reflect
-     * 
-     * @param name
-     * @param value
-     */
-    public boolean setProperty(String name, Object value) ;
+	/**
+	 * set config attributes with reflect
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	public boolean setProperty(String name, Object value);
 
-    /**
-     * get current config
-     * 
-     * @param key
-     * @return The property
-     */
-    public Object getProperty(String key) ;
-    /**
-     * Get all properties keys
-     * 
-     * @return An iterator over the property names
-     */
-    public Iterator<String> getPropertyNames() ;
+	/**
+	 * get current config
+	 * 
+	 * @param key
+	 * @return The property
+	 */
+	public Object getProperty(String key);
 
-    /**
-     * remove a configured property.
-     * 
-     * @param key
-     */
-    public void removeProperty(String key) ;
+	/**
+	 * Get all properties keys
+	 * 
+	 * @return An iterator over the property names
+	 */
+	public Iterator<String> getPropertyNames();
+
+	/**
+	 * remove a configured property.
+	 * 
+	 * @param key
+	 */
+	public void removeProperty(String key);
 
 }

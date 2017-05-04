@@ -28,21 +28,20 @@ import java.util.jar.JarInputStream;
  */
 public class NonClosingJarInputStream extends JarInputStream {
 
-    public NonClosingJarInputStream(InputStream in, boolean verify)
-            throws IOException {
-        super(in, verify);
-    }
+	public NonClosingJarInputStream(InputStream in, boolean verify) throws IOException {
+		super(in, verify);
+	}
 
-    public NonClosingJarInputStream(InputStream in) throws IOException {
-        super(in);
-    }
+	public NonClosingJarInputStream(InputStream in) throws IOException {
+		super(in);
+	}
 
-    @Override
-    public void close() throws IOException {
-        // Make this a NO-OP so that further entries can be read from the stream
-    }
+	@Override
+	public void close() throws IOException {
+		// Make this a NO-OP so that further entries can be read from the stream
+	}
 
-    public void reallyClose() throws IOException {
-        super.close();
-    }
+	public void reallyClose() throws IOException {
+		super.close();
+	}
 }

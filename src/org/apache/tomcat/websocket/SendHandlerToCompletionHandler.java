@@ -21,22 +21,21 @@ import java.nio.channels.CompletionHandler;
 import javax.websocket.SendHandler;
 import javax.websocket.SendResult;
 
-public class SendHandlerToCompletionHandler
-        implements CompletionHandler<Long,Void> {
+public class SendHandlerToCompletionHandler implements CompletionHandler<Long, Void> {
 
-    private SendHandler handler;
+	private SendHandler handler;
 
-    public SendHandlerToCompletionHandler(SendHandler handler) {
-        this.handler = handler;
-    }
+	public SendHandlerToCompletionHandler(SendHandler handler) {
+		this.handler = handler;
+	}
 
-    @Override
-    public void completed(Long result, Void attachment) {
-        handler.onResult(new SendResult());
-    }
+	@Override
+	public void completed(Long result, Void attachment) {
+		handler.onResult(new SendResult());
+	}
 
-    @Override
-    public void failed(Throwable exc, Void attachment) {
-        handler.onResult(new SendResult(exc));
-    }
+	@Override
+	public void failed(Throwable exc, Void attachment) {
+		handler.onResult(new SendResult(exc));
+	}
 }

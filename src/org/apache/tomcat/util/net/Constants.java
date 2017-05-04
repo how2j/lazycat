@@ -18,27 +18,25 @@ package org.apache.tomcat.util.net;
 
 public class Constants {
 
-    /**
-     * Name of the system property containing
-     * the tomcat instance installation path
-     */
-    public static final String CATALINA_BASE_PROP = "catalina.base";
+	/**
+	 * Name of the system property containing the tomcat instance installation
+	 * path
+	 */
+	public static final String CATALINA_BASE_PROP = "catalina.base";
 
+	/**
+	 * Has security been turned on?
+	 */
+	public static final boolean IS_SECURITY_ENABLED = (System.getSecurityManager() != null);
 
-    /**
-     * Has security been turned on?
-     */
-    public static final boolean IS_SECURITY_ENABLED =
-        (System.getSecurityManager() != null);
-
-    /**
-     * JSSE and OpenSSL protocol names
-     */
-    public static final String SSL_PROTO_ALL        = "all";
-    public static final String SSL_PROTO_TLS        = "TLS";
-    public static final String SSL_PROTO_TLSv1_2    = "TLSv1.2";
-    public static final String SSL_PROTO_TLSv1_1    = "TLSv1.1";
-    public static final String SSL_PROTO_TLSv1      = "TLSv1";
-    public static final String SSL_PROTO_SSLv3      = "SSLv3";
-    public static final String SSL_PROTO_SSLv2      = "SSLv2";
+	/**
+	 * JSSE and OpenSSL protocol names
+	 */
+	public static final String SSL_PROTO_ALL = "all";
+	public static final String SSL_PROTO_TLS = "TLS";
+	public static final String SSL_PROTO_TLSv1_2 = "TLSv1.2";
+	public static final String SSL_PROTO_TLSv1_1 = "TLSv1.1";
+	public static final String SSL_PROTO_TLSv1 = "TLSv1";
+	public static final String SSL_PROTO_SSLv3 = "SSLv3";
+	public static final String SSL_PROTO_SSLv2 = "SSLv2";
 }

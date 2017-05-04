@@ -34,58 +34,54 @@ import org.apache.jasper.compiler.Localizer;
  * @author Anil K. Vijendran
  */
 public abstract class HttpJspBase extends HttpServlet implements HttpJspPage {
-    
-    private static final long serialVersionUID = 1L;
 
-    protected HttpJspBase() {
-    }
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public final void init(ServletConfig config) 
-        throws ServletException 
-    {
-        super.init(config);
-        jspInit();
-        _jspInit();
-    }
-    
-    @Override
-    public String getServletInfo() {
-        return Localizer.getMessage("jsp.engine.info");
-    }
+	protected HttpJspBase() {
+	}
 
-    @Override
-    public final void destroy() {
-        jspDestroy();
-        _jspDestroy();
-    }
+	@Override
+	public final void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		jspInit();
+		_jspInit();
+	}
 
-    /**
-     * Entry point into service.
-     */
-    @Override
-    public final void service(HttpServletRequest request, HttpServletResponse response) 
-        throws ServletException, IOException 
-    {
-        _jspService(request, response);
-    }
-    
-    @Override
-    public void jspInit() {
-    }
+	@Override
+	public String getServletInfo() {
+		return Localizer.getMessage("jsp.engine.info");
+	}
 
-    public void _jspInit() {
-    }
+	@Override
+	public final void destroy() {
+		jspDestroy();
+		_jspDestroy();
+	}
 
-    @Override
-    public void jspDestroy() {
-    }
+	/**
+	 * Entry point into service.
+	 */
+	@Override
+	public final void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		_jspService(request, response);
+	}
 
-    protected void _jspDestroy() {
-    }
+	@Override
+	public void jspInit() {
+	}
 
-    @Override
-    public abstract void _jspService(HttpServletRequest request, 
-                                     HttpServletResponse response) 
-        throws ServletException, IOException;
+	public void _jspInit() {
+	}
+
+	@Override
+	public void jspDestroy() {
+	}
+
+	protected void _jspDestroy() {
+	}
+
+	@Override
+	public abstract void _jspService(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException;
 }

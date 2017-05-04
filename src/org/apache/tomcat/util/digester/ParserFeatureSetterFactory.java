@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.tomcat.util.digester;
 
@@ -28,46 +27,44 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 /**
- * Creates a <code>SAXParser</code> based on the underlying parser.
- * Allows logical properties depending on logical parser versions
- * to be set.
+ * Creates a <code>SAXParser</code> based on the underlying parser. Allows
+ * logical properties depending on logical parser versions to be set.
  *
  * @since 1.6
  */
-public class ParserFeatureSetterFactory{
+public class ParserFeatureSetterFactory {
 
-    /**
-     * <code>true</code> is Xerces is used.
-     */
-    private static boolean isXercesUsed; 
+	/**
+	 * <code>true</code> is Xerces is used.
+	 */
+	private static boolean isXercesUsed;
 
-    static {
-        try{
-            // Use reflection to avoid a build dependency with Xerces.
-            Class.forName("org.apache.xerces.impl.Version");
-            isXercesUsed = true;
-        } catch (Exception ex){
-            isXercesUsed = false;
-        }
-    }
+	static {
+		try {
+			// Use reflection to avoid a build dependency with Xerces.
+			Class.forName("org.apache.xerces.impl.Version");
+			isXercesUsed = true;
+		} catch (Exception ex) {
+			isXercesUsed = false;
+		}
+	}
 
-    /**
-     * Create a new <code>SAXParser</code>
-     * @param properties (logical) properties to be set on parser
-     * @return a <code>SAXParser</code> configured based on the underlying
-     * parser implementation.
-     */
-    public static SAXParser newSAXParser(Properties properties)
-            throws ParserConfigurationException, 
-                   SAXException,
-                   SAXNotRecognizedException, 
-                   SAXNotSupportedException {
+	/**
+	 * Create a new <code>SAXParser</code>
+	 * 
+	 * @param properties
+	 *            (logical) properties to be set on parser
+	 * @return a <code>SAXParser</code> configured based on the underlying
+	 *         parser implementation.
+	 */
+	public static SAXParser newSAXParser(Properties properties)
+			throws ParserConfigurationException, SAXException, SAXNotRecognizedException, SAXNotSupportedException {
 
-        if (isXercesUsed){
-            return XercesParser.newSAXParser(properties);
-        } else {
-            return GenericParser.newSAXParser(properties);
-        }
-    }
+		if (isXercesUsed) {
+			return XercesParser.newSAXParser(properties);
+		} else {
+			return GenericParser.newSAXParser(properties);
+		}
+	}
 
 }

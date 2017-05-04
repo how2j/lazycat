@@ -33,105 +33,87 @@ import org.apache.tomcat.util.buf.ByteChunk;
  */
 public class VoidInputFilter implements InputFilter {
 
+	// -------------------------------------------------------------- Constants
 
-    // -------------------------------------------------------------- Constants
+	protected static final String ENCODING_NAME = "void";
+	protected static final ByteChunk ENCODING = new ByteChunk();
 
+	// ----------------------------------------------------- Static Initializer
 
-    protected static final String ENCODING_NAME = "void";
-    protected static final ByteChunk ENCODING = new ByteChunk();
+	static {
+		ENCODING.setBytes(ENCODING_NAME.getBytes(Charset.defaultCharset()), 0, ENCODING_NAME.length());
+	}
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Static Initializer
+	// --------------------------------------------------- OutputBuffer Methods
 
+	/**
+	 * Write some bytes.
+	 * 
+	 * @return number of bytes written by the filter
+	 */
+	@Override
+	public int doRead(ByteChunk chunk, Request req) throws IOException {
 
-    static {
-        ENCODING.setBytes(ENCODING_NAME.getBytes(Charset.defaultCharset()), 0,
-                ENCODING_NAME.length());
-    }
+		return -1;
 
+	}
 
-    // ----------------------------------------------------- Instance Variables
+	// --------------------------------------------------- OutputFilter Methods
 
+	/**
+	 * Set the associated request.
+	 */
+	@Override
+	public void setRequest(Request request) {
+		// NOOP: Request isn't used so ignore it
+	}
 
-    // --------------------------------------------------- OutputBuffer Methods
+	/**
+	 * Set the next buffer in the filter pipeline.
+	 */
+	@Override
+	public void setBuffer(InputBuffer buffer) {
+		// NOOP: No body to read
+	}
 
+	/**
+	 * Make the filter ready to process the next request.
+	 */
+	@Override
+	public void recycle() {
+		// NOOP: Nothing to recycle
+	}
 
-    /**
-     * Write some bytes.
-     * 
-     * @return number of bytes written by the filter
-     */
-    @Override
-    public int doRead(ByteChunk chunk, Request req)
-        throws IOException {
+	/**
+	 * Return the name of the associated encoding; Here, the value is "void".
+	 */
+	@Override
+	public ByteChunk getEncodingName() {
+		return ENCODING;
+	}
 
-        return -1;
+	/**
+	 * End the current request. It is acceptable to write extra bytes using
+	 * buffer.doWrite during the execution of this method.
+	 * 
+	 * @return Should return 0 unless the filter does some content length
+	 *         delimitation, in which case the number is the amount of extra
+	 *         bytes or missing bytes, which would indicate an error. Note: It
+	 *         is recommended that extra bytes be swallowed by the filter.
+	 */
+	@Override
+	public long end() throws IOException {
+		return 0;
+	}
 
-    }
+	/**
+	 * Amount of bytes still available in a buffer.
+	 */
+	@Override
+	public int available() {
+		return 0;
+	}
 
-
-    // --------------------------------------------------- OutputFilter Methods
-
-
-    /**
-     * Set the associated request.
-     */
-    @Override
-    public void setRequest(Request request) {
-        // NOOP: Request isn't used so ignore it
-    }
-
-
-    /**
-     * Set the next buffer in the filter pipeline.
-     */
-    @Override
-    public void setBuffer(InputBuffer buffer) {
-        // NOOP: No body to read
-    }
-
-
-    /**
-     * Make the filter ready to process the next request.
-     */
-    @Override
-    public void recycle() {
-        // NOOP: Nothing to recycle
-    }
-
-
-    /**
-     * Return the name of the associated encoding; Here, the value is 
-     * "void".
-     */
-    @Override
-    public ByteChunk getEncodingName() {
-        return ENCODING;
-    }
-
-
-    /**
-     * End the current request. It is acceptable to write extra bytes using
-     * buffer.doWrite during the execution of this method.
-     * 
-     * @return Should return 0 unless the filter does some content length 
-     * delimitation, in which case the number is the amount of extra bytes or
-     * missing bytes, which would indicate an error. 
-     * Note: It is recommended that extra bytes be swallowed by the filter.
-     */
-    @Override
-    public long end()
-        throws IOException {
-        return 0;
-    }
-
-
-    /**
-     * Amount of bytes still available in a buffer.
-     */
-    @Override
-    public int available() {
-        return 0;
-    }
-    
 }

@@ -20,23 +20,19 @@ import javax.websocket.MessageHandler;
 
 public class MessageHandlerResult {
 
-    private final MessageHandler handler;
-    private final MessageHandlerResultType type;
+	private final MessageHandler handler;
+	private final MessageHandlerResultType type;
 
+	public MessageHandlerResult(MessageHandler handler, MessageHandlerResultType type) {
+		this.handler = handler;
+		this.type = type;
+	}
 
-    public MessageHandlerResult(MessageHandler handler,
-            MessageHandlerResultType type) {
-        this.handler = handler;
-        this.type = type;
-    }
+	public MessageHandler getHandler() {
+		return handler;
+	}
 
-
-    public MessageHandler getHandler() {
-        return handler;
-    }
-
-
-    public MessageHandlerResultType getType() {
-        return type;
-    }
+	public MessageHandlerResultType getType() {
+		return type;
+	}
 }

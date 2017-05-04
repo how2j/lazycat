@@ -23,15 +23,15 @@ import javax.servlet.jsp.el.VariableResolver;
 @Deprecated
 public final class VariableResolverImpl implements VariableResolver {
 
-    private final ELContext ctx;
-    
-    public VariableResolverImpl(ELContext ctx) {
-        this.ctx = ctx;
-    }
+	private final ELContext ctx;
 
-    @Override
-    public Object resolveVariable(String pName) throws ELException {
-        return this.ctx.getELResolver().getValue(this.ctx, null, pName);
-    }
+	public VariableResolverImpl(ELContext ctx) {
+		this.ctx = ctx;
+	}
+
+	@Override
+	public Object resolveVariable(String pName) throws ELException {
+		return this.ctx.getELResolver().getValue(this.ctx, null, pName);
+	}
 
 }

@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-
 /**
  * Filter that explicitly sets the default character set for media subtypes of
  * the "text" type to ISO-8859-1, or another user defined character set. RFC2616
@@ -47,83 +46,79 @@ import org.apache.juli.logging.LogFactory;
  */
 public class AddDefaultCharsetFilter extends FilterBase {
 
-    private static final Log log =
-        LogFactory.getLog(AddDefaultCharsetFilter.class);
+	private static final Log log = LogFactory.getLog(AddDefaultCharsetFilter.class);
 
-    private static final String DEFAULT_ENCODING = "ISO-8859-1";
-    
-    private String encoding;
+	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
+	private String encoding;
 
-    @Override
-    protected Log getLogger() {
-        return log;
-    }
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        super.init(filterConfig);
-        if (encoding == null || encoding.length() == 0 ||
-                encoding.equalsIgnoreCase("default")) {
-            encoding = DEFAULT_ENCODING;
-        } else if (encoding.equalsIgnoreCase("system")) {
-            encoding = Charset.defaultCharset().name();
-        } else if (!Charset.isSupported(encoding)) {
-            throw new IllegalArgumentException(sm.getString(
-                    "addDefaultCharset.unsupportedCharset", encoding));
-        }
-    }
+	@Override
+	protected Log getLogger() {
+		return log;
+	}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
-        
-        // Wrap the response
-        if (response instanceof HttpServletResponse) {
-            ResponseWrapper wrapped =
-                new ResponseWrapper((HttpServletResponse)response, encoding);
-            chain.doFilter(request, wrapped);
-        } else {
-            chain.doFilter(request, response);
-        }
-    }
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		super.init(filterConfig);
+		if (encoding == null || encoding.length() == 0 || encoding.equalsIgnoreCase("default")) {
+			encoding = DEFAULT_ENCODING;
+		} else if (encoding.equalsIgnoreCase("system")) {
+			encoding = Charset.defaultCharset().name();
+		} else if (!Charset.isSupported(encoding)) {
+			throw new IllegalArgumentException(sm.getString("addDefaultCharset.unsupportedCharset", encoding));
+		}
+	}
 
-    /**
-     * Wrapper that adds a character set for text media types if no character
-     * set is specified.
-     */
-    public static class ResponseWrapper extends HttpServletResponseWrapper {
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-        private String encoding;
-        
-        public ResponseWrapper(HttpServletResponse response, String encoding) {
-            super(response);
-            this.encoding = encoding;
-        }
+		// Wrap the response
+		if (response instanceof HttpServletResponse) {
+			ResponseWrapper wrapped = new ResponseWrapper((HttpServletResponse) response, encoding);
+			chain.doFilter(request, wrapped);
+		} else {
+			chain.doFilter(request, response);
+		}
+	}
 
-        @Override
-        public void setContentType(String ct) {
-            
-            if (ct != null && ct.startsWith("text/")) {
-                if (ct.indexOf("charset=") < 0) {
-                    super.setContentType(ct + ";charset=" + encoding);
-                } else {
-                    super.setContentType(ct);
-                    encoding = getCharacterEncoding();
-                }
-            } else {
-                super.setContentType(ct);
-            }
+	/**
+	 * Wrapper that adds a character set for text media types if no character
+	 * set is specified.
+	 */
+	public static class ResponseWrapper extends HttpServletResponseWrapper {
 
-        }
+		private String encoding;
 
-        @Override
-        public void setCharacterEncoding(String charset) {
-            super.setCharacterEncoding(charset);
-            encoding = charset;
-        }
-    }
+		public ResponseWrapper(HttpServletResponse response, String encoding) {
+			super(response);
+			this.encoding = encoding;
+		}
+
+		@Override
+		public void setContentType(String ct) {
+
+			if (ct != null && ct.startsWith("text/")) {
+				if (ct.indexOf("charset=") < 0) {
+					super.setContentType(ct + ";charset=" + encoding);
+				} else {
+					super.setContentType(ct);
+					encoding = getCharacterEncoding();
+				}
+			} else {
+				super.setContentType(ct);
+			}
+
+		}
+
+		@Override
+		public void setCharacterEncoding(String charset) {
+			super.setCharacterEncoding(charset);
+			encoding = charset;
+		}
+	}
 }

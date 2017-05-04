@@ -22,23 +22,19 @@ import javax.websocket.server.ServerEndpointConfig;
 
 class WsMappingResult {
 
-    private final ServerEndpointConfig config;
-    private final Map<String,String> pathParams;
+	private final ServerEndpointConfig config;
+	private final Map<String, String> pathParams;
 
+	WsMappingResult(ServerEndpointConfig config, Map<String, String> pathParams) {
+		this.config = config;
+		this.pathParams = pathParams;
+	}
 
-    WsMappingResult(ServerEndpointConfig config,
-            Map<String,String> pathParams) {
-        this.config = config;
-        this.pathParams = pathParams;
-    }
+	ServerEndpointConfig getConfig() {
+		return config;
+	}
 
-
-    ServerEndpointConfig getConfig() {
-        return config;
-    }
-
-
-    Map<String,String> getPathParams() {
-        return pathParams;
-    }
+	Map<String, String> getPathParams() {
+		return pathParams;
+	}
 }

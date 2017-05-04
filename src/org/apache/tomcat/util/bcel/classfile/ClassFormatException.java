@@ -18,20 +18,18 @@
 package org.apache.tomcat.util.bcel.classfile;
 
 /**
- * Thrown when the BCEL attempts to read a class file and determines
- * that the file is malformed or otherwise cannot be interpreted as a
- * class file.
+ * Thrown when the BCEL attempts to read a class file and determines that the
+ * file is malformed or otherwise cannot be interpreted as a class file.
  */
 public class ClassFormatException extends RuntimeException {
 
-    private static final long serialVersionUID = 3243149520175287759L;
+	private static final long serialVersionUID = 3243149520175287759L;
 
-    public ClassFormatException() {
-        super();
-    }
+	public ClassFormatException() {
+		super();
+	}
 
-
-    public ClassFormatException(final String s) {
-        super(s);
-    }
+	public ClassFormatException(final String s) {
+		super(s);
+	}
 }

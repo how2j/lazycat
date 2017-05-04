@@ -25,19 +25,20 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class NioProcessor extends AbstractProcessor<NioChannel> {
 
-    private static final Log log = LogFactory.getLog(NioProcessor.class);
-    @Override
-    protected Log getLog() {return log;}
+	private static final Log log = LogFactory.getLog(NioProcessor.class);
 
-    private static final int INFINITE_TIMEOUT = -1;
+	@Override
+	protected Log getLog() {
+		return log;
+	}
 
-    public NioProcessor(SocketWrapper<NioChannel> wrapper,
-            HttpUpgradeHandler httpUpgradeProcessor, NioSelectorPool pool,
-            int asyncWriteBufferSize) {
-        super(httpUpgradeProcessor,
-                new NioServletInputStream(wrapper, pool),
-                new NioServletOutputStream(wrapper, asyncWriteBufferSize, pool));
+	private static final int INFINITE_TIMEOUT = -1;
 
-        wrapper.setTimeout(INFINITE_TIMEOUT);
-    }
+	public NioProcessor(SocketWrapper<NioChannel> wrapper, HttpUpgradeHandler httpUpgradeProcessor,
+			NioSelectorPool pool, int asyncWriteBufferSize) {
+		super(httpUpgradeProcessor, new NioServletInputStream(wrapper, pool),
+				new NioServletOutputStream(wrapper, asyncWriteBufferSize, pool));
+
+		wrapper.setTimeout(INFINITE_TIMEOUT);
+	}
 }

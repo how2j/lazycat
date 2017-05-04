@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.tribes;
 
 /**
- * Manifest constants for the <code>org.apache.catalina.tribes</code>
- * package.
+ * Manifest constants for the <code>org.apache.catalina.tribes</code> package.
  *
  * @author Bip Thelin
  * @author Filip Hanik
  *
- * @deprecated  Unused - will be removed in 8.0.x
+ * @deprecated Unused - will be removed in 8.0.x
  */
 @Deprecated
 public final class Constants {
-    public static final String Package = "org.apache.catalina.tribes";
+	public static final String Package = "org.apache.catalina.tribes";
 }

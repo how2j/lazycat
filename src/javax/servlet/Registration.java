@@ -21,44 +21,45 @@ import java.util.Set;
 
 /**
  * TODO SERVLET3 - Add comments
+ * 
  * @since Servlet 3.0
  */
 public interface Registration {
-    
-    public String getName();
-    
-    public String getClassName();
 
-    /**
-     * 
-     * @param name
-     * @param value
-     * @return TODO
-     * @throws IllegalArgumentException
-     * @throws IllegalStateException
-     */
-    public boolean setInitParameter(String name, String value);
+	public String getName();
 
-    public String getInitParameter(String name);
-    
-    /**
-     * 
-     * @param initParameters
-     * @return TODO
-     * @throws IllegalArgumentException
-     * @throws IllegalStateException
-     */
-    public Set<String> setInitParameters(Map<String,String> initParameters);
+	public String getClassName();
 
-    public Map<String, String> getInitParameters();
+	/**
+	 * 
+	 * @param name
+	 * @param value
+	 * @return TODO
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 */
+	public boolean setInitParameter(String name, String value);
 
-    public interface Dynamic extends Registration {
-        
-        /**
-         * 
-         * @param isAsyncSupported
-         * @throws IllegalStateException
-         */
-        public void setAsyncSupported(boolean isAsyncSupported);
-    }
+	public String getInitParameter(String name);
+
+	/**
+	 * 
+	 * @param initParameters
+	 * @return TODO
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
+	 */
+	public Set<String> setInitParameters(Map<String, String> initParameters);
+
+	public Map<String, String> getInitParameters();
+
+	public interface Dynamic extends Registration {
+
+		/**
+		 * 
+		 * @param isAsyncSupported
+		 * @throws IllegalStateException
+		 */
+		public void setAsyncSupported(boolean isAsyncSupported);
+	}
 }

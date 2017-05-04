@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ha.backend;
 
 import java.net.DatagramPacket;
@@ -30,56 +29,55 @@ import org.apache.juli.logging.LogFactory;
 /*
  * Sender to proxies using multicast socket.
  */
-public class MultiCastSender
-    implements Sender {
+public class MultiCastSender implements Sender {
 
-    private static final Log log = LogFactory.getLog(HeartbeatListener.class);
-    private static final Charset US_ASCII = Charset.forName("US-ASCII");
+	private static final Log log = LogFactory.getLog(HeartbeatListener.class);
+	private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
-    HeartbeatListener config = null;
+	HeartbeatListener config = null;
 
-    /* for multicasting stuff */
-    MulticastSocket s = null;
-    InetAddress group = null;
+	/* for multicasting stuff */
+	MulticastSocket s = null;
+	InetAddress group = null;
 
-    @Override
-    public void init(HeartbeatListener config) throws Exception {
-        this.config = config;
-    }
+	@Override
+	public void init(HeartbeatListener config) throws Exception {
+		this.config = config;
+	}
 
-    @Override
-    public int send(String mess) throws Exception {
-        if (s == null) {
-            try {
-                group = InetAddress.getByName(config.getGroup());
-                if (config.host != null) {
-                    InetAddress addr =  InetAddress.getByName(config.host);
-                    InetSocketAddress addrs = new InetSocketAddress(addr, config.getMultiport());
-                    s = new MulticastSocket(addrs);
-                } else
-                    s = new MulticastSocket(config.getMultiport());
-          
-                s.setTimeToLive(config.getTtl());
-                s.joinGroup(group);
-            } catch (Exception ex) {
-                log.error("Unable to use multicast: " + ex);
-                s = null;
-                return -1;
-            } 
-        }
+	@Override
+	public int send(String mess) throws Exception {
+		if (s == null) {
+			try {
+				group = InetAddress.getByName(config.getGroup());
+				if (config.host != null) {
+					InetAddress addr = InetAddress.getByName(config.host);
+					InetSocketAddress addrs = new InetSocketAddress(addr, config.getMultiport());
+					s = new MulticastSocket(addrs);
+				} else
+					s = new MulticastSocket(config.getMultiport());
 
-        byte[] buf;
-        buf = mess.getBytes(US_ASCII);
-        DatagramPacket data = new DatagramPacket(buf, buf.length, group, config.getMultiport());
-        try {
-            s.send(data);
-        } catch (Exception ex) {
-            log.error("Unable to send collected load information: " + ex);
-            s.close();
-            s = null;
-            return -1;
-        }
-        return 0;
-    }
+				s.setTimeToLive(config.getTtl());
+				s.joinGroup(group);
+			} catch (Exception ex) {
+				log.error("Unable to use multicast: " + ex);
+				s = null;
+				return -1;
+			}
+		}
+
+		byte[] buf;
+		buf = mess.getBytes(US_ASCII);
+		DatagramPacket data = new DatagramPacket(buf, buf.length, group, config.getMultiport());
+		try {
+			s.send(data);
+		} catch (Exception ex) {
+			log.error("Unable to send collected load information: " + ex);
+			s.close();
+			s = null;
+			return -1;
+		}
+		return 0;
+	}
 
 }

@@ -15,108 +15,100 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.deploy;
 
 import java.io.Serializable;
 
-
 /**
- * Representation of a context initialization parameter that is configured
- * in the server configuration file, rather than the application deployment
- * descriptor.  This is convenient for establishing default values (which
- * may be configured to allow application overrides or not) without having
- * to modify the application deployment descriptor itself.
+ * Representation of a context initialization parameter that is configured in
+ * the server configuration file, rather than the application deployment
+ * descriptor. This is convenient for establishing default values (which may be
+ * configured to allow application overrides or not) without having to modify
+ * the application deployment descriptor itself.
  *
  * @author Craig R. McClanahan
  */
 public class ApplicationParameter implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    // ------------------------------------------------------------- Properties
+	// ------------------------------------------------------------- Properties
 
+	/**
+	 * The description of this environment entry.
+	 */
+	private String description = null;
 
-    /**
-     * The description of this environment entry.
-     */
-    private String description = null;
+	public String getDescription() {
+		return (this.description);
+	}
 
-    public String getDescription() {
-        return (this.description);
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	/**
+	 * The name of this application parameter.
+	 */
+	private String name = null;
 
+	public String getName() {
+		return (this.name);
+	}
 
-    /**
-     * The name of this application parameter.
-     */
-    private String name = null;
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getName() {
-        return (this.name);
-    }
+	/**
+	 * Does this application parameter allow overrides by the application
+	 * deployment descriptor?
+	 */
+	private boolean override = true;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public boolean getOverride() {
+		return (this.override);
+	}
 
+	public void setOverride(boolean override) {
+		this.override = override;
+	}
 
-    /**
-     * Does this application parameter allow overrides by the application
-     * deployment descriptor?
-     */
-    private boolean override = true;
+	/**
+	 * The value of this application parameter.
+	 */
+	private String value = null;
 
-    public boolean getOverride() {
-        return (this.override);
-    }
+	public String getValue() {
+		return (this.value);
+	}
 
-    public void setOverride(boolean override) {
-        this.override = override;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * The value of this application parameter.
-     */
-    private String value = null;
+	/**
+	 * Return a String representation of this object.
+	 */
+	@Override
+	public String toString() {
 
-    public String getValue() {
-        return (this.value);
-    }
+		StringBuilder sb = new StringBuilder("ApplicationParameter[");
+		sb.append("name=");
+		sb.append(name);
+		if (description != null) {
+			sb.append(", description=");
+			sb.append(description);
+		}
+		sb.append(", value=");
+		sb.append(value);
+		sb.append(", override=");
+		sb.append(override);
+		sb.append("]");
+		return (sb.toString());
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    // --------------------------------------------------------- Public Methods
-
-
-    /**
-     * Return a String representation of this object.
-     */
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder("ApplicationParameter[");
-        sb.append("name=");
-        sb.append(name);
-        if (description != null) {
-            sb.append(", description=");
-            sb.append(description);
-        }
-        sb.append(", value=");
-        sb.append(value);
-        sb.append(", override=");
-        sb.append(override);
-        sb.append("]");
-        return (sb.toString());
-
-    }
-
+	}
 
 }

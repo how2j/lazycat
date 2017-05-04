@@ -18,52 +18,52 @@ package org.apache.coyote;
 
 public enum ErrorState {
 
-    /**
-     * Not in an error state.
-     */
-    NONE(false, 0, true),
+	/**
+	 * Not in an error state.
+	 */
+	NONE(false, 0, true),
 
-    /**
-     * The current request/response is in an error state and while it is safe to
-     * complete the current response it is not safe to continue to use the
-     * existing connection which must be closed once the response has been
-     * completed.
-     */
-    CLOSE_CLEAN(true, 1, true),
+	/**
+	 * The current request/response is in an error state and while it is safe to
+	 * complete the current response it is not safe to continue to use the
+	 * existing connection which must be closed once the response has been
+	 * completed.
+	 */
+	CLOSE_CLEAN(true, 1, true),
 
-    /**
-     * The current request/response is in an error state and it is not safe to
-     * continue to use the existing connection which must be closed immediately.
-     */
-    CLOSE_NOW(true, 2, false);
+	/**
+	 * The current request/response is in an error state and it is not safe to
+	 * continue to use the existing connection which must be closed immediately.
+	 */
+	CLOSE_NOW(true, 2, false);
 
-    private final boolean error;
-    private final int severity;
-    private final boolean ioAllowed;
+	private final boolean error;
+	private final int severity;
+	private final boolean ioAllowed;
 
-    private ErrorState(boolean error, int severity, boolean ioAllowed) {
-        this.error = error;
-        this.severity = severity;
-        this.ioAllowed = ioAllowed;
-    }
+	private ErrorState(boolean error, int severity, boolean ioAllowed) {
+		this.error = error;
+		this.severity = severity;
+		this.ioAllowed = ioAllowed;
+	}
 
-    public boolean isError() {
-        return error;
-    }
+	public boolean isError() {
+		return error;
+	}
 
-    /**
-     * Compare this ErrorState with the provided ErrorState and return the most
-     * severe.
-     */
-    public ErrorState getMostSevere(ErrorState input) {
-        if (input.severity > this.severity) {
-            return input;
-        } else {
-            return this;
-        }
-    }
+	/**
+	 * Compare this ErrorState with the provided ErrorState and return the most
+	 * severe.
+	 */
+	public ErrorState getMostSevere(ErrorState input) {
+		if (input.severity > this.severity) {
+			return input;
+		} else {
+			return this;
+		}
+	}
 
-    public boolean isIoAllowed() {
-        return ioAllowed;
-    }
+	public boolean isIoAllowed() {
+		return ioAllowed;
+	}
 }

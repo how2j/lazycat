@@ -24,16 +24,16 @@ import java.net.URL;
  */
 public class JarFactory {
 
-    private JarFactory() {
-        // Factory class. Hide public constructor.
-    }
+	private JarFactory() {
+		// Factory class. Hide public constructor.
+	}
 
-    public static Jar newInstance(URL url) throws IOException {
-        String jarUrl = url.toString();
-        if (jarUrl.startsWith("jar:file:")) {
-            return new FileUrlJar(url);
-        } else {
-            return new UrlJar(url);
-        }
-    }
+	public static Jar newInstance(URL url) throws IOException {
+		String jarUrl = url.toString();
+		if (jarUrl.startsWith("jar:file:")) {
+			return new FileUrlJar(url);
+		} else {
+			return new UrlJar(url);
+		}
+	}
 }

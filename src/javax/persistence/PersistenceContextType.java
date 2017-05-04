@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-
 package javax.persistence;
 
 public enum PersistenceContextType {
-    TRANSACTION,
-    EXTENDED
+	TRANSACTION, EXTENDED
 }

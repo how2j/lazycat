@@ -27,95 +27,102 @@ import org.apache.catalina.tribes.Channel;
 import org.apache.catalina.tribes.Member;
 import org.apache.juli.logging.Log;
 
-
-
 /**
- * A <b>CatalinaCluster</b> interface allows to plug in and out the 
- * different cluster implementations
+ * A <b>CatalinaCluster</b> interface allows to plug in and out the different
+ * cluster implementations
  *
  * @author Filip Hanik
  */
 public interface CatalinaCluster extends Cluster {
-    // ----------------------------------------------------- Instance Variables
+	// ----------------------------------------------------- Instance Variables
 
-    /**
-     * Descriptive information about this component implementation.
-     */
-    public String info = "CatalinaCluster/2.0";
-    
-    /**
-     * Start the cluster, the owning container will invoke this
-     * @throws Exception - if failure to start cluster
-     */
-    public void start() throws Exception;
-    
-    /**
-     * Stops the cluster, the owning container will invoke this
-     * @throws LifecycleException
-     */
-    public void stop() throws LifecycleException;
-    
-    /**
-     * Returns the associates logger with this cluster.
-     *
-     * @return Log
-     */
-    public Log getLogger();
-    
-    /**
-     * Sends a message to all the members in the cluster
-     * @param msg ClusterMessage
-     */
-    public void send(ClusterMessage msg);
-    
-    /**
-     * Sends a message to a specific member in the cluster.
-     *
-     * @param msg ClusterMessage
-     * @param dest Member
-     */
-    public void send(ClusterMessage msg, Member dest);
+	/**
+	 * Descriptive information about this component implementation.
+	 */
+	public String info = "CatalinaCluster/2.0";
 
-    /**
-     * Returns that cluster has members.
-     */
-    public boolean hasMembers();
+	/**
+	 * Start the cluster, the owning container will invoke this
+	 * 
+	 * @throws Exception
+	 *             - if failure to start cluster
+	 */
+	public void start() throws Exception;
 
-    /**
-     * Returns all the members currently participating in the cluster.
-     *
-     * @return Member[]
-     */
-    public Member[] getMembers();
-    
-    /**
-     * Return the member that represents this node.
-     *
-     * @return Member
-     */
-    public Member getLocalMember();
-    
-    public void addValve(Valve valve);
-    
-    public void addClusterListener(ClusterListener listener);
-    
-    public void removeClusterListener(ClusterListener listener);
-    
-    public void setClusterDeployer(ClusterDeployer deployer);
-    
-    public ClusterDeployer getClusterDeployer();
-    
-    /**
-     * @return The map of managers
-     */
-    public Map<String,ClusterManager> getManagers();
+	/**
+	 * Stops the cluster, the owning container will invoke this
+	 * 
+	 * @throws LifecycleException
+	 */
+	public void stop() throws LifecycleException;
 
-    public Manager getManager(String name);
-    public String getManagerName(String name, Manager manager);
-    public Valve[] getValves();
-    
-    public void setChannel(Channel channel);
-    public Channel getChannel();
-    
+	/**
+	 * Returns the associates logger with this cluster.
+	 *
+	 * @return Log
+	 */
+	public Log getLogger();
+
+	/**
+	 * Sends a message to all the members in the cluster
+	 * 
+	 * @param msg
+	 *            ClusterMessage
+	 */
+	public void send(ClusterMessage msg);
+
+	/**
+	 * Sends a message to a specific member in the cluster.
+	 *
+	 * @param msg
+	 *            ClusterMessage
+	 * @param dest
+	 *            Member
+	 */
+	public void send(ClusterMessage msg, Member dest);
+
+	/**
+	 * Returns that cluster has members.
+	 */
+	public boolean hasMembers();
+
+	/**
+	 * Returns all the members currently participating in the cluster.
+	 *
+	 * @return Member[]
+	 */
+	public Member[] getMembers();
+
+	/**
+	 * Return the member that represents this node.
+	 *
+	 * @return Member
+	 */
+	public Member getLocalMember();
+
+	public void addValve(Valve valve);
+
+	public void addClusterListener(ClusterListener listener);
+
+	public void removeClusterListener(ClusterListener listener);
+
+	public void setClusterDeployer(ClusterDeployer deployer);
+
+	public ClusterDeployer getClusterDeployer();
+
+	/**
+	 * @return The map of managers
+	 */
+	public Map<String, ClusterManager> getManagers();
+
+	public Manager getManager(String name);
+
+	public String getManagerName(String name, Manager manager);
+
+	public Valve[] getValves();
+
+	public void setChannel(Channel channel);
+
+	public Channel getChannel();
 
 }

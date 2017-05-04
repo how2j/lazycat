@@ -36,222 +36,203 @@ import org.apache.tomcat.util.net.SocketWrapper;
  */
 public class InternalAprOutputBuffer extends AbstractOutputBuffer<Long> {
 
+	// ----------------------------------------------------------- Constructors
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * Default constructor.
+	 */
+	public InternalAprOutputBuffer(Response response, int headerBufferSize) {
 
-    /**
-     * Default constructor.
-     */
-    public InternalAprOutputBuffer(Response response, int headerBufferSize) {
+		this.response = response;
 
-        this.response = response;
+		buf = new byte[headerBufferSize];
+		if (headerBufferSize < (8 * 1024)) {
+			bbuf = ByteBuffer.allocateDirect(6 * 1500);
+		} else {
+			bbuf = ByteBuffer.allocateDirect((headerBufferSize / 1500 + 1) * 1500);
+		}
 
-        buf = new byte[headerBufferSize];
-        if (headerBufferSize < (8 * 1024)) {
-            bbuf = ByteBuffer.allocateDirect(6 * 1500);
-        } else {
-            bbuf = ByteBuffer.allocateDirect((headerBufferSize / 1500 + 1) * 1500);
-        }
+		outputStreamOutputBuffer = new SocketOutputBuffer();
 
-        outputStreamOutputBuffer = new SocketOutputBuffer();
+		filterLibrary = new OutputFilter[0];
+		activeFilters = new OutputFilter[0];
+		lastActiveFilter = -1;
 
-        filterLibrary = new OutputFilter[0];
-        activeFilters = new OutputFilter[0];
-        lastActiveFilter = -1;
+		committed = false;
+		finished = false;
 
-        committed = false;
-        finished = false;
+		// Cause loading of HttpMessages
+		HttpMessages.getInstance(response.getLocale()).getMessage(200);
 
-        // Cause loading of HttpMessages
-        HttpMessages.getInstance(response.getLocale()).getMessage(200);
+	}
 
-    }
+	// ----------------------------------------------------- Instance Variables
 
+	/**
+	 * Underlying socket.
+	 */
+	private long socket;
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * Direct byte buffer used for writing.
+	 */
+	private ByteBuffer bbuf = null;
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * Underlying socket.
-     */
-    private long socket;
+	@Override
+	public void init(SocketWrapper<Long> socketWrapper, AbstractEndpoint<Long> endpoint) throws IOException {
 
+		socket = socketWrapper.getSocket().longValue();
+		Socket.setsbb(this.socket, bbuf);
+	}
 
-    /**
-     * Direct byte buffer used for writing.
-     */
-    private ByteBuffer bbuf = null;
+	/**
+	 * Flush the response.
+	 *
+	 * @throws IOException
+	 *             an underlying I/O error occurred
+	 */
+	@Override
+	public void flush() throws IOException {
 
+		super.flush();
 
-    // --------------------------------------------------------- Public Methods
+		// Flush the current buffer
+		flushBuffer();
+	}
 
-    @Override
-    public void init(SocketWrapper<Long> socketWrapper,
-            AbstractEndpoint<Long> endpoint) throws IOException {
+	/**
+	 * Recycle the output buffer. This should be called when closing the
+	 * connection.
+	 */
+	@Override
+	public void recycle() {
 
-        socket = socketWrapper.getSocket().longValue();
-        Socket.setsbb(this.socket, bbuf);
-    }
+		super.recycle();
 
+		bbuf.clear();
+	}
 
-    /**
-     * Flush the response.
-     *
-     * @throws IOException an underlying I/O error occurred
-     */
-    @Override
-    public void flush()
-        throws IOException {
+	/**
+	 * End request.
+	 *
+	 * @throws IOException
+	 *             an underlying I/O error occurred
+	 */
+	@Override
+	public void endRequest() throws IOException {
 
-        super.flush();
+		if (!committed) {
 
-        // Flush the current buffer
-        flushBuffer();
-    }
+			// Send the connector a request for commit. The connector should
+			// then validate the headers, send them (using sendHeader) and
+			// set the filters accordingly.
+			response.action(ActionCode.COMMIT, null);
 
+		}
 
-    /**
-     * Recycle the output buffer. This should be called when closing the
-     * connection.
-     */
-    @Override
-    public void recycle() {
+		if (finished)
+			return;
 
-        super.recycle();
+		if (lastActiveFilter != -1)
+			activeFilters[lastActiveFilter].end();
 
-        bbuf.clear();
-    }
+		flushBuffer();
 
+		finished = true;
 
-    /**
-     * End request.
-     *
-     * @throws IOException an underlying I/O error occurred
-     */
-    @Override
-    public void endRequest()
-        throws IOException {
+	}
 
-        if (!committed) {
+	// ------------------------------------------------ HTTP/1.1 Output Methods
 
-            // Send the connector a request for commit. The connector should
-            // then validate the headers, send them (using sendHeader) and
-            // set the filters accordingly.
-            response.action(ActionCode.COMMIT, null);
+	/**
+	 * Send an acknowledgment.
+	 */
+	@Override
+	public void sendAck() throws IOException {
 
-        }
+		if (!committed) {
+			if (Socket.send(socket, Constants.ACK_BYTES, 0, Constants.ACK_BYTES.length) < 0)
+				throw new IOException(sm.getString("iib.failedwrite"));
+		}
 
-        if (finished)
-            return;
+	}
 
-        if (lastActiveFilter != -1)
-            activeFilters[lastActiveFilter].end();
+	// ------------------------------------------------------ Protected Methods
 
-        flushBuffer();
+	/**
+	 * Commit the response.
+	 *
+	 * @throws IOException
+	 *             an underlying I/O error occurred
+	 */
+	@Override
+	protected void commit() throws IOException {
 
-        finished = true;
+		// The response is now committed
+		committed = true;
+		response.setCommitted(true);
 
-    }
+		if (pos > 0) {
+			// Sending the response header buffer
+			bbuf.put(buf, 0, pos);
+		}
 
+	}
 
-    // ------------------------------------------------ HTTP/1.1 Output Methods
+	/**
+	 * Callback to write data from the buffer.
+	 */
+	private void flushBuffer() throws IOException {
+		if (bbuf.position() > 0) {
+			if (Socket.sendbb(socket, 0, bbuf.position()) < 0) {
+				throw new IOException();
+			}
+			bbuf.clear();
+		}
+	}
 
+	// ----------------------------------- OutputStreamOutputBuffer Inner Class
 
-    /**
-     * Send an acknowledgment.
-     */
-    @Override
-    public void sendAck()
-        throws IOException {
+	/**
+	 * This class is an output buffer which will write data to an output stream.
+	 */
+	protected class SocketOutputBuffer implements OutputBuffer {
 
-        if (!committed) {
-            if (Socket.send(socket, Constants.ACK_BYTES, 0, Constants.ACK_BYTES.length) < 0)
-                throw new IOException(sm.getString("iib.failedwrite"));
-        }
+		/**
+		 * Write chunk.
+		 */
+		@Override
+		public int doWrite(ByteChunk chunk, Response res) throws IOException {
+			try {
+				int len = chunk.getLength();
+				int start = chunk.getStart();
+				byte[] b = chunk.getBuffer();
+				while (len > 0) {
+					int thisTime = len;
+					if (bbuf.position() == bbuf.capacity()) {
+						flushBuffer();
+					}
+					if (thisTime > bbuf.capacity() - bbuf.position()) {
+						thisTime = bbuf.capacity() - bbuf.position();
+					}
+					bbuf.put(b, start, thisTime);
+					len = len - thisTime;
+					start = start + thisTime;
+				}
+				byteCount += chunk.getLength();
+				return chunk.getLength();
+			} catch (IOException ioe) {
+				response.action(ActionCode.CLOSE_NOW, ioe);
+				// Re-throw
+				throw ioe;
+			}
+		}
 
-    }
-
-
-    // ------------------------------------------------------ Protected Methods
-
-
-    /**
-     * Commit the response.
-     *
-     * @throws IOException an underlying I/O error occurred
-     */
-    @Override
-    protected void commit() throws IOException {
-
-        // The response is now committed
-        committed = true;
-        response.setCommitted(true);
-
-        if (pos > 0) {
-            // Sending the response header buffer
-            bbuf.put(buf, 0, pos);
-        }
-
-    }
-
-
-    /**
-     * Callback to write data from the buffer.
-     */
-    private void flushBuffer()
-        throws IOException {
-        if (bbuf.position() > 0) {
-            if (Socket.sendbb(socket, 0, bbuf.position()) < 0) {
-                throw new IOException();
-            }
-            bbuf.clear();
-        }
-    }
-
-
-    // ----------------------------------- OutputStreamOutputBuffer Inner Class
-
-
-    /**
-     * This class is an output buffer which will write data to an output
-     * stream.
-     */
-    protected class SocketOutputBuffer implements OutputBuffer {
-
-
-        /**
-         * Write chunk.
-         */
-        @Override
-        public int doWrite(ByteChunk chunk, Response res) throws IOException {
-            try {
-                int len = chunk.getLength();
-                int start = chunk.getStart();
-                byte[] b = chunk.getBuffer();
-                while (len > 0) {
-                    int thisTime = len;
-                    if (bbuf.position() == bbuf.capacity()) {
-                        flushBuffer();
-                    }
-                    if (thisTime > bbuf.capacity() - bbuf.position()) {
-                        thisTime = bbuf.capacity() - bbuf.position();
-                    }
-                    bbuf.put(b, start, thisTime);
-                    len = len - thisTime;
-                    start = start + thisTime;
-                }
-                byteCount += chunk.getLength();
-                return chunk.getLength();
-            } catch (IOException ioe) {
-                response.action(ActionCode.CLOSE_NOW, ioe);
-                // Re-throw
-                throw ioe;
-            }
-        }
-
-        @Override
-        public long getBytesWritten() {
-            return byteCount;
-        }
-    }
+		@Override
+		public long getBytesWritten() {
+			return byteCount;
+		}
+	}
 }

@@ -19,15 +19,13 @@ package org.apache.coyote;
 
 import java.util.concurrent.Executor;
 
-
 /**
- * Abstract the protocol implementation, including threading, etc.
- * Processor is single threaded and specific to stream-based protocols,
- * will not fit Jk protocols like JNI.
+ * Abstract the protocol implementation, including threading, etc. Processor is
+ * single threaded and specific to stream-based protocols, will not fit Jk
+ * protocols like JNI.
  *
- * This is the main interface to be implemented by a coyote connector.
- * Adapter is the main interface to be implemented by a coyote servlet
- * container.
+ * This is the main interface to be implemented by a coyote connector. Adapter
+ * is the main interface to be implemented by a coyote servlet container.
  *
  * @author Remy Maucherat
  * @author Costin Manolache
@@ -35,57 +33,50 @@ import java.util.concurrent.Executor;
  */
 public interface ProtocolHandler {
 
-    /**
-     * The adapter, used to call the connector.
-     */
-    public void setAdapter(Adapter adapter);
-    public Adapter getAdapter();
+	/**
+	 * The adapter, used to call the connector.
+	 */
+	public void setAdapter(Adapter adapter);
 
+	public Adapter getAdapter();
 
-    /**
-     * The executor, provide access to the underlying thread pool.
-     */
-    public Executor getExecutor();
+	/**
+	 * The executor, provide access to the underlying thread pool.
+	 */
+	public Executor getExecutor();
 
+	/**
+	 * Initialise the protocol.
+	 */
+	public void init() throws Exception;
 
-    /**
-     * Initialise the protocol.
-     */
-    public void init() throws Exception;
+	/**
+	 * Start the protocol.
+	 */
+	public void start() throws Exception;
 
+	/**
+	 * Pause the protocol (optional).
+	 */
+	public void pause() throws Exception;
 
-    /**
-     * Start the protocol.
-     */
-    public void start() throws Exception;
+	/**
+	 * Resume the protocol (optional).
+	 */
+	public void resume() throws Exception;
 
+	/**
+	 * Stop the protocol.
+	 */
+	public void stop() throws Exception;
 
-    /**
-     * Pause the protocol (optional).
-     */
-    public void pause() throws Exception;
+	/**
+	 * Destroy the protocol (optional).
+	 */
+	public void destroy() throws Exception;
 
-
-    /**
-     * Resume the protocol (optional).
-     */
-    public void resume() throws Exception;
-
-
-    /**
-     * Stop the protocol.
-     */
-    public void stop() throws Exception;
-
-
-    /**
-     * Destroy the protocol (optional).
-     */
-    public void destroy() throws Exception;
-
-
-    /**
-     * Requires APR/native library
-     */
-    public boolean isAprRequired();
+	/**
+	 * Requires APR/native library
+	 */
+	public boolean isAprRequired();
 }

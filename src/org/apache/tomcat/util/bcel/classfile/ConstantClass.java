@@ -23,32 +23,32 @@ import java.io.IOException;
 import org.apache.tomcat.util.bcel.Const;
 
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a (external) class.
+ * This class is derived from the abstract {@link Constant} and represents a
+ * reference to a (external) class.
  *
- * @see     Constant
+ * @see Constant
  */
 public final class ConstantClass extends Constant {
 
-    private final int name_index; // Identical to ConstantString except for the name
+	private final int name_index; // Identical to ConstantString except for the
+									// name
 
+	/**
+	 * Initialize instance from file data.
+	 *
+	 * @param file
+	 *            Input stream
+	 * @throws IOException
+	 */
+	ConstantClass(final DataInput file) throws IOException {
+		super(Const.CONSTANT_Class);
+		this.name_index = file.readUnsignedShort();
+	}
 
-    /**
-     * Initialize instance from file data.
-     *
-     * @param file Input stream
-     * @throws IOException
-     */
-    ConstantClass(final DataInput file) throws IOException {
-        super(Const.CONSTANT_Class);
-        this.name_index = file.readUnsignedShort();
-    }
-
-
-    /**
-     * @return Name index in constant pool of class name.
-     */
-    public final int getNameIndex() {
-        return name_index;
-    }
+	/**
+	 * @return Name index in constant pool of class name.
+	 */
+	public final int getNameIndex() {
+		return name_index;
+	}
 }

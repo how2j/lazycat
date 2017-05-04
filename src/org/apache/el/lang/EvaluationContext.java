@@ -26,68 +26,66 @@ import javax.el.VariableMapper;
 
 public final class EvaluationContext extends ELContext {
 
-    private final ELContext elContext;
+	private final ELContext elContext;
 
-    private final FunctionMapper fnMapper;
+	private final FunctionMapper fnMapper;
 
-    private final VariableMapper varMapper;
+	private final VariableMapper varMapper;
 
-    public EvaluationContext(ELContext elContext, FunctionMapper fnMapper,
-            VariableMapper varMapper) {
-        this.elContext = elContext;
-        this.fnMapper = fnMapper;
-        this.varMapper = varMapper;
-    }
+	public EvaluationContext(ELContext elContext, FunctionMapper fnMapper, VariableMapper varMapper) {
+		this.elContext = elContext;
+		this.fnMapper = fnMapper;
+		this.varMapper = varMapper;
+	}
 
-    public ELContext getELContext() {
-        return this.elContext;
-    }
+	public ELContext getELContext() {
+		return this.elContext;
+	}
 
-    @Override
-    public FunctionMapper getFunctionMapper() {
-        return this.fnMapper;
-    }
+	@Override
+	public FunctionMapper getFunctionMapper() {
+		return this.fnMapper;
+	}
 
-    @Override
-    public VariableMapper getVariableMapper() {
-        return this.varMapper;
-    }
+	@Override
+	public VariableMapper getVariableMapper() {
+		return this.varMapper;
+	}
 
-    @Override
-    // Can't use Class<?> because API needs to match specification in superclass
-    public Object getContext(@SuppressWarnings("rawtypes") Class key) {
-        return this.elContext.getContext(key);
-    }
+	@Override
+	// Can't use Class<?> because API needs to match specification in superclass
+	public Object getContext(@SuppressWarnings("rawtypes") Class key) {
+		return this.elContext.getContext(key);
+	}
 
-    @Override
-    public ELResolver getELResolver() {
-        return this.elContext.getELResolver();
-    }
+	@Override
+	public ELResolver getELResolver() {
+		return this.elContext.getELResolver();
+	}
 
-    @Override
-    public boolean isPropertyResolved() {
-        return this.elContext.isPropertyResolved();
-    }
+	@Override
+	public boolean isPropertyResolved() {
+		return this.elContext.isPropertyResolved();
+	}
 
-    @Override
-    // Can't use Class<?> because API needs to match specification in superclass
-    public void putContext(@SuppressWarnings("rawtypes") Class key,
-            Object contextObject) {
-        this.elContext.putContext(key, contextObject);
-    }
+	@Override
+	// Can't use Class<?> because API needs to match specification in superclass
+	public void putContext(@SuppressWarnings("rawtypes") Class key, Object contextObject) {
+		this.elContext.putContext(key, contextObject);
+	}
 
-    @Override
-    public void setPropertyResolved(boolean resolved) {
-        this.elContext.setPropertyResolved(resolved);
-    }
+	@Override
+	public void setPropertyResolved(boolean resolved) {
+		this.elContext.setPropertyResolved(resolved);
+	}
 
-    @Override
-    public Locale getLocale() {
-        return this.elContext.getLocale();
-        }
+	@Override
+	public Locale getLocale() {
+		return this.elContext.getLocale();
+	}
 
-    @Override
-    public void setLocale(Locale locale) {
-        this.elContext.setLocale(locale);
-    }
+	@Override
+	public void setLocale(Locale locale) {
+		this.elContext.setLocale(locale);
+	}
 }

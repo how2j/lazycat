@@ -22,14 +22,14 @@ import org.apache.catalina.tribes.ErrorHandler;
  * @author Filip Hanik
  * @version 1.0
  */
-public class InterceptorPayload  {
-    private ErrorHandler errorHandler;
-    
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
-    }
+public class InterceptorPayload {
+	private ErrorHandler errorHandler;
 
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
-    }
+	public ErrorHandler getErrorHandler() {
+		return errorHandler;
+	}
+
+	public void setErrorHandler(ErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
+	}
 }

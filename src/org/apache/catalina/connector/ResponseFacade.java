@@ -34,607 +34,531 @@ import org.apache.catalina.security.SecurityUtil;
 import org.apache.tomcat.util.res.StringManager;
 
 /**
- * Facade class that wraps a Coyote response object.
- * All methods are delegated to the wrapped response.
+ * Facade class that wraps a Coyote response object. All methods are delegated
+ * to the wrapped response.
  *
  * @author Remy Maucherat
  * @author Jean-Francois Arcand
  */
 @SuppressWarnings("deprecation")
-public class ResponseFacade
-    implements HttpServletResponse {
+public class ResponseFacade implements HttpServletResponse {
+
+	// ----------------------------------------------------------- DoPrivileged
+
+	private final class SetContentTypePrivilegedAction implements PrivilegedAction<Void> {
+
+		private final String contentType;
+
+		public SetContentTypePrivilegedAction(String contentType) {
+			this.contentType = contentType;
+		}
 
+		@Override
+		public Void run() {
+			response.setContentType(contentType);
+			return null;
+		}
+	}
 
-    // ----------------------------------------------------------- DoPrivileged
+	private final class DateHeaderPrivilegedAction implements PrivilegedAction<Void> {
 
-    private final class SetContentTypePrivilegedAction
-            implements PrivilegedAction<Void> {
+		private final String name;
+		private final long value;
+		private final boolean add;
 
-        private final String contentType;
+		DateHeaderPrivilegedAction(String name, long value, boolean add) {
+			this.name = name;
+			this.value = value;
+			this.add = add;
+		}
 
-        public SetContentTypePrivilegedAction(String contentType){
-            this.contentType = contentType;
-        }
+		@Override
+		public Void run() {
+			if (add) {
+				response.addDateHeader(name, value);
+			} else {
+				response.setDateHeader(name, value);
+			}
+			return null;
+		}
+	}
 
-        @Override
-        public Void run() {
-            response.setContentType(contentType);
-            return null;
-        }
-    }
+	// ----------------------------------------------------------- Constructors
 
-    private final class DateHeaderPrivilegedAction
-            implements PrivilegedAction<Void> {
+	/**
+	 * Construct a wrapper for the specified response.
+	 *
+	 * @param response
+	 *            The response to be wrapped
+	 */
+	public ResponseFacade(Response response) {
 
-        private final String name;
-        private final long value;
-        private final boolean add;
+		this.response = response;
+	}
 
-        DateHeaderPrivilegedAction(String name, long value, boolean add) {
-            this.name = name;
-            this.value = value;
-            this.add = add;
-        }
+	// ----------------------------------------------- Class/Instance Variables
 
-        @Override
-        public Void run() {
-            if(add) {
-                response.addDateHeader(name, value);
-            } else {
-                response.setDateHeader(name, value);
-            }
-            return null;
-        }
-    }
+	/**
+	 * The string manager for this package.
+	 */
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * The wrapped response.
+	 */
+	protected Response response = null;
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * Construct a wrapper for the specified response.
-     *
-     * @param response The response to be wrapped
-     */
-    public ResponseFacade(Response response) {
+	/**
+	 * Clear facade.
+	 */
+	public void clear() {
+		response = null;
+	}
 
-         this.response = response;
-    }
+	/**
+	 * Prevent cloning the facade.
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
+	public void finish() {
 
-    // ----------------------------------------------- Class/Instance Variables
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		response.setSuspended(true);
+	}
 
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+	public boolean isFinished() {
 
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-    /**
-     * The wrapped response.
-     */
-    protected Response response = null;
+		return response.isSuspended();
+	}
 
+	public long getContentWritten() {
 
-    // --------------------------------------------------------- Public Methods
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		return response.getContentWritten();
+	}
 
-    /**
-     * Clear facade.
-     */
-    public void clear() {
-        response = null;
-    }
+	// ------------------------------------------------ ServletResponse Methods
 
+	@Override
+	public String getCharacterEncoding() {
 
-    /**
-     * Prevent cloning the facade.
-     */
-    @Override
-    protected Object clone()
-        throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
-    }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		return response.getCharacterEncoding();
+	}
 
-    public void finish() {
+	@Override
+	public ServletOutputStream getOutputStream() throws IOException {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		// if (isFinished())
+		// throw new IllegalStateException
+		// (/*sm.getString("responseFacade.finished")*/);
 
-        response.setSuspended(true);
-    }
+		ServletOutputStream sos = response.getOutputStream();
+		if (isFinished()) {
+			response.setSuspended(true);
+		}
+		return (sos);
 
+	}
 
-    public boolean isFinished() {
+	@Override
+	public PrintWriter getWriter() throws IOException {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		// if (isFinished())
+		// throw new IllegalStateException
+		// (/*sm.getString("responseFacade.finished")*/);
 
-        return response.isSuspended();
-    }
+		PrintWriter writer = response.getWriter();
+		if (isFinished()) {
+			response.setSuspended(true);
+		}
+		return (writer);
 
+	}
 
-    public long getContentWritten() {
+	@Override
+	public void setContentLength(int len) {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        return response.getContentWritten();
-    }
+		response.setContentLength(len);
 
-    // ------------------------------------------------ ServletResponse Methods
+	}
 
+	@Override
+	public void setContentType(String type) {
 
-    @Override
-    public String getCharacterEncoding() {
+		if (isCommitted()) {
+			return;
+		}
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (SecurityUtil.isPackageProtectionEnabled()) {
+			AccessController.doPrivileged(new SetContentTypePrivilegedAction(type));
+		} else {
+			response.setContentType(type);
+		}
+	}
 
-        return response.getCharacterEncoding();
-    }
+	@Override
+	public void setBufferSize(int size) {
 
+		if (isCommitted()) {
+			throw new IllegalStateException(sm.getString("coyoteResponse.setBufferSize.ise"));
+		}
 
-    @Override
-    public ServletOutputStream getOutputStream()
-        throws IOException {
+		response.setBufferSize(size);
 
-        //        if (isFinished())
-        //            throw new IllegalStateException
-        //                (/*sm.getString("responseFacade.finished")*/);
+	}
 
-        ServletOutputStream sos = response.getOutputStream();
-        if (isFinished()) {
-            response.setSuspended(true);
-        }
-        return (sos);
+	@Override
+	public int getBufferSize() {
 
-    }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		return response.getBufferSize();
+	}
 
-    @Override
-    public PrintWriter getWriter()
-        throws IOException {
+	@Override
+	public void flushBuffer() throws IOException {
 
-        //        if (isFinished())
-        //            throw new IllegalStateException
-        //                (/*sm.getString("responseFacade.finished")*/);
+		if (isFinished()) {
+			// throw new IllegalStateException
+			// (/*sm.getString("responseFacade.finished")*/);
+			return;
+		}
 
-        PrintWriter writer = response.getWriter();
-        if (isFinished()) {
-            response.setSuspended(true);
-        }
-        return (writer);
+		if (SecurityUtil.isPackageProtectionEnabled()) {
+			try {
+				AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
 
-    }
+					@Override
+					public Void run() throws IOException {
+						response.setAppCommitted(true);
 
+						response.flushBuffer();
+						return null;
+					}
+				});
+			} catch (PrivilegedActionException e) {
+				Exception ex = e.getException();
+				if (ex instanceof IOException) {
+					throw (IOException) ex;
+				}
+			}
+		} else {
+			response.setAppCommitted(true);
 
-    @Override
-    public void setContentLength(int len) {
+			response.flushBuffer();
+		}
 
-        if (isCommitted()) {
-            return;
-        }
+	}
 
-        response.setContentLength(len);
+	@Override
+	public void resetBuffer() {
 
-    }
+		if (isCommitted()) {
+			throw new IllegalStateException(sm.getString("coyoteResponse.resetBuffer.ise"));
+		}
 
+		response.resetBuffer();
 
-    @Override
-    public void setContentType(String type) {
+	}
 
-        if (isCommitted()) {
-            return;
-        }
+	@Override
+	public boolean isCommitted() {
 
-        if (SecurityUtil.isPackageProtectionEnabled()){
-            AccessController.doPrivileged(new SetContentTypePrivilegedAction(type));
-        } else {
-            response.setContentType(type);
-        }
-    }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		return (response.isAppCommitted());
+	}
 
-    @Override
-    public void setBufferSize(int size) {
+	@Override
+	public void reset() {
 
-        if (isCommitted()) {
-            throw new IllegalStateException
-                (sm.getString("coyoteResponse.setBufferSize.ise"));
-        }
+		if (isCommitted()) {
+			throw new IllegalStateException(sm.getString("coyoteResponse.reset.ise"));
+		}
 
-        response.setBufferSize(size);
+		response.reset();
 
-    }
+	}
 
+	@Override
+	public void setLocale(Locale loc) {
 
-    @Override
-    public int getBufferSize() {
+		if (isCommitted()) {
+			return;
+		}
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		response.setLocale(loc);
+	}
 
-        return response.getBufferSize();
-    }
+	@Override
+	public Locale getLocale() {
 
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-    @Override
-    public void flushBuffer()
-        throws IOException {
+		return response.getLocale();
+	}
 
-        if (isFinished()) {
-            //            throw new IllegalStateException
-            //                (/*sm.getString("responseFacade.finished")*/);
-            return;
-        }
+	@Override
+	public void addCookie(Cookie cookie) {
 
-        if (SecurityUtil.isPackageProtectionEnabled()){
-            try{
-                AccessController.doPrivileged(
-                        new PrivilegedExceptionAction<Void>(){
+		if (isCommitted()) {
+			return;
+		}
 
-                    @Override
-                    public Void run() throws IOException{
-                        response.setAppCommitted(true);
+		response.addCookie(cookie);
 
-                        response.flushBuffer();
-                        return null;
-                    }
-                });
-            } catch(PrivilegedActionException e){
-                Exception ex = e.getException();
-                if (ex instanceof IOException){
-                    throw (IOException)ex;
-                }
-            }
-        } else {
-            response.setAppCommitted(true);
+	}
 
-            response.flushBuffer();
-        }
+	@Override
+	public boolean containsHeader(String name) {
 
-    }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		return response.containsHeader(name);
+	}
 
-    @Override
-    public void resetBuffer() {
+	@Override
+	public String encodeURL(String url) {
 
-        if (isCommitted()) {
-            throw new IllegalStateException
-                (sm.getString("coyoteResponse.resetBuffer.ise"));
-        }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-        response.resetBuffer();
+		return response.encodeURL(url);
+	}
 
-    }
+	@Override
+	public String encodeRedirectURL(String url) {
 
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-    @Override
-    public boolean isCommitted() {
+		return response.encodeRedirectURL(url);
+	}
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+	@Override
+	public String encodeUrl(String url) {
 
-        return (response.isAppCommitted());
-    }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
+		return response.encodeURL(url);
+	}
 
-    @Override
-    public void reset() {
+	@Override
+	public String encodeRedirectUrl(String url) {
 
-        if (isCommitted()) {
-            throw new IllegalStateException
-                (sm.getString("coyoteResponse.reset.ise"));
-        }
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-        response.reset();
+		return response.encodeRedirectURL(url);
+	}
 
-    }
+	@Override
+	public void sendError(int sc, String msg) throws IOException {
 
+		if (isCommitted()) {
+			throw new IllegalStateException(sm.getString("coyoteResponse.sendError.ise"));
+		}
 
-    @Override
-    public void setLocale(Locale loc) {
+		response.setAppCommitted(true);
 
-        if (isCommitted()) {
-            return;
-        }
+		response.sendError(sc, msg);
 
-        response.setLocale(loc);
-    }
+	}
 
+	@Override
+	public void sendError(int sc) throws IOException {
 
-    @Override
-    public Locale getLocale() {
+		if (isCommitted()) {
+			throw new IllegalStateException(sm.getString("coyoteResponse.sendError.ise"));
+		}
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		response.setAppCommitted(true);
 
-        return response.getLocale();
-    }
+		response.sendError(sc);
 
+	}
 
-    @Override
-    public void addCookie(Cookie cookie) {
+	@Override
+	public void sendRedirect(String location) throws IOException {
 
-        if (isCommitted()) {
-            return;
-        }
+		if (isCommitted()) {
+			throw new IllegalStateException(sm.getString("coyoteResponse.sendRedirect.ise"));
+		}
 
-        response.addCookie(cookie);
+		response.setAppCommitted(true);
 
-    }
+		response.sendRedirect(location);
 
+	}
 
-    @Override
-    public boolean containsHeader(String name) {
+	@Override
+	public void setDateHeader(String name, long date) {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        return response.containsHeader(name);
-    }
+		if (Globals.IS_SECURITY_ENABLED) {
+			AccessController.doPrivileged(new DateHeaderPrivilegedAction(name, date, false));
+		} else {
+			response.setDateHeader(name, date);
+		}
 
+	}
 
-    @Override
-    public String encodeURL(String url) {
+	@Override
+	public void addDateHeader(String name, long date) {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        return response.encodeURL(url);
-    }
+		if (Globals.IS_SECURITY_ENABLED) {
+			AccessController.doPrivileged(new DateHeaderPrivilegedAction(name, date, true));
+		} else {
+			response.addDateHeader(name, date);
+		}
 
+	}
 
-    @Override
-    public String encodeRedirectURL(String url) {
+	@Override
+	public void setHeader(String name, String value) {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        return response.encodeRedirectURL(url);
-    }
+		response.setHeader(name, value);
 
+	}
 
-    @Override
-    public String encodeUrl(String url) {
+	@Override
+	public void addHeader(String name, String value) {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        return response.encodeURL(url);
-    }
+		response.addHeader(name, value);
 
+	}
 
-    @Override
-    public String encodeRedirectUrl(String url) {
+	@Override
+	public void setIntHeader(String name, int value) {
 
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        return response.encodeRedirectURL(url);
-    }
+		response.setIntHeader(name, value);
 
+	}
 
-    @Override
-    public void sendError(int sc, String msg)
-        throws IOException {
+	@Override
+	public void addIntHeader(String name, int value) {
 
-        if (isCommitted()) {
-            throw new IllegalStateException
-                (sm.getString("coyoteResponse.sendError.ise"));
-        }
+		if (isCommitted()) {
+			return;
+		}
 
-        response.setAppCommitted(true);
+		response.addIntHeader(name, value);
 
-        response.sendError(sc, msg);
+	}
 
-    }
+	@Override
+	public void setStatus(int sc) {
 
+		if (isCommitted()) {
+			return;
+		}
 
-    @Override
-    public void sendError(int sc)
-        throws IOException {
+		response.setStatus(sc);
 
-        if (isCommitted()) {
-            throw new IllegalStateException
-                (sm.getString("coyoteResponse.sendError.ise"));
-        }
+	}
 
-        response.setAppCommitted(true);
+	@Override
+	public void setStatus(int sc, String sm) {
 
-        response.sendError(sc);
+		if (isCommitted()) {
+			return;
+		}
 
-    }
+		response.setStatus(sc, sm);
+	}
 
+	@Override
+	public String getContentType() {
 
-    @Override
-    public void sendRedirect(String location)
-        throws IOException {
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-        if (isCommitted()) {
-            throw new IllegalStateException
-                (sm.getString("coyoteResponse.sendRedirect.ise"));
-        }
+		return response.getContentType();
+	}
 
-        response.setAppCommitted(true);
+	@Override
+	public void setCharacterEncoding(String arg0) {
 
-        response.sendRedirect(location);
+		if (response == null) {
+			throw new IllegalStateException(sm.getString("responseFacade.nullResponse"));
+		}
 
-    }
+		response.setCharacterEncoding(arg0);
+	}
 
+	@Override
+	public int getStatus() {
+		return response.getStatus();
+	}
 
-    @Override
-    public void setDateHeader(String name, long date) {
+	@Override
+	public String getHeader(String name) {
+		return response.getHeader(name);
+	}
 
-        if (isCommitted()) {
-            return;
-        }
+	@Override
+	public Collection<String> getHeaderNames() {
+		return response.getHeaderNames();
+	}
 
-        if(Globals.IS_SECURITY_ENABLED) {
-            AccessController.doPrivileged(new DateHeaderPrivilegedAction
-                                             (name, date, false));
-        } else {
-            response.setDateHeader(name, date);
-        }
-
-    }
-
-
-    @Override
-    public void addDateHeader(String name, long date) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        if(Globals.IS_SECURITY_ENABLED) {
-            AccessController.doPrivileged(new DateHeaderPrivilegedAction
-                                             (name, date, true));
-        } else {
-            response.addDateHeader(name, date);
-        }
-
-    }
-
-
-    @Override
-    public void setHeader(String name, String value) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        response.setHeader(name, value);
-
-    }
-
-
-    @Override
-    public void addHeader(String name, String value) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        response.addHeader(name, value);
-
-    }
-
-
-    @Override
-    public void setIntHeader(String name, int value) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        response.setIntHeader(name, value);
-
-    }
-
-
-    @Override
-    public void addIntHeader(String name, int value) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        response.addIntHeader(name, value);
-
-    }
-
-
-    @Override
-    public void setStatus(int sc) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        response.setStatus(sc);
-
-    }
-
-
-    @Override
-    public void setStatus(int sc, String sm) {
-
-        if (isCommitted()) {
-            return;
-        }
-
-        response.setStatus(sc, sm);
-    }
-
-
-    @Override
-    public String getContentType() {
-
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
-
-        return response.getContentType();
-    }
-
-
-    @Override
-    public void setCharacterEncoding(String arg0) {
-
-        if (response == null) {
-            throw new IllegalStateException(
-                            sm.getString("responseFacade.nullResponse"));
-        }
-
-        response.setCharacterEncoding(arg0);
-    }
-
-    @Override
-    public int getStatus() {
-        return response.getStatus();
-    }
-
-    @Override
-    public String getHeader(String name) {
-        return response.getHeader(name);
-    }
-
-    @Override
-    public Collection<String> getHeaderNames() {
-        return response.getHeaderNames();
-    }
-
-    @Override
-    public Collection<String> getHeaders(String name) {
-        return response.getHeaders(name);
-    }
+	@Override
+	public Collection<String> getHeaders(String name) {
+		return response.getHeaders(name);
+	}
 }

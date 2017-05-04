@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.naming.factory;
 
@@ -34,93 +33,77 @@ import org.apache.naming.TransactionRef;
  * 
  * @author Remy Maucherat
  */
-public class TransactionFactory
-    implements ObjectFactory {
+public class TransactionFactory implements ObjectFactory {
 
+	// ----------------------------------------------------------- Constructors
 
-    // ----------------------------------------------------------- Constructors
+	// -------------------------------------------------------------- Constants
 
+	// ----------------------------------------------------- Instance Variables
 
-    // -------------------------------------------------------------- Constants
+	// --------------------------------------------------------- Public Methods
 
+	// -------------------------------------------------- ObjectFactory Methods
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * Create a new User transaction instance.
+	 * 
+	 * @param obj
+	 *            The reference object describing the DataSource
+	 */
+	@Override
+	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+			throws Exception {
 
+		if (obj instanceof TransactionRef) {
+			Reference ref = (Reference) obj;
+			ObjectFactory factory = null;
+			RefAddr factoryRefAddr = ref.get(Constants.FACTORY);
+			if (factoryRefAddr != null) {
+				// Using the specified factory
+				String factoryClassName = factoryRefAddr.getContent().toString();
+				// Loading factory
+				ClassLoader tcl = Thread.currentThread().getContextClassLoader();
+				Class<?> factoryClass = null;
+				if (tcl != null) {
+					try {
+						factoryClass = tcl.loadClass(factoryClassName);
+					} catch (ClassNotFoundException e) {
+						NamingException ex = new NamingException("Could not load resource factory class");
+						ex.initCause(e);
+						throw ex;
+					}
+				} else {
+					try {
+						factoryClass = Class.forName(factoryClassName);
+					} catch (ClassNotFoundException e) {
+						NamingException ex = new NamingException("Could not load resource factory class");
+						ex.initCause(e);
+						throw ex;
+					}
+				}
+				if (factoryClass != null) {
+					try {
+						factory = (ObjectFactory) factoryClass.newInstance();
+					} catch (Throwable t) {
+						if (t instanceof NamingException)
+							throw (NamingException) t;
+						NamingException ex = new NamingException("Could not create resource factory instance");
+						ex.initCause(t);
+						throw ex;
+					}
+				}
+			}
+			if (factory != null) {
+				return factory.getObjectInstance(obj, name, nameCtx, environment);
+			} else {
+				throw new NamingException("Cannot create resource instance");
+			}
 
-    // --------------------------------------------------------- Public Methods
+		}
 
+		return null;
 
-    // -------------------------------------------------- ObjectFactory Methods
-
-
-    /**
-     * Create a new User transaction instance.
-     * 
-     * @param obj The reference object describing the DataSource
-     */
-    @Override
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable<?,?> environment)
-        throws Exception {
-        
-        if (obj instanceof TransactionRef) {
-            Reference ref = (Reference) obj;
-            ObjectFactory factory = null;
-            RefAddr factoryRefAddr = ref.get(Constants.FACTORY);
-            if (factoryRefAddr != null) {
-                // Using the specified factory
-                String factoryClassName = 
-                    factoryRefAddr.getContent().toString();
-                // Loading factory
-                ClassLoader tcl = 
-                    Thread.currentThread().getContextClassLoader();
-                Class<?> factoryClass = null;
-                if (tcl != null) {
-                    try {
-                        factoryClass = tcl.loadClass(factoryClassName);
-                    } catch(ClassNotFoundException e) {
-                        NamingException ex = new NamingException
-                            ("Could not load resource factory class");
-                        ex.initCause(e);
-                        throw ex;
-                    }
-                } else {
-                    try {
-                        factoryClass = Class.forName(factoryClassName);
-                    } catch(ClassNotFoundException e) {
-                        NamingException ex = new NamingException
-                            ("Could not load resource factory class");
-                        ex.initCause(e);
-                        throw ex;
-                    }
-                }
-                if (factoryClass != null) {
-                    try {
-                        factory = (ObjectFactory) factoryClass.newInstance();
-                    } catch(Throwable t) {
-                        if (t instanceof NamingException)
-                            throw (NamingException) t;
-                        NamingException ex = new NamingException
-                            ("Could not create resource factory instance");
-                        ex.initCause(t);
-                        throw ex;
-                    }
-                }
-            }
-            if (factory != null) {
-                return factory.getObjectInstance
-                    (obj, name, nameCtx, environment);
-            } else {
-                throw new NamingException
-                    ("Cannot create resource instance");
-            }
-            
-        }
-        
-        return null;
-        
-    }
-
+	}
 
 }
-

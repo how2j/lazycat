@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.tomcat.util.modeler;
-
 
 import java.util.HashSet;
 
@@ -25,135 +23,127 @@ import javax.management.AttributeChangeNotification;
 import javax.management.Notification;
 import javax.management.NotificationFilter;
 
-
 /**
- * <p>Implementation of <code>NotificationFilter</code> for attribute change
- * notifications.  This class is used by <code>BaseModelMBean</code> to
- * construct attribute change notification event filters when a filter is not
- * supplied by the application.</p>
+ * <p>
+ * Implementation of <code>NotificationFilter</code> for attribute change
+ * notifications. This class is used by <code>BaseModelMBean</code> to construct
+ * attribute change notification event filters when a filter is not supplied by
+ * the application.
+ * </p>
  *
  * @author Craig R. McClanahan
  */
 public class BaseAttributeFilter implements NotificationFilter {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
-    /**
-     * Construct a new filter that accepts only the specified attribute
-     * name.
-     *
-     * @param name Name of the attribute to be accepted by this filter, or
-     *  <code>null</code> to accept all attribute names
-     */
-    public BaseAttributeFilter(String name) {
+	/**
+	 * Construct a new filter that accepts only the specified attribute name.
+	 *
+	 * @param name
+	 *            Name of the attribute to be accepted by this filter, or
+	 *            <code>null</code> to accept all attribute names
+	 */
+	public BaseAttributeFilter(String name) {
 
-        super();
-        if (name != null)
-            addAttribute(name);
+		super();
+		if (name != null)
+			addAttribute(name);
 
-    }
+	}
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * The set of attribute names that are accepted by this filter. If this list
+	 * is empty, all attribute names are accepted.
+	 */
+	private HashSet<String> names = new HashSet<String>();
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * The set of attribute names that are accepted by this filter.  If this
-     * list is empty, all attribute names are accepted.
-     */
-    private HashSet<String> names = new HashSet<String>();
+	/**
+	 * Add a new attribute name to the set of names accepted by this filter.
+	 *
+	 * @param name
+	 *            Name of the attribute to be accepted
+	 */
+	public void addAttribute(String name) {
 
+		synchronized (names) {
+			names.add(name);
+		}
 
-    // --------------------------------------------------------- Public Methods
+	}
 
+	/**
+	 * Clear all accepted names from this filter, so that it will accept all
+	 * attribute names.
+	 */
+	public void clear() {
 
-    /**
-     * Add a new attribute name to the set of names accepted by this filter.
-     *
-     * @param name Name of the attribute to be accepted
-     */
-    public void addAttribute(String name) {
+		synchronized (names) {
+			names.clear();
+		}
 
-        synchronized (names) {
-            names.add(name);
-        }
+	}
 
-    }
+	/**
+	 * Return the set of names that are accepted by this filter. If this filter
+	 * accepts all attribute names, a zero length array will be returned.
+	 */
+	public String[] getNames() {
 
+		synchronized (names) {
+			return names.toArray(new String[names.size()]);
+		}
 
-    /**
-     * Clear all accepted names from this filter, so that it will accept
-     * all attribute names.
-     */
-    public void clear() {
+	}
 
-        synchronized (names) {
-            names.clear();
-        }
+	/**
+	 * <p>
+	 * Test whether notification enabled for this event. Return true if:
+	 * </p>
+	 * <ul>
+	 * <li>This is an attribute change notification</li>
+	 * <li>Either the set of accepted names is empty (implying that all
+	 * attribute names are of interest) or the set of accepted names includes
+	 * the name of the attribute in this notification</li>
+	 * </ul>
+	 */
+	@Override
+	public boolean isNotificationEnabled(Notification notification) {
 
-    }
+		if (notification == null)
+			return (false);
+		if (!(notification instanceof AttributeChangeNotification))
+			return (false);
+		AttributeChangeNotification acn = (AttributeChangeNotification) notification;
+		if (!AttributeChangeNotification.ATTRIBUTE_CHANGE.equals(acn.getType()))
+			return (false);
+		synchronized (names) {
+			if (names.size() < 1)
+				return (true);
+			else
+				return (names.contains(acn.getAttributeName()));
+		}
 
+	}
 
-    /**
-     * Return the set of names that are accepted by this filter.  If this
-     * filter accepts all attribute names, a zero length array will be
-     * returned.
-     */
-    public String[] getNames() {
+	/**
+	 * Remove an attribute name from the set of names accepted by this filter.
+	 *
+	 * @param name
+	 *            Name of the attribute to be removed
+	 */
+	public void removeAttribute(String name) {
 
-        synchronized (names) {
-            return names.toArray(new String[names.size()]);
-        }
+		synchronized (names) {
+			names.remove(name);
+		}
 
-    }
-
-
-    /**
-     * <p>Test whether notification enabled for this event.
-     * Return true if:</p>
-     * <ul>
-     * <li>This is an attribute change notification</li>
-     * <li>Either the set of accepted names is empty (implying that all
-     *     attribute names are of interest) or the set of accepted names
-     *     includes the name of the attribute in this notification</li>
-     * </ul>
-     */
-    @Override
-    public boolean isNotificationEnabled(Notification notification) {
-
-        if (notification == null)
-            return (false);
-        if (!(notification instanceof AttributeChangeNotification))
-            return (false);
-        AttributeChangeNotification acn =
-            (AttributeChangeNotification) notification;
-        if (!AttributeChangeNotification.ATTRIBUTE_CHANGE.equals(acn.getType()))
-            return (false);
-        synchronized (names) {
-            if (names.size() < 1)
-                return (true);
-            else
-                return (names.contains(acn.getAttributeName()));
-        }
-
-    }
-
-
-    /**
-     * Remove an attribute name from the set of names accepted by this
-     * filter.
-     *
-     * @param name Name of the attribute to be removed
-     */
-    public void removeAttribute(String name) {
-
-        synchronized (names) {
-            names.remove(name);
-        }
-
-    }
-
+	}
 
 }

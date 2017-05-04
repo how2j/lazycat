@@ -32,21 +32,21 @@ import java.util.Enumeration;
 // Spec API does not use @Deprecated
 public interface HttpSessionContext {
 
-    /**
-     * @deprecated As of Java Servlet API 2.1 with no replacement. This method
-     *             must return null and will be removed in a future version of
-     *             this API.
-     */
-    @SuppressWarnings("dep-ann")
-    // Spec API does not use @Deprecated
-    public HttpSession getSession(String sessionId);
+	/**
+	 * @deprecated As of Java Servlet API 2.1 with no replacement. This method
+	 *             must return null and will be removed in a future version of
+	 *             this API.
+	 */
+	@SuppressWarnings("dep-ann")
+	// Spec API does not use @Deprecated
+	public HttpSession getSession(String sessionId);
 
-    /**
-     * @deprecated As of Java Servlet API 2.1 with no replacement. This method
-     *             must return an empty <code>Enumeration</code> and will be
-     *             removed in a future version of this API.
-     */
-    @SuppressWarnings("dep-ann")
-    // Spec API does not use @Deprecated
-    public Enumeration<String> getIds();
+	/**
+	 * @deprecated As of Java Servlet API 2.1 with no replacement. This method
+	 *             must return an empty <code>Enumeration</code> and will be
+	 *             removed in a future version of this API.
+	 */
+	@SuppressWarnings("dep-ann")
+	// Spec API does not use @Deprecated
+	public Enumeration<String> getIds();
 }

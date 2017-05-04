@@ -27,41 +27,41 @@ import org.apache.catalina.connector.Response;
  */
 public class AccessLogAdapter implements AccessLog {
 
-    private AccessLog[] logs;
+	private AccessLog[] logs;
 
-    public AccessLogAdapter(AccessLog log) {
-        if (log == null) {
-            throw new NullPointerException();
-        }
-        logs = new AccessLog[] { log };
-    }
+	public AccessLogAdapter(AccessLog log) {
+		if (log == null) {
+			throw new NullPointerException();
+		}
+		logs = new AccessLog[] { log };
+	}
 
-    public void add(AccessLog log) {
-        if (log == null) {
-            throw new NullPointerException();
-        }
-        AccessLog newArray[] = Arrays.copyOf(logs, logs.length + 1);
-        newArray[newArray.length - 1] = log;
-        logs = newArray;
-    }
+	public void add(AccessLog log) {
+		if (log == null) {
+			throw new NullPointerException();
+		}
+		AccessLog newArray[] = Arrays.copyOf(logs, logs.length + 1);
+		newArray[newArray.length - 1] = log;
+		logs = newArray;
+	}
 
-    @Override
-    public void log(Request request, Response response, long time) {
-        for (AccessLog log: logs) {
-            log.log(request, response, time);
-        }
-    }
+	@Override
+	public void log(Request request, Response response, long time) {
+		for (AccessLog log : logs) {
+			log.log(request, response, time);
+		}
+	}
 
-    @Override
-    public void setRequestAttributesEnabled(boolean requestAttributesEnabled) {
-        // NOOP
-    }
+	@Override
+	public void setRequestAttributesEnabled(boolean requestAttributesEnabled) {
+		// NOOP
+	}
 
-    @Override
-    public boolean getRequestAttributesEnabled() {
-        // NOOP. Could return logs[0].getRequestAttributesEnabled(), but I do
-        // not see a use case for that.
-        return false;
-    }
+	@Override
+	public boolean getRequestAttributesEnabled() {
+		// NOOP. Could return logs[0].getRequestAttributesEnabled(), but I do
+		// not see a use case for that.
+		return false;
+	}
 
 }

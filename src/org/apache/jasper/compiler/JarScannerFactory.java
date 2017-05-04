@@ -27,22 +27,21 @@ import org.apache.tomcat.util.scan.StandardJarScanner;
  */
 public class JarScannerFactory {
 
-    private JarScannerFactory() {
-        // Don't want any instances so hide the default constructor.
-    }
+	private JarScannerFactory() {
+		// Don't want any instances so hide the default constructor.
+	}
 
-    /**
-     * Obtain the {@link JarScanner} associated with the specified {@link
-     * ServletContext}. It is obtained via a context parameter.
-     */
-    public static JarScanner getJarScanner(ServletContext ctxt) {
-        JarScanner jarScanner = 
-            (JarScanner) ctxt.getAttribute(JarScanner.class.getName());
-        if (jarScanner == null) {
-            ctxt.log(Localizer.getMessage("jsp.warning.noJarScanner"));
-            jarScanner = new StandardJarScanner();
-        }
-        return jarScanner;
-    }
+	/**
+	 * Obtain the {@link JarScanner} associated with the specified
+	 * {@link ServletContext}. It is obtained via a context parameter.
+	 */
+	public static JarScanner getJarScanner(ServletContext ctxt) {
+		JarScanner jarScanner = (JarScanner) ctxt.getAttribute(JarScanner.class.getName());
+		if (jarScanner == null) {
+			ctxt.log(Localizer.getMessage("jsp.warning.noJarScanner"));
+			jarScanner = new StandardJarScanner();
+		}
+		return jarScanner;
+	}
 
 }

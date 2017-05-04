@@ -27,52 +27,52 @@ import org.apache.tomcat.util.net.SocketStatus;
  */
 public interface Adapter {
 
-    /** 
-     * Call the service method, and notify all listeners
-     *
-     * @exception Exception if an error happens during handling of
-     *   the request. Common errors are:
-     *   <ul><li>IOException if an input/output error occurs and we are
-     *   processing an included servlet (otherwise it is swallowed and
-     *   handled by the top level error handler mechanism)
-     *       <li>ServletException if a servlet throws an exception and
-     *  we are processing an included servlet (otherwise it is swallowed
-     *  and handled by the top level error handler mechanism)
-     *  </ul>
-     *  Tomcat should be able to handle and log any other exception ( including
-     *  runtime exceptions )
-     */
-    public void service(Request req, Response res)
-            throws Exception;
+	/**
+	 * Call the service method, and notify all listeners
+	 *
+	 * @exception Exception
+	 *                if an error happens during handling of the request. Common
+	 *                errors are:
+	 *                <ul>
+	 *                <li>IOException if an input/output error occurs and we are
+	 *                processing an included servlet (otherwise it is swallowed
+	 *                and handled by the top level error handler mechanism)
+	 *                <li>ServletException if a servlet throws an exception and
+	 *                we are processing an included servlet (otherwise it is
+	 *                swallowed and handled by the top level error handler
+	 *                mechanism)
+	 *                </ul>
+	 *                Tomcat should be able to handle and log any other
+	 *                exception ( including runtime exceptions )
+	 */
+	public void service(Request req, Response res) throws Exception;
 
-    public boolean event(Request req, Response res, SocketStatus status)
-            throws Exception;
-    
-    public boolean asyncDispatch(Request req,Response res, SocketStatus status)
-            throws Exception;
+	public boolean event(Request req, Response res, SocketStatus status) throws Exception;
 
-    public void errorDispatch(Request request, Response response);
+	public boolean asyncDispatch(Request req, Response res, SocketStatus status) throws Exception;
 
-    public void log(Request req, Response res, long time);
+	public void errorDispatch(Request request, Response response);
 
-    /**
-     * Assert that request and response have been recycled. If they have not
-     * then log a warning and force a recycle. This method is called as a safety
-     * check when a processor is being recycled and may be returned to a pool
-     * for reuse.
-     *
-     * @param req
-     *            Request
-     * @param res
-     *            Response
-     */
-    public void checkRecycled(Request req, Response res);
+	public void log(Request req, Response res, long time);
 
-    /**
-     * Provide the name of the domain to use to register MBeans for components
-     * associated with the connector.
-     * 
-     * @return  The MBean domain name
-     */
-    public String getDomain();
+	/**
+	 * Assert that request and response have been recycled. If they have not
+	 * then log a warning and force a recycle. This method is called as a safety
+	 * check when a processor is being recycled and may be returned to a pool
+	 * for reuse.
+	 *
+	 * @param req
+	 *            Request
+	 * @param res
+	 *            Response
+	 */
+	public void checkRecycled(Request req, Response res);
+
+	/**
+	 * Provide the name of the domain to use to register MBeans for components
+	 * associated with the connector.
+	 * 
+	 * @return The MBean domain name
+	 */
+	public String getDomain();
 }

@@ -29,138 +29,137 @@ import org.apache.tomcat.util.net.SocketWrapper;
 import org.apache.tomcat.util.res.StringManager;
 
 /**
- * @deprecated  Will be removed in Tomcat 8.0.x.
+ * @deprecated Will be removed in Tomcat 8.0.x.
  */
 @Deprecated
 public abstract class UpgradeProcessor<S> implements Processor<S> {
 
-    protected static final StringManager sm =
-            StringManager.getManager(Constants.Package);
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    private final UpgradeInbound upgradeInbound;
+	private final UpgradeInbound upgradeInbound;
 
-    protected UpgradeProcessor (UpgradeInbound upgradeInbound) {
-        this.upgradeInbound = upgradeInbound;
-        upgradeInbound.setUpgradeProcessor(this);
-        upgradeInbound.setUpgradeOutbound(new UpgradeOutbound(this));
-    }
+	protected UpgradeProcessor(UpgradeInbound upgradeInbound) {
+		this.upgradeInbound = upgradeInbound;
+		upgradeInbound.setUpgradeProcessor(this);
+		upgradeInbound.setUpgradeOutbound(new UpgradeOutbound(this));
+	}
 
-    // Output methods
-    public abstract void flush() throws IOException;
-    public abstract void write(int b) throws IOException;
-    public abstract void write(byte[] b, int off, int len) throws IOException;
+	// Output methods
+	public abstract void flush() throws IOException;
 
-    // Input methods
-    /**
-     * This is always a blocking read of a single byte.
-     *
-     * @return  The next byte or -1 if the end of the input is reached.
-     *
-     * @throws IOException  If a problem occurs trying to read from the input
-     */
-    public abstract int read() throws IOException;
+	public abstract void write(int b) throws IOException;
 
-    /**
-     * Read up to len bytes from the input in either blocking or non-blocking
-     * mode (where non-blocking is supported). If the input does not support
-     * non-blocking reads, a blcoking read will be performed.
-     *
-     * @param block
-     * @param bytes
-     * @param off
-     * @param len
-     * @return  The number of bytes read or -1 if the end of the input is
-     *          reached. Non-blocking reads may return zero if no data is
-     *          available. Blocking reads never return zero.
-     *
-     * @throws IOException  If a problem occurs trying to read from the input
-     */
-    public abstract int read(boolean block, byte[] bytes, int off, int len)
-            throws IOException;
+	public abstract void write(byte[] b, int off, int len) throws IOException;
 
-    @Override
-    public final UpgradeInbound getUpgradeInbound() {
-        return upgradeInbound;
-    }
+	// Input methods
+	/**
+	 * This is always a blocking read of a single byte.
+	 *
+	 * @return The next byte or -1 if the end of the input is reached.
+	 *
+	 * @throws IOException
+	 *             If a problem occurs trying to read from the input
+	 */
+	public abstract int read() throws IOException;
 
-    @Override
-    public final SocketState upgradeDispatch() throws IOException {
-        return upgradeInbound.onData();
-    }
+	/**
+	 * Read up to len bytes from the input in either blocking or non-blocking
+	 * mode (where non-blocking is supported). If the input does not support
+	 * non-blocking reads, a blcoking read will be performed.
+	 *
+	 * @param block
+	 * @param bytes
+	 * @param off
+	 * @param len
+	 * @return The number of bytes read or -1 if the end of the input is
+	 *         reached. Non-blocking reads may return zero if no data is
+	 *         available. Blocking reads never return zero.
+	 *
+	 * @throws IOException
+	 *             If a problem occurs trying to read from the input
+	 */
+	public abstract int read(boolean block, byte[] bytes, int off, int len) throws IOException;
 
-    @Override
-    public final void recycle(boolean socketClosing) {
-        // Currently a NO-OP as upgrade processors are not recycled.
-    }
+	@Override
+	public final UpgradeInbound getUpgradeInbound() {
+		return upgradeInbound;
+	}
 
-    
-    // Servlet 3.1 based HTTP upgrade mechanism. NO-OPs for the proprietary
-    // Tomcat upgrade mechanism.
-    @Override
-    public HttpUpgradeHandler getHttpUpgradeHandler() {
-        return null;
-    }
+	@Override
+	public final SocketState upgradeDispatch() throws IOException {
+		return upgradeInbound.onData();
+	}
 
-    @Override
-    public SocketState upgradeDispatch(SocketStatus status) throws IOException {
-        return null;
-    }
+	@Override
+	public final void recycle(boolean socketClosing) {
+		// Currently a NO-OP as upgrade processors are not recycled.
+	}
 
-    @Override
-    public boolean isUpgrade() {
-        return false;
-    }
-    
-    
-    // NO-OP methods for upgrade
-    @Override
-    public final Executor getExecutor() {
-        return null;
-    }
+	// Servlet 3.1 based HTTP upgrade mechanism. NO-OPs for the proprietary
+	// Tomcat upgrade mechanism.
+	@Override
+	public HttpUpgradeHandler getHttpUpgradeHandler() {
+		return null;
+	}
 
-    @Override
-    public final SocketState process(SocketWrapper<S> socketWrapper)
-            throws IOException {
-        return null;
-    }
+	@Override
+	public SocketState upgradeDispatch(SocketStatus status) throws IOException {
+		return null;
+	}
 
-    @Override
-    public final SocketState event(SocketStatus status) throws IOException {
-        return null;
-    }
+	@Override
+	public boolean isUpgrade() {
+		return false;
+	}
 
-    @Override
-    public final SocketState asyncDispatch(SocketStatus status) {
-        return null;
-    }
+	// NO-OP methods for upgrade
+	@Override
+	public final Executor getExecutor() {
+		return null;
+	}
 
-    @Override
-    public void errorDispatch() {
-        // NO-OP
-    }
+	@Override
+	public final SocketState process(SocketWrapper<S> socketWrapper) throws IOException {
+		return null;
+	}
 
-    @Override
-    public final SocketState asyncPostProcess() {
-        return null;
-    }
+	@Override
+	public final SocketState event(SocketStatus status) throws IOException {
+		return null;
+	}
 
-    @Override
-    public final boolean isComet() {
-        return false;
-    }
+	@Override
+	public final SocketState asyncDispatch(SocketStatus status) {
+		return null;
+	}
 
-    @Override
-    public final boolean isAsync() {
-        return false;
-    }
+	@Override
+	public void errorDispatch() {
+		// NO-OP
+	}
 
-    @Override
-    public final Request getRequest() {
-        return null;
-    }
+	@Override
+	public final SocketState asyncPostProcess() {
+		return null;
+	}
 
-    @Override
-    public final void setSslSupport(SSLSupport sslSupport) {
-        // NOOP
-    }
+	@Override
+	public final boolean isComet() {
+		return false;
+	}
+
+	@Override
+	public final boolean isAsync() {
+		return false;
+	}
+
+	@Override
+	public final Request getRequest() {
+		return null;
+	}
+
+	@Override
+	public final void setSslSupport(SSLSupport sslSupport) {
+		// NOOP
+	}
 }

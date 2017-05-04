@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-
 package org.apache.jasper.util;
-
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 
 /**
  * Adapter class that wraps an <code>Enumeration</code> around a Java2
@@ -38,89 +35,82 @@ import java.util.NoSuchElementException;
 @Deprecated
 public final class Enumerator<T> implements Enumeration<T> {
 
+	// ----------------------------------------------------------- Constructors
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * Return an Enumeration over the values returned by the specified Iterator.
+	 *
+	 * @param iterator
+	 *            Iterator to be wrapped
+	 */
+	public Enumerator(Iterator<T> iterator) {
 
+		super();
+		this.iterator = iterator;
 
-    /**
-     * Return an Enumeration over the values returned by the
-     * specified Iterator.
-     *
-     * @param iterator Iterator to be wrapped
-     */
-    public Enumerator(Iterator<T> iterator) {
+	}
 
-        super();
-        this.iterator = iterator;
+	/**
+	 * Return an Enumeration over the values returned by the specified Iterator.
+	 *
+	 * @param iterator
+	 *            Iterator to be wrapped
+	 * @param clone
+	 *            true to clone iterator
+	 */
+	public Enumerator(Iterator<T> iterator, boolean clone) {
 
-    }
+		super();
+		if (!clone) {
+			this.iterator = iterator;
+		} else {
+			List<T> list = new ArrayList<T>();
+			while (iterator.hasNext()) {
+				list.add(iterator.next());
+			}
+			this.iterator = list.iterator();
+		}
 
+	}
 
-    /**
-     * Return an Enumeration over the values returned by the
-     * specified Iterator.
-     *
-     * @param iterator Iterator to be wrapped
-     * @param clone true to clone iterator
-     */
-    public Enumerator(Iterator<T> iterator, boolean clone) {
+	// ----------------------------------------------------- Instance Variables
 
-        super();
-        if (!clone) {
-            this.iterator = iterator;
-        } else {
-            List<T> list = new ArrayList<T>();
-            while (iterator.hasNext()) {
-                list.add(iterator.next());
-            }
-            this.iterator = list.iterator();   
-        }
+	/**
+	 * The <code>Iterator</code> over which the <code>Enumeration</code>
+	 * represented by this class actually operates.
+	 */
+	private Iterator<T> iterator = null;
 
-    }
+	// --------------------------------------------------------- Public Methods
 
+	/**
+	 * Tests if this enumeration contains more elements.
+	 *
+	 * @return <code>true</code> if and only if this enumeration object contains
+	 *         at least one more element to provide, <code>false</code>
+	 *         otherwise
+	 */
+	@Override
+	public boolean hasMoreElements() {
 
-    // ----------------------------------------------------- Instance Variables
+		return (iterator.hasNext());
 
+	}
 
-    /**
-     * The <code>Iterator</code> over which the <code>Enumeration</code>
-     * represented by this class actually operates.
-     */
-    private Iterator<T> iterator = null;
+	/**
+	 * Returns the next element of this enumeration if this enumeration has at
+	 * least one more element to provide.
+	 *
+	 * @return the next element of this enumeration
+	 *
+	 * @exception NoSuchElementException
+	 *                if no more elements exist
+	 */
+	@Override
+	public T nextElement() throws NoSuchElementException {
 
+		return (iterator.next());
 
-    // --------------------------------------------------------- Public Methods
-
-
-    /**
-     * Tests if this enumeration contains more elements.
-     *
-     * @return <code>true</code> if and only if this enumeration object
-     *  contains at least one more element to provide, <code>false</code>
-     *  otherwise
-     */
-    @Override
-    public boolean hasMoreElements() {
-
-        return (iterator.hasNext());
-
-    }
-
-
-    /**
-     * Returns the next element of this enumeration if this enumeration
-     * has at least one more element to provide.
-     *
-     * @return the next element of this enumeration
-     *
-     * @exception NoSuchElementException if no more elements exist
-     */
-    @Override
-    public T nextElement() throws NoSuchElementException {
-
-        return (iterator.next());
-
-    }
-
+	}
 
 }

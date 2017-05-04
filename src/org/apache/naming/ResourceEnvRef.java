@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.naming;
 
@@ -29,70 +28,64 @@ import javax.naming.Reference;
 
 public class ResourceEnvRef extends Reference {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    // -------------------------------------------------------------- Constants
+	// -------------------------------------------------------------- Constants
 
-    /**
-     * Default factory for this reference.
-     */
-    public static final String DEFAULT_FACTORY = 
-        org.apache.naming.factory.Constants.DEFAULT_RESOURCE_ENV_FACTORY;
+	/**
+	 * Default factory for this reference.
+	 */
+	public static final String DEFAULT_FACTORY = org.apache.naming.factory.Constants.DEFAULT_RESOURCE_ENV_FACTORY;
 
+	// ----------------------------------------------------------- Constructors
 
-    // ----------------------------------------------------------- Constructors
+	/**
+	 * Resource env reference.
+	 * 
+	 * @param resourceType
+	 *            Type
+	 */
+	public ResourceEnvRef(String resourceType) {
+		super(resourceType);
+	}
 
+	/**
+	 * Resource env reference.
+	 * 
+	 * @param resourceType
+	 *            Type
+	 * @param factory
+	 *            The factory class
+	 * @param factoryLocation
+	 *            The factory location
+	 */
+	public ResourceEnvRef(String resourceType, String factory, String factoryLocation) {
+		super(resourceType, factory, factoryLocation);
+	}
 
-    /**
-     * Resource env reference.
-     * 
-     * @param resourceType Type
-     */
-    public ResourceEnvRef(String resourceType) {
-        super(resourceType);
-    }
+	// ----------------------------------------------------- Instance Variables
 
+	// ------------------------------------------------------ Reference Methods
 
-    /**
-     * Resource env reference.
-     * 
-     * @param resourceType Type
-     * @param factory The factory class
-     * @param factoryLocation The factory location
-     */
-    public ResourceEnvRef(String resourceType, String factory,
-                          String factoryLocation) {
-        super(resourceType, factory, factoryLocation);
-    }
+	/**
+	 * Retrieves the class name of the factory of the object to which this
+	 * reference refers.
+	 */
+	@Override
+	public String getFactoryClassName() {
+		String factory = super.getFactoryClassName();
+		if (factory != null) {
+			return factory;
+		} else {
+			factory = System.getProperty(Context.OBJECT_FACTORIES);
+			if (factory != null) {
+				return null;
+			} else {
+				return DEFAULT_FACTORY;
+			}
+		}
+	}
 
-
-    // ----------------------------------------------------- Instance Variables
-
-
-    // ------------------------------------------------------ Reference Methods
-
-
-    /**
-     * Retrieves the class name of the factory of the object to which this 
-     * reference refers.
-     */
-    @Override
-    public String getFactoryClassName() {
-        String factory = super.getFactoryClassName();
-        if (factory != null) {
-            return factory;
-        } else {
-            factory = System.getProperty(Context.OBJECT_FACTORIES);
-            if (factory != null) {
-                return null;
-            } else {
-                return DEFAULT_FACTORY;
-            }
-        }
-    }
-
-
-    // ------------------------------------------------------------- Properties
-
+	// ------------------------------------------------------------- Properties
 
 }

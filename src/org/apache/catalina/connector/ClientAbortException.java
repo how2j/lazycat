@@ -19,79 +19,78 @@ package org.apache.catalina.connector;
 import java.io.IOException;
 
 /**
- * Wrap an IOException identifying it as being caused by an abort
- * of a request by a remote client.
+ * Wrap an IOException identifying it as being caused by an abort of a request
+ * by a remote client.
  *
  * @author Glenn L. Nielsen
  */
 public final class ClientAbortException extends IOException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
+	// ------------------------------------------------------------ Constructors
 
-    //------------------------------------------------------------ Constructors
+	/**
+	 * Construct a new ClientAbortException with no other information.
+	 */
+	public ClientAbortException() {
+		super();
+	}
 
-    /**
-     * Construct a new ClientAbortException with no other information.
-     */
-    public ClientAbortException() {
-        super();
-    }
+	/**
+	 * Construct a new ClientAbortException for the specified message.
+	 *
+	 * @param message
+	 *            Message describing this exception
+	 */
+	public ClientAbortException(String message) {
+		super(message);
+		this.message = getMessage();
+	}
 
+	/**
+	 * Construct a new ClientAbortException for the specified throwable.
+	 *
+	 * @param throwable
+	 *            Throwable that caused this exception
+	 */
+	public ClientAbortException(Throwable throwable) {
+		super(throwable);
+		this.message = getMessage();
+		this.throwable = throwable;
+	}
 
-    /**
-     * Construct a new ClientAbortException for the specified message.
-     *
-     * @param message Message describing this exception
-     */
-    public ClientAbortException(String message) {
-        super(message);
-        this.message = getMessage();
-    }
+	/**
+	 * Construct a new ClientAbortException for the specified message and
+	 * throwable.
+	 *
+	 * @param message
+	 *            Message describing this exception
+	 * @param throwable
+	 *            Throwable that caused this exception
+	 */
+	public ClientAbortException(String message, Throwable throwable) {
+		super(message, throwable);
+		this.message = getMessage();
+		this.throwable = throwable;
+	}
 
+	// ------------------------------------------------------ Instance Variables
 
-    /**
-     * Construct a new ClientAbortException for the specified throwable.
-     *
-     * @param throwable Throwable that caused this exception
-     */
-    public ClientAbortException(Throwable throwable) {
-        super(throwable);
-        this.message = getMessage();
-        this.throwable = throwable;
-    }
+	/**
+	 * The error message passed to our constructor (if any)
+	 * 
+	 * @deprecated Use {@link Throwable#getMessage()}
+	 */
+	@Deprecated
+	String message = null;
 
-
-    /**
-     * Construct a new ClientAbortException for the specified message
-     * and throwable.
-     *
-     * @param message Message describing this exception
-     * @param throwable Throwable that caused this exception
-     */
-    public ClientAbortException(String message, Throwable throwable) {
-        super(message, throwable);
-        this.message = getMessage();
-        this.throwable = throwable;
-    }
-
-
-    //------------------------------------------------------ Instance Variables
-
-
-    /**
-     * The error message passed to our constructor (if any)
-     * @deprecated Use {@link Throwable#getMessage()}
-     */
-    @Deprecated
-    String message = null;
-
-
-    /**
-     * The underlying exception or error passed to our constructor (if any)
-     * @deprecated Use {@link Throwable#getCause()}
-     */
-    @Deprecated
-    Throwable throwable = null;
+	/**
+	 * The underlying exception or error passed to our constructor (if any)
+	 * 
+	 * @deprecated Use {@link Throwable#getCause()}
+	 */
+	@Deprecated
+	Throwable throwable = null;
 
 }

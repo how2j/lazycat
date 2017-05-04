@@ -28,121 +28,110 @@ import org.apache.tomcat.util.res.StringManager;
 
 public class CometEventImpl implements CometEvent {
 
+	/**
+	 * The string manager for this package.
+	 */
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    /**
-     * The string manager for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+	public CometEventImpl(Request request, Response response) {
+		this.request = request;
+		this.response = response;
+	}
 
+	// ----------------------------------------------------- Instance Variables
 
-    public CometEventImpl(Request request, Response response) {
-        this.request = request;
-        this.response = response;
-    }
+	/**
+	 * Associated request.
+	 */
+	protected Request request = null;
 
+	/**
+	 * Associated response.
+	 */
+	protected Response response = null;
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * Event type.
+	 */
+	protected EventType eventType = EventType.BEGIN;
 
+	/**
+	 * Event sub type.
+	 */
+	protected EventSubType eventSubType = null;
 
-    /**
-     * Associated request.
-     */
-    protected Request request = null;
+	// --------------------------------------------------------- Public Methods
 
+	/**
+	 * Clear the event.
+	 */
+	public void clear() {
+		request = null;
+		response = null;
+	}
 
-    /**
-     * Associated response.
-     */
-    protected Response response = null;
+	public void setEventType(EventType eventType) {
+		this.eventType = eventType;
+	}
 
+	public void setEventSubType(EventSubType eventSubType) {
+		this.eventSubType = eventSubType;
+	}
 
-    /**
-     * Event type.
-     */
-    protected EventType eventType = EventType.BEGIN;
+	@Override
+	public void close() throws IOException {
+		if (request == null) {
+			throw new IllegalStateException(sm.getString("cometEvent.nullRequest"));
+		}
+		request.finishRequest();
+		response.finishResponse();
+		if (request.isComet()) {
+			request.cometClose();
+		}
+	}
 
+	@Override
+	public EventSubType getEventSubType() {
+		return eventSubType;
+	}
 
-    /**
-     * Event sub type.
-     */
-    protected EventSubType eventSubType = null;
+	@Override
+	public EventType getEventType() {
+		return eventType;
+	}
 
+	@Override
+	public HttpServletRequest getHttpServletRequest() {
+		return request.getRequest();
+	}
 
-    // --------------------------------------------------------- Public Methods
+	@Override
+	public HttpServletResponse getHttpServletResponse() {
+		return response.getResponse();
+	}
 
-    /**
-     * Clear the event.
-     */
-    public void clear() {
-        request = null;
-        response = null;
-    }
+	@Override
+	public void setTimeout(int timeout) throws IOException, ServletException, UnsupportedOperationException {
+		if (Boolean.TRUE.equals(request.getAttribute(Globals.COMET_TIMEOUT_SUPPORTED_ATTR))) {
+			request.setAttribute(Globals.COMET_TIMEOUT_ATTR, Integer.valueOf(timeout));
+			if (request.isComet()) {
+				request.setCometTimeout(timeout);
+			}
+		} else {
+			throw new UnsupportedOperationException();
+		}
+	}
 
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
-
-    public void setEventSubType(EventSubType eventSubType) {
-        this.eventSubType = eventSubType;
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (request == null) {
-            throw new IllegalStateException(sm.getString("cometEvent.nullRequest"));
-        }
-        request.finishRequest();
-        response.finishResponse();
-        if (request.isComet()) {
-            request.cometClose();
-        }
-    }
-
-    @Override
-    public EventSubType getEventSubType() {
-        return eventSubType;
-    }
-
-    @Override
-    public EventType getEventType() {
-        return eventType;
-    }
-
-    @Override
-    public HttpServletRequest getHttpServletRequest() {
-        return request.getRequest();
-    }
-
-    @Override
-    public HttpServletResponse getHttpServletResponse() {
-        return response.getResponse();
-    }
-
-    @Override
-    public void setTimeout(int timeout) throws IOException, ServletException,
-            UnsupportedOperationException {
-        if (Boolean.TRUE.equals(request.getAttribute(Globals.COMET_TIMEOUT_SUPPORTED_ATTR))) {
-            request.setAttribute(Globals.COMET_TIMEOUT_ATTR,
-                    Integer.valueOf(timeout));
-            if (request.isComet()) {
-                request.setCometTimeout(timeout);
-            }
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(super.toString());
-        buf.append("[EventType:");
-        buf.append(eventType);
-        buf.append(", EventSubType:");
-        buf.append(eventSubType);
-        buf.append("]");
-        return buf.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append(super.toString());
+		buf.append("[EventType:");
+		buf.append(eventType);
+		buf.append(", EventSubType:");
+		buf.append(eventSubType);
+		buf.append("]");
+		return buf.toString();
+	}
 
 }

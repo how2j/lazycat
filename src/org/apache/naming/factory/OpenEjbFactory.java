@@ -13,8 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.naming.factory;
 
@@ -38,54 +37,48 @@ import org.apache.naming.EjbRef;
  */
 public class OpenEjbFactory implements ObjectFactory {
 
+	// -------------------------------------------------------------- Constants
 
-    // -------------------------------------------------------------- Constants
+	protected static final String DEFAULT_OPENEJB_FACTORY = "org.openejb.client.LocalInitialContextFactory";
 
+	// -------------------------------------------------- ObjectFactory Methods
 
-    protected static final String DEFAULT_OPENEJB_FACTORY = 
-        "org.openejb.client.LocalInitialContextFactory";
+	/**
+	 * Create a new EJB instance using OpenEJB.
+	 * 
+	 * @param obj
+	 *            The reference object describing the DataSource
+	 */
+	@Override
+	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+			throws Exception {
 
+		Object beanObj = null;
 
-    // -------------------------------------------------- ObjectFactory Methods
+		if (obj instanceof EjbRef) {
 
+			Reference ref = (Reference) obj;
 
-    /**
-     * Create a new EJB instance using OpenEJB.
-     * 
-     * @param obj The reference object describing the DataSource
-     */
-    @Override
-    public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable<?,?> environment)
-        throws Exception {
+			String factory = DEFAULT_OPENEJB_FACTORY;
+			RefAddr factoryRefAddr = ref.get("openejb.factory");
+			if (factoryRefAddr != null) {
+				// Retrieving the OpenEJB factory
+				factory = factoryRefAddr.getContent().toString();
+			}
 
-        Object beanObj = null;
+			Properties env = new Properties();
+			env.put(Context.INITIAL_CONTEXT_FACTORY, factory);
 
-        if (obj instanceof EjbRef) {
+			RefAddr linkRefAddr = ref.get("openejb.link");
+			if (linkRefAddr != null) {
+				String ejbLink = linkRefAddr.getContent().toString();
+				beanObj = (new InitialContext(env)).lookup(ejbLink);
+			}
 
-            Reference ref = (Reference) obj;
+		}
 
-            String factory = DEFAULT_OPENEJB_FACTORY;
-            RefAddr factoryRefAddr = ref.get("openejb.factory");
-            if (factoryRefAddr != null) {
-                // Retrieving the OpenEJB factory
-                factory = factoryRefAddr.getContent().toString();
-            }
+		return beanObj;
 
-            Properties env = new Properties();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, factory);
-
-            RefAddr linkRefAddr = ref.get("openejb.link");
-            if (linkRefAddr != null) {
-                String ejbLink = linkRefAddr.getContent().toString();
-                beanObj = (new InitialContext(env)).lookup(ejbLink);
-            }
-
-        }
-
-        return beanObj;
-
-    }
-
+	}
 
 }

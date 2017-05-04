@@ -28,248 +28,248 @@ import org.apache.jasper.JasperException;
 /**
  * This class defines internal representation for an EL Expression
  *
- * It currently only defines functions.  It can be expanded to define
- * all the components of an EL expression, if need to.
+ * It currently only defines functions. It can be expanded to define all the
+ * components of an EL expression, if need to.
  *
  * @author Kin-man Chung
  */
 
 abstract class ELNode {
 
-    public abstract void accept(Visitor v) throws JasperException;
+	public abstract void accept(Visitor v) throws JasperException;
 
-    /**
-     * Child classes
-     */
+	/**
+	 * Child classes
+	 */
 
+	/**
+	 * Represents an EL expression: anything in ${ and }.
+	 */
+	public static class Root extends ELNode {
 
-    /**
-     * Represents an EL expression: anything in ${ and }.
-     */
-    public static class Root extends ELNode {
+		private final ELNode.Nodes expr;
+		private final char type;
 
-        private final ELNode.Nodes expr;
-        private final char type;
+		Root(ELNode.Nodes expr, char type) {
+			this.expr = expr;
+			this.type = type;
+		}
 
-        Root(ELNode.Nodes expr, char type) {
-            this.expr = expr;
-        this.type = type;
-        }
+		@Override
+		public void accept(Visitor v) throws JasperException {
+			v.visit(this);
+		}
 
-        @Override
-        public void accept(Visitor v) throws JasperException {
-            v.visit(this);
-        }
+		public ELNode.Nodes getExpression() {
+			return expr;
+		}
 
-        public ELNode.Nodes getExpression() {
-            return expr;
-        }
+		public char getType() {
+			return type;
+		}
+	}
 
-        public char getType() {
-            return type;
-        }
-    }
+	/**
+	 * Represents text outside of EL expression.
+	 */
+	public static class Text extends ELNode {
 
-    /**
-     * Represents text outside of EL expression.
-     */
-    public static class Text extends ELNode {
+		private final String text;
 
-        private final String text;
+		Text(String text) {
+			this.text = text;
+		}
 
-        Text(String text) {
-            this.text = text;
-        }
+		@Override
+		public void accept(Visitor v) throws JasperException {
+			v.visit(this);
+		}
 
-        @Override
-        public void accept(Visitor v) throws JasperException {
-            v.visit(this);
-        }
+		public String getText() {
+			return text;
+		}
+	}
 
-        public String getText() {
-            return text;
-        }
-    }
+	/**
+	 * Represents anything in EL expression, other than functions, including
+	 * function arguments etc
+	 */
+	public static class ELText extends ELNode {
 
-    /**
-     * Represents anything in EL expression, other than functions, including
-     * function arguments etc
-     */
-    public static class ELText extends ELNode {
+		private final String text;
 
-        private final String text;
+		ELText(String text) {
+			this.text = text;
+		}
 
-        ELText(String text) {
-            this.text = text;
-        }
+		@Override
+		public void accept(Visitor v) throws JasperException {
+			v.visit(this);
+		}
 
-        @Override
-        public void accept(Visitor v) throws JasperException {
-            v.visit(this);
-        }
+		public String getText() {
+			return text;
+		}
+	}
 
-        public String getText() {
-            return text;
-        }
-    }
+	/**
+	 * Represents a function Currently only include the prefix and function
+	 * name, but not its arguments.
+	 */
+	public static class Function extends ELNode {
 
-    /**
-     * Represents a function
-     * Currently only include the prefix and function name, but not its
-     * arguments.
-     */
-    public static class Function extends ELNode {
+		private final String prefix;
+		private final String name;
+		private final String originalText;
+		private String uri;
+		private FunctionInfo functionInfo;
+		private String methodName;
+		private String[] parameters;
 
-        private final String prefix;
-        private final String name;
-        private final String originalText;
-        private String uri;
-        private FunctionInfo functionInfo;
-        private String methodName;
-        private String[] parameters;
+		Function(String prefix, String name, String originalText) {
+			this.prefix = prefix;
+			this.name = name;
+			this.originalText = originalText;
+		}
 
-        Function(String prefix, String name, String originalText) {
-            this.prefix = prefix;
-            this.name = name;
-            this.originalText = originalText;
-        }
+		@Override
+		public void accept(Visitor v) throws JasperException {
+			v.visit(this);
+		}
 
-        @Override
-        public void accept(Visitor v) throws JasperException {
-            v.visit(this);
-        }
+		public String getPrefix() {
+			return prefix;
+		}
 
-        public String getPrefix() {
-            return prefix;
-        }
+		public String getName() {
+			return name;
+		}
 
-        public String getName() {
-            return name;
-        }
+		public String getOriginalText() {
+			return originalText;
+		}
 
-        public String getOriginalText() {
-            return originalText;
-        }
+		public void setUri(String uri) {
+			this.uri = uri;
+		}
 
-        public void setUri(String uri) {
-            this.uri = uri;
-        }
+		public String getUri() {
+			return uri;
+		}
 
-        public String getUri() {
-            return uri;
-        }
+		public void setFunctionInfo(FunctionInfo f) {
+			this.functionInfo = f;
+		}
 
-        public void setFunctionInfo(FunctionInfo f) {
-            this.functionInfo = f;
-        }
+		public FunctionInfo getFunctionInfo() {
+			return functionInfo;
+		}
 
-        public FunctionInfo getFunctionInfo() {
-            return functionInfo;
-        }
+		public void setMethodName(String methodName) {
+			this.methodName = methodName;
+		}
 
-        public void setMethodName(String methodName) {
-            this.methodName = methodName;
-        }
+		public String getMethodName() {
+			return methodName;
+		}
 
-        public String getMethodName() {
-            return methodName;
-        }
+		public void setParameters(String[] parameters) {
+			this.parameters = parameters;
+		}
 
-        public void setParameters(String[] parameters) {
-            this.parameters = parameters;
-        }
+		public String[] getParameters() {
+			return parameters;
+		}
+	}
 
-        public String[] getParameters() {
-            return parameters;
-        }
-    }
+	/**
+	 * An ordered list of ELNode.
+	 */
+	public static class Nodes {
 
-    /**
-     * An ordered list of ELNode.
-     */
-    public static class Nodes {
+		/*
+		 * Name used for creating a map for the functions in this EL expression,
+		 * for communication to Generator.
+		 */
+		String mapName = null; // The function map associated this EL
+		private final List<ELNode> list;
 
-        /* Name used for creating a map for the functions in this
-           EL expression, for communication to Generator.
-         */
-        String mapName = null;        // The function map associated this EL
-        private final List<ELNode> list;
+		public Nodes() {
+			list = new ArrayList<ELNode>();
+		}
 
-        public Nodes() {
-            list = new ArrayList<ELNode>();
-        }
+		public void add(ELNode en) {
+			list.add(en);
+		}
 
-        public void add(ELNode en) {
-            list.add(en);
-        }
+		/**
+		 * Visit the nodes in the list with the supplied visitor
+		 * 
+		 * @param v
+		 *            The visitor used
+		 */
+		public void visit(Visitor v) throws JasperException {
+			Iterator<ELNode> iter = list.iterator();
+			while (iter.hasNext()) {
+				ELNode n = iter.next();
+				n.accept(v);
+			}
+		}
 
-        /**
-         * Visit the nodes in the list with the supplied visitor
-         * @param v The visitor used
-         */
-        public void visit(Visitor v) throws JasperException {
-            Iterator<ELNode> iter = list.iterator();
-            while (iter.hasNext()) {
-                ELNode n = iter.next();
-                n.accept(v);
-            }
-        }
+		public Iterator<ELNode> iterator() {
+			return list.iterator();
+		}
 
-        public Iterator<ELNode> iterator() {
-            return list.iterator();
-        }
+		public boolean isEmpty() {
+			return list.size() == 0;
+		}
 
-        public boolean isEmpty() {
-            return list.size() == 0;
-        }
+		/**
+		 * @return true if the expression contains a ${...}
+		 */
+		public boolean containsEL() {
+			Iterator<ELNode> iter = list.iterator();
+			while (iter.hasNext()) {
+				ELNode n = iter.next();
+				if (n instanceof Root) {
+					return true;
+				}
+			}
+			return false;
+		}
 
-        /**
-         * @return true if the expression contains a ${...}
-         */
-        public boolean containsEL() {
-            Iterator<ELNode> iter = list.iterator();
-            while (iter.hasNext()) {
-                ELNode n = iter.next();
-                if (n instanceof Root) {
-                    return true;
-                }
-            }
-            return false;
-        }
+		public void setMapName(String name) {
+			this.mapName = name;
+		}
 
-        public void setMapName(String name) {
-            this.mapName = name;
-        }
+		public String getMapName() {
+			return mapName;
+		}
 
-        public String getMapName() {
-            return mapName;
-        }
-    
-    }
+	}
 
-    /*
-     * A visitor class for traversing ELNodes
-     */
-    public static class Visitor {
+	/*
+	 * A visitor class for traversing ELNodes
+	 */
+	public static class Visitor {
 
-        public void visit(Root n) throws JasperException {
-            n.getExpression().visit(this);
-        }
+		public void visit(Root n) throws JasperException {
+			n.getExpression().visit(this);
+		}
 
-        @SuppressWarnings("unused")
-        public void visit(Function n) throws JasperException {
-            // NOOP by default
-        }
+		@SuppressWarnings("unused")
+		public void visit(Function n) throws JasperException {
+			// NOOP by default
+		}
 
-        @SuppressWarnings("unused")
-        public void visit(Text n) throws JasperException {
-            // NOOP by default
-        }
+		@SuppressWarnings("unused")
+		public void visit(Text n) throws JasperException {
+			// NOOP by default
+		}
 
-        @SuppressWarnings("unused")
-        public void visit(ELText n) throws JasperException {
-            // NOOP by default
-        }
-    }
+		@SuppressWarnings("unused")
+		public void visit(ELText n) throws JasperException {
+			// NOOP by default
+		}
+	}
 }
-

@@ -32,9 +32,9 @@ import java.lang.annotation.Target;
 @SuppressWarnings("rawtypes") // Spec API does not use generics
 public @interface HandlesTypes {
 
-    /**
-     * @return array of classes
-     */
-    Class[] value();
+	/**
+	 * @return array of classes
+	 */
+	Class[] value();
 
 }

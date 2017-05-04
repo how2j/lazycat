@@ -20,9 +20,9 @@ import javax.el.MethodNotFoundException;
 
 public class JspMethodNotFoundException extends MethodNotFoundException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public JspMethodNotFoundException(String mark, MethodNotFoundException e) {
-        super(mark + " " + e.getMessage(), e.getCause());
-    }
+	public JspMethodNotFoundException(String mark, MethodNotFoundException e) {
+		super(mark + " " + e.getMessage(), e.getCause());
+	}
 }

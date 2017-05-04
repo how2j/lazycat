@@ -31,51 +31,46 @@ import org.xml.sax.SAXParseException;
 @Deprecated
 public class XmlErrorHandler implements ErrorHandler {
 
-    private static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+	private static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    private Set<SAXParseException> errors =
-        new HashSet<SAXParseException>();
-    
-    private Set<SAXParseException> warnings =
-        new HashSet<SAXParseException>();
+	private Set<SAXParseException> errors = new HashSet<SAXParseException>();
 
-    @Override
-    public void error(SAXParseException exception) throws SAXException {
-        // Collect non-fatal errors
-        errors.add(exception);
-    }
+	private Set<SAXParseException> warnings = new HashSet<SAXParseException>();
 
-    @Override
-    public void fatalError(SAXParseException exception) throws SAXException {
-        // Re-throw fatal errors
-        throw exception;
-    }
+	@Override
+	public void error(SAXParseException exception) throws SAXException {
+		// Collect non-fatal errors
+		errors.add(exception);
+	}
 
-    @Override
-    public void warning(SAXParseException exception) throws SAXException {
-        // Collect warnings
-        warnings.add(exception);
-    }
-    
-    public Set<SAXParseException> getErrors() {
-        // Internal use only - don't worry about immutability
-        return errors;
-    }
-    
-    public Set<SAXParseException> getWarnings() {
-        // Internal use only - don't worry about immutability
-        return warnings;
-    }
+	@Override
+	public void fatalError(SAXParseException exception) throws SAXException {
+		// Re-throw fatal errors
+		throw exception;
+	}
 
-    public void logFindings(Log log, String source) {
-        for (SAXParseException e : getWarnings()) {
-            log.warn(sm.getString(
-                    "xmlErrorHandler.warning", e.getMessage(), source));
-        }
-        for (SAXParseException e : getErrors()) {
-            log.warn(sm.getString(
-                    "xmlErrorHandler.error", e.getMessage(), source));
-        }
-    }
+	@Override
+	public void warning(SAXParseException exception) throws SAXException {
+		// Collect warnings
+		warnings.add(exception);
+	}
+
+	public Set<SAXParseException> getErrors() {
+		// Internal use only - don't worry about immutability
+		return errors;
+	}
+
+	public Set<SAXParseException> getWarnings() {
+		// Internal use only - don't worry about immutability
+		return warnings;
+	}
+
+	public void logFindings(Log log, String source) {
+		for (SAXParseException e : getWarnings()) {
+			log.warn(sm.getString("xmlErrorHandler.warning", e.getMessage(), source));
+		}
+		for (SAXParseException e : getErrors()) {
+			log.warn(sm.getString("xmlErrorHandler.error", e.getMessage(), source));
+		}
+	}
 }

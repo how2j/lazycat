@@ -26,43 +26,47 @@ import org.apache.tomcat.util.net.SSLSupport;
 import org.apache.tomcat.util.net.SocketStatus;
 import org.apache.tomcat.util.net.SocketWrapper;
 
-
 /**
  * Common interface for processors of all protocols.
  */
 public interface Processor<S> {
-    Executor getExecutor();
+	Executor getExecutor();
 
-    SocketState process(SocketWrapper<S> socketWrapper) throws IOException;
+	SocketState process(SocketWrapper<S> socketWrapper) throws IOException;
 
-    SocketState event(SocketStatus status) throws IOException;
+	SocketState event(SocketStatus status) throws IOException;
 
-    SocketState asyncDispatch(SocketStatus status);
-    SocketState asyncPostProcess();
+	SocketState asyncDispatch(SocketStatus status);
 
-    /**
-     * @deprecated  Will be removed in Tomcat 8.0.x.
-     */
-    @Deprecated
-    org.apache.coyote.http11.upgrade.UpgradeInbound getUpgradeInbound();
-    /**
-     * @deprecated  Will be removed in Tomcat 8.0.x.
-     */
-    @Deprecated
-    SocketState upgradeDispatch() throws IOException;
+	SocketState asyncPostProcess();
 
-    HttpUpgradeHandler getHttpUpgradeHandler();
-    SocketState upgradeDispatch(SocketStatus status) throws IOException;
-    
-    void errorDispatch();
+	/**
+	 * @deprecated Will be removed in Tomcat 8.0.x.
+	 */
+	@Deprecated
+	org.apache.coyote.http11.upgrade.UpgradeInbound getUpgradeInbound();
 
-    boolean isComet();
-    boolean isAsync();
-    boolean isUpgrade();
+	/**
+	 * @deprecated Will be removed in Tomcat 8.0.x.
+	 */
+	@Deprecated
+	SocketState upgradeDispatch() throws IOException;
 
-    Request getRequest();
+	HttpUpgradeHandler getHttpUpgradeHandler();
 
-    void recycle(boolean socketClosing);
+	SocketState upgradeDispatch(SocketStatus status) throws IOException;
 
-    void setSslSupport(SSLSupport sslSupport);
+	void errorDispatch();
+
+	boolean isComet();
+
+	boolean isAsync();
+
+	boolean isUpgrade();
+
+	Request getRequest();
+
+	void recycle(boolean socketClosing);
+
+	void setSslSupport(SSLSupport sslSupport);
 }

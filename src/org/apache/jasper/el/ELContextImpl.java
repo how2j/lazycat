@@ -41,101 +41,100 @@ import org.apache.jasper.Constants;
  */
 public class ELContextImpl extends ELContext {
 
-    private static final FunctionMapper NullFunctionMapper = new FunctionMapper() {
-        @Override
-        public Method resolveFunction(String prefix, String localName) {
-            return null;
-        }
-    };
+	private static final FunctionMapper NullFunctionMapper = new FunctionMapper() {
+		@Override
+		public Method resolveFunction(String prefix, String localName) {
+			return null;
+		}
+	};
 
-    private static final class VariableMapperImpl extends VariableMapper {
+	private static final class VariableMapperImpl extends VariableMapper {
 
-        private Map<String, ValueExpression> vars;
+		private Map<String, ValueExpression> vars;
 
-        @Override
-        public ValueExpression resolveVariable(String variable) {
-            if (vars == null) {
-                return null;
-            }
-            return vars.get(variable);
-        }
+		@Override
+		public ValueExpression resolveVariable(String variable) {
+			if (vars == null) {
+				return null;
+			}
+			return vars.get(variable);
+		}
 
-        @Override
-        public ValueExpression setVariable(String variable,
-                ValueExpression expression) {
-            if (vars == null)
-                vars = new HashMap<String, ValueExpression>();
-            return vars.put(variable, expression);
-        }
+		@Override
+		public ValueExpression setVariable(String variable, ValueExpression expression) {
+			if (vars == null)
+				vars = new HashMap<String, ValueExpression>();
+			return vars.put(variable, expression);
+		}
 
-    }
+	}
 
-    private static final ELResolver DefaultResolver;
+	private static final ELResolver DefaultResolver;
 
-    static {
-        if (Constants.IS_SECURITY_ENABLED) {
-            DefaultResolver = null;
-        } else {
-            DefaultResolver = new CompositeELResolver();
-            ((CompositeELResolver) DefaultResolver).add(new MapELResolver());
-            ((CompositeELResolver) DefaultResolver).add(new ResourceBundleELResolver());
-            ((CompositeELResolver) DefaultResolver).add(new ListELResolver());
-            ((CompositeELResolver) DefaultResolver).add(new ArrayELResolver());
-            ((CompositeELResolver) DefaultResolver).add(new BeanELResolver());
-        }
-    }
+	static {
+		if (Constants.IS_SECURITY_ENABLED) {
+			DefaultResolver = null;
+		} else {
+			DefaultResolver = new CompositeELResolver();
+			((CompositeELResolver) DefaultResolver).add(new MapELResolver());
+			((CompositeELResolver) DefaultResolver).add(new ResourceBundleELResolver());
+			((CompositeELResolver) DefaultResolver).add(new ListELResolver());
+			((CompositeELResolver) DefaultResolver).add(new ArrayELResolver());
+			((CompositeELResolver) DefaultResolver).add(new BeanELResolver());
+		}
+	}
 
-    private final ELResolver resolver;
+	private final ELResolver resolver;
 
-    private FunctionMapper functionMapper = NullFunctionMapper;
+	private FunctionMapper functionMapper = NullFunctionMapper;
 
-    private VariableMapper variableMapper;
+	private VariableMapper variableMapper;
 
-    public ELContextImpl() {
-        this(getDefaultResolver());
-    }
+	public ELContextImpl() {
+		this(getDefaultResolver());
+	}
 
-    public ELContextImpl(ELResolver resolver) {
-        this.resolver = resolver;
-    }
+	public ELContextImpl(ELResolver resolver) {
+		this.resolver = resolver;
+	}
 
-    @Override
-    public ELResolver getELResolver() {
-        return this.resolver;
-    }
+	@Override
+	public ELResolver getELResolver() {
+		return this.resolver;
+	}
 
-    @Override
-    public FunctionMapper getFunctionMapper() {
-        return this.functionMapper;
-    }
+	@Override
+	public FunctionMapper getFunctionMapper() {
+		return this.functionMapper;
+	}
 
-    @Override
-    public VariableMapper getVariableMapper() {
-        if (this.variableMapper == null) {
-            this.variableMapper = new VariableMapperImpl();
-        }
-        return this.variableMapper;
-    }
+	@Override
+	public VariableMapper getVariableMapper() {
+		if (this.variableMapper == null) {
+			this.variableMapper = new VariableMapperImpl();
+		}
+		return this.variableMapper;
+	}
 
-    public void setFunctionMapper(FunctionMapper functionMapper) {
-        this.functionMapper = functionMapper;
-    }
+	public void setFunctionMapper(FunctionMapper functionMapper) {
+		this.functionMapper = functionMapper;
+	}
 
-    public void setVariableMapper(VariableMapper variableMapper) {
-        this.variableMapper = variableMapper;
-    }
+	public void setVariableMapper(VariableMapper variableMapper) {
+		this.variableMapper = variableMapper;
+	}
 
-    public static ELResolver getDefaultResolver() {
-        if (Constants.IS_SECURITY_ENABLED) {
-            CompositeELResolver defaultResolver = new CompositeELResolver();
-            defaultResolver.add(new MapELResolver());
-            defaultResolver.add(new ResourceBundleELResolver());
-            defaultResolver.add(new ListELResolver());
-            defaultResolver.add(new ArrayELResolver());
-            defaultResolver.add(new BeanELResolver());
-            return defaultResolver;
-        } else {
-            return DefaultResolver;
-        }
-    }
+	public static ELResolver getDefaultResolver() {
+		if (Constants.IS_SECURITY_ENABLED) {
+			CompositeELResolver defaultResolver = new CompositeELResolver();
+			defaultResolver.add(new MapELResolver());
+			defaultResolver.add(new ResourceBundleELResolver());
+			defaultResolver.add(new ListELResolver());
+			defaultResolver.add(new ArrayELResolver());
+			defaultResolver.add(new BeanELResolver());
+			return defaultResolver;
+		} else {
+			return DefaultResolver;
+		}
+	}
 }

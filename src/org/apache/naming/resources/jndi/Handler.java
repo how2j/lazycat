@@ -13,20 +13,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
+ */
 package org.apache.naming.resources.jndi;
 
 import org.apache.naming.resources.DirContextURLStreamHandler;
 
 /**
- * Stream handler to a JNDI directory context. For use when
- * embedding Tomcat and the embedding application has already set its own
+ * Stream handler to a JNDI directory context. For use when embedding Tomcat and
+ * the embedding application has already set its own
  * {@link java.net.URLStreamHandlerFactory} and the Tomcat jndi handler needs to
  * be registered via the java.protocol.handler.pkgs system property.
  */
 public class Handler extends DirContextURLStreamHandler {
-    
-    public Handler() {
-        // NOOP
-    }
+
+	public Handler() {
+		// NOOP
+	}
 }

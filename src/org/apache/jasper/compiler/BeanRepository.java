@@ -16,58 +16,53 @@
  */
 package org.apache.jasper.compiler;
 
-
 import java.util.HashMap;
 
 import org.apache.jasper.JasperException;
 
 /**
- * Repository of {page, request, session, application}-scoped beans 
+ * Repository of {page, request, session, application}-scoped beans
  *
  * @author Mandar Raje
  * @author Remy Maucherat
  */
 public class BeanRepository {
 
-    protected HashMap<String, String> beanTypes;
-    protected ClassLoader loader;
-    protected ErrorDispatcher errDispatcher;
+	protected HashMap<String, String> beanTypes;
+	protected ClassLoader loader;
+	protected ErrorDispatcher errDispatcher;
 
-    /**
-     * Constructor.
-     */    
-    public BeanRepository(ClassLoader loader, ErrorDispatcher err) {
-        this.loader = loader;
-        this.errDispatcher = err;
-        beanTypes = new HashMap<String, String>();
-    }
+	/**
+	 * Constructor.
+	 */
+	public BeanRepository(ClassLoader loader, ErrorDispatcher err) {
+		this.loader = loader;
+		this.errDispatcher = err;
+		beanTypes = new HashMap<String, String>();
+	}
 
-    public void addBean(Node.UseBean n, String s, String type, String scope)
-        throws JasperException {
+	public void addBean(Node.UseBean n, String s, String type, String scope) throws JasperException {
 
-        if (!(scope == null || scope.equals("page") || scope.equals("request") 
-                || scope.equals("session") || scope.equals("application"))) {
-            errDispatcher.jspError(n, "jsp.error.usebean.badScope");
-        }
+		if (!(scope == null || scope.equals("page") || scope.equals("request") || scope.equals("session")
+				|| scope.equals("application"))) {
+			errDispatcher.jspError(n, "jsp.error.usebean.badScope");
+		}
 
-        beanTypes.put(s, type);
-    }
-            
-    public Class<?> getBeanType(String bean)
-        throws JasperException {
-        Class<?> clazz = null;
-        try {
-            clazz = loader.loadClass(beanTypes.get(bean));
-        } catch (ClassNotFoundException ex) {
-            throw new JasperException (ex);
-        }
-        return clazz;
-    }
-      
-    public boolean checkVariable(String bean) {
-        return beanTypes.containsKey(bean);
-    }
+		beanTypes.put(s, type);
+	}
+
+	public Class<?> getBeanType(String bean) throws JasperException {
+		Class<?> clazz = null;
+		try {
+			clazz = loader.loadClass(beanTypes.get(bean));
+		} catch (ClassNotFoundException ex) {
+			throw new JasperException(ex);
+		}
+		return clazz;
+	}
+
+	public boolean checkVariable(String bean) {
+		return beanTypes.containsKey(bean);
+	}
 
 }
-
-

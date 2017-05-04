@@ -23,32 +23,31 @@ import java.io.IOException;
 import org.apache.tomcat.util.bcel.Const;
 
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a long object.
+ * This class is derived from the abstract {@link Constant} and represents a
+ * reference to a long object.
  *
- * @see     Constant
+ * @see Constant
  */
 public final class ConstantLong extends Constant {
 
-    private final long bytes;
+	private final long bytes;
 
+	/**
+	 * Initialize instance from file data.
+	 *
+	 * @param file
+	 *            Input stream
+	 * @throws IOException
+	 */
+	ConstantLong(final DataInput input) throws IOException {
+		super(Const.CONSTANT_Long);
+		this.bytes = input.readLong();
+	}
 
-    /**
-     * Initialize instance from file data.
-     *
-     * @param file Input stream
-     * @throws IOException
-     */
-    ConstantLong(final DataInput input) throws IOException {
-        super(Const.CONSTANT_Long);
-        this.bytes = input.readLong();
-    }
-
-
-    /**
-     * @return data, i.e., 8 bytes.
-     */
-    public final long getBytes() {
-        return bytes;
-    }
+	/**
+	 * @return data, i.e., 8 bytes.
+	 */
+	public final long getBytes() {
+		return bytes;
+	}
 }

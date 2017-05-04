@@ -19,72 +19,74 @@ package javax.servlet;
 /**
  * 
  * TODO SERVLET3 - Add comments
+ * 
  * @since Servlet 3.0
  */
 public interface SessionCookieConfig {
-    
-    /**
-     * 
-     * @param name
-     * @throws IllegalStateException
-     */
-    public void setName(String name);
-    
-    public String getName();
-    
-    /**
-     * 
-     * @param domain
-     * @throws IllegalStateException
-     */
-    public void setDomain(String domain);
-    
-    public String getDomain();
-    
-    /**
-     * 
-     * @param path
-     * @throws IllegalStateException
-     */
-    public void setPath(String path);
-    
-    public String getPath();
-    
-    /**
-     * 
-     * @param comment
-     * @throws IllegalStateException
-     */
-    public void setComment(String comment);
-    
-    public String getComment();
-    
-    /**
-     * 
-     * @param httpOnly
-     * @throws IllegalStateException
-     */
-    public void setHttpOnly(boolean httpOnly);
-    
-    public boolean isHttpOnly();
-    
-    /**
-     * 
-     * @param secure
-     * @throws IllegalStateException
-     */
-    public void setSecure(boolean secure);
-    
-    public boolean isSecure();
 
-    /**
-     * Sets the maximum age.
-     * 
-     * @param MaxAge the maximum age to set
-     * @throws IllegalStateException
-     */
-    public void setMaxAge(int MaxAge);
-    
-    public int getMaxAge();
-    
+	/**
+	 * 
+	 * @param name
+	 * @throws IllegalStateException
+	 */
+	public void setName(String name);
+
+	public String getName();
+
+	/**
+	 * 
+	 * @param domain
+	 * @throws IllegalStateException
+	 */
+	public void setDomain(String domain);
+
+	public String getDomain();
+
+	/**
+	 * 
+	 * @param path
+	 * @throws IllegalStateException
+	 */
+	public void setPath(String path);
+
+	public String getPath();
+
+	/**
+	 * 
+	 * @param comment
+	 * @throws IllegalStateException
+	 */
+	public void setComment(String comment);
+
+	public String getComment();
+
+	/**
+	 * 
+	 * @param httpOnly
+	 * @throws IllegalStateException
+	 */
+	public void setHttpOnly(boolean httpOnly);
+
+	public boolean isHttpOnly();
+
+	/**
+	 * 
+	 * @param secure
+	 * @throws IllegalStateException
+	 */
+	public void setSecure(boolean secure);
+
+	public boolean isSecure();
+
+	/**
+	 * Sets the maximum age.
+	 * 
+	 * @param MaxAge
+	 *            the maximum age to set
+	 * @throws IllegalStateException
+	 */
+	public void setMaxAge(int MaxAge);
+
+	public int getMaxAge();
+
 }

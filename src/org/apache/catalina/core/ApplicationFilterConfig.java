@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.core;
-
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -46,365 +44,345 @@ import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.modeler.Util;
 import org.apache.tomcat.util.res.StringManager;
 
-
 /**
  * Implementation of a <code>javax.servlet.FilterConfig</code> useful in
- * managing the filter instances instantiated when a web application
- * is first started.
+ * managing the filter instances instantiated when a web application is first
+ * started.
  *
  * @author Craig R. McClanahan
  */
 public final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+	static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    private static final org.apache.juli.logging.Log log =
-        LogFactory.getLog(ApplicationFilterConfig.class);
+	private static final org.apache.juli.logging.Log log = LogFactory.getLog(ApplicationFilterConfig.class);
 
-    /**
-     * Empty String collection to serve as the basis for empty enumerations.
-     */
-    private static final List<String> emptyString = Collections.emptyList();
+	/**
+	 * Empty String collection to serve as the basis for empty enumerations.
+	 */
+	private static final List<String> emptyString = Collections.emptyList();
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
+	/**
+	 * Construct a new ApplicationFilterConfig for the specified filter
+	 * definition.
+	 *
+	 * @param context
+	 *            The context with which we are associated
+	 * @param filterDef
+	 *            Filter definition for which a FilterConfig is to be
+	 *            constructed
+	 *
+	 * @exception ClassCastException
+	 *                if the specified class does not implement the
+	 *                <code>javax.servlet.Filter</code> interface
+	 * @exception ClassNotFoundException
+	 *                if the filter class cannot be found
+	 * @exception IllegalAccessException
+	 *                if the filter class cannot be publicly instantiated
+	 * @exception InstantiationException
+	 *                if an exception occurs while instantiating the filter
+	 *                object
+	 * @exception ServletException
+	 *                if thrown by the filter's init() method
+	 * @throws NamingException
+	 * @throws InvocationTargetException
+	 */
+	ApplicationFilterConfig(Context context, FilterDef filterDef)
+			throws ClassCastException, ClassNotFoundException, IllegalAccessException, InstantiationException,
+			ServletException, InvocationTargetException, NamingException {
 
-    /**
-     * Construct a new ApplicationFilterConfig for the specified filter
-     * definition.
-     *
-     * @param context The context with which we are associated
-     * @param filterDef Filter definition for which a FilterConfig is to be
-     *  constructed
-     *
-     * @exception ClassCastException if the specified class does not implement
-     *  the <code>javax.servlet.Filter</code> interface
-     * @exception ClassNotFoundException if the filter class cannot be found
-     * @exception IllegalAccessException if the filter class cannot be
-     *  publicly instantiated
-     * @exception InstantiationException if an exception occurs while
-     *  instantiating the filter object
-     * @exception ServletException if thrown by the filter's init() method
-     * @throws NamingException
-     * @throws InvocationTargetException
-     */
-    ApplicationFilterConfig(Context context, FilterDef filterDef)
-        throws ClassCastException, ClassNotFoundException,
-               IllegalAccessException, InstantiationException,
-               ServletException, InvocationTargetException, NamingException {
+		super();
 
-        super();
+		this.context = context;
+		this.filterDef = filterDef;
+		// Allocate a new filter instance if necessary
+		if (filterDef.getFilter() == null) {
+			getFilter();
+		} else {
+			this.filter = filterDef.getFilter();
+			getInstanceManager().newInstance(filter);
+			initFilter();
+		}
+	}
 
-        this.context = context;
-        this.filterDef = filterDef;
-        // Allocate a new filter instance if necessary
-        if (filterDef.getFilter() == null) {
-            getFilter();
-        } else {
-            this.filter = filterDef.getFilter();
-            getInstanceManager().newInstance(filter);
-            initFilter();
-        }
-    }
+	// ----------------------------------------------------- Instance Variables
 
+	/**
+	 * The Context with which we are associated.
+	 */
+	private transient Context context = null;
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * The application Filter we are configured for.
+	 */
+	private transient Filter filter = null;
 
+	/**
+	 * The <code>FilterDef</code> that defines our associated Filter.
+	 */
+	private final FilterDef filterDef;
 
-    /**
-     * The Context with which we are associated.
-     */
-    private transient Context context = null;
+	/**
+	 * the InstanceManager used to create and destroy filter instances.
+	 */
+	private transient InstanceManager instanceManager;
 
+	/**
+	 * JMX registration name
+	 */
+	private ObjectName oname;
 
-    /**
-     * The application Filter we are configured for.
-     */
-    private transient Filter filter = null;
+	// --------------------------------------------------- FilterConfig Methods
 
+	/**
+	 * Return the name of the filter we are configuring.
+	 */
+	@Override
+	public String getFilterName() {
+		return (filterDef.getFilterName());
+	}
 
-    /**
-     * The <code>FilterDef</code> that defines our associated Filter.
-     */
-    private final FilterDef filterDef;
+	/**
+	 * Return the class of the filter we are configuring.
+	 */
+	public String getFilterClass() {
+		return filterDef.getFilterClass();
+	}
 
-    /**
-     * the InstanceManager used to create and destroy filter instances.
-     */
-    private transient InstanceManager instanceManager;
+	/**
+	 * Return a <code>String</code> containing the value of the named
+	 * initialization parameter, or <code>null</code> if the parameter does not
+	 * exist.
+	 *
+	 * @param name
+	 *            Name of the requested initialization parameter
+	 */
+	@Override
+	public String getInitParameter(String name) {
 
-    /**
-     * JMX registration name
-     */
-    private ObjectName oname;
+		Map<String, String> map = filterDef.getParameterMap();
+		if (map == null) {
+			return (null);
+		}
 
-    // --------------------------------------------------- FilterConfig Methods
+		return map.get(name);
 
+	}
 
-    /**
-     * Return the name of the filter we are configuring.
-     */
-    @Override
-    public String getFilterName() {
-        return (filterDef.getFilterName());
-    }
+	/**
+	 * Return an <code>Enumeration</code> of the names of the initialization
+	 * parameters for this Filter.
+	 */
+	@Override
+	public Enumeration<String> getInitParameterNames() {
+		Map<String, String> map = filterDef.getParameterMap();
 
-    /**
-     * Return the class of the filter we are configuring.
-     */
-    public String getFilterClass() {
-        return filterDef.getFilterClass();
-    }
+		if (map == null) {
+			return Collections.enumeration(emptyString);
+		}
 
-    /**
-     * Return a <code>String</code> containing the value of the named
-     * initialization parameter, or <code>null</code> if the parameter
-     * does not exist.
-     *
-     * @param name Name of the requested initialization parameter
-     */
-    @Override
-    public String getInitParameter(String name) {
+		return Collections.enumeration(map.keySet());
+	}
 
-        Map<String,String> map = filterDef.getParameterMap();
-        if (map == null) {
-            return (null);
-        }
+	/**
+	 * Return the ServletContext of our associated web application.
+	 */
+	@Override
+	public ServletContext getServletContext() {
 
-        return map.get(name);
+		return this.context.getServletContext();
 
-    }
+	}
 
+	/**
+	 * Return a String representation of this object.
+	 */
+	@Override
+	public String toString() {
 
-    /**
-     * Return an <code>Enumeration</code> of the names of the initialization
-     * parameters for this Filter.
-     */
-    @Override
-    public Enumeration<String> getInitParameterNames() {
-        Map<String,String> map = filterDef.getParameterMap();
-        
-        if (map == null) {
-            return Collections.enumeration(emptyString);
-        }
+		StringBuilder sb = new StringBuilder("ApplicationFilterConfig[");
+		sb.append("name=");
+		sb.append(filterDef.getFilterName());
+		sb.append(", filterClass=");
+		sb.append(filterDef.getFilterClass());
+		sb.append("]");
+		return (sb.toString());
 
-        return Collections.enumeration(map.keySet());
-    }
+	}
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * Return the ServletContext of our associated web application.
-     */
-    @Override
-    public ServletContext getServletContext() {
+	public Map<String, String> getFilterInitParameterMap() {
+		return Collections.unmodifiableMap(filterDef.getParameterMap());
+	}
 
-        return this.context.getServletContext();
+	// -------------------------------------------------------- Package Methods
 
-    }
+	/**
+	 * Return the application Filter we are configured for.
+	 *
+	 * @exception ClassCastException
+	 *                if the specified class does not implement the
+	 *                <code>javax.servlet.Filter</code> interface
+	 * @exception ClassNotFoundException
+	 *                if the filter class cannot be found
+	 * @exception IllegalAccessException
+	 *                if the filter class cannot be publicly instantiated
+	 * @exception InstantiationException
+	 *                if an exception occurs while instantiating the filter
+	 *                object
+	 * @exception ServletException
+	 *                if thrown by the filter's init() method
+	 * @throws NamingException
+	 * @throws InvocationTargetException
+	 */
+	Filter getFilter() throws ClassCastException, ClassNotFoundException, IllegalAccessException,
+			InstantiationException, ServletException, InvocationTargetException, NamingException {
 
+		// Return the existing filter instance, if any
+		if (this.filter != null)
+			return (this.filter);
 
-    /**
-     * Return a String representation of this object.
-     */
-    @Override
-    public String toString() {
+		// Identify the class loader we will be using
+		String filterClass = filterDef.getFilterClass();
+		this.filter = (Filter) getInstanceManager().newInstance(filterClass);
 
-        StringBuilder sb = new StringBuilder("ApplicationFilterConfig[");
-        sb.append("name=");
-        sb.append(filterDef.getFilterName());
-        sb.append(", filterClass=");
-        sb.append(filterDef.getFilterClass());
-        sb.append("]");
-        return (sb.toString());
+		initFilter();
 
-    }
+		return (this.filter);
 
-    // --------------------------------------------------------- Public Methods
+	}
 
-    public Map<String, String> getFilterInitParameterMap() {
-        return Collections.unmodifiableMap(filterDef.getParameterMap());
-    }
+	private void initFilter() throws ServletException {
+		if (context instanceof StandardContext && context.getSwallowOutput()) {
+			try {
+				SystemLogHandler.startCapture();
+				filter.init(this);
+			} finally {
+				String capturedlog = SystemLogHandler.stopCapture();
+				if (capturedlog != null && capturedlog.length() > 0) {
+					getServletContext().log(capturedlog);
+				}
+			}
+		} else {
+			filter.init(this);
+		}
 
-    // -------------------------------------------------------- Package Methods
+		// Expose filter via JMX
+		registerJMX();
+	}
 
+	/**
+	 * Return the filter definition we are configured for.
+	 */
+	FilterDef getFilterDef() {
 
-    /**
-     * Return the application Filter we are configured for.
-     *
-     * @exception ClassCastException if the specified class does not implement
-     *  the <code>javax.servlet.Filter</code> interface
-     * @exception ClassNotFoundException if the filter class cannot be found
-     * @exception IllegalAccessException if the filter class cannot be
-     *  publicly instantiated
-     * @exception InstantiationException if an exception occurs while
-     *  instantiating the filter object
-     * @exception ServletException if thrown by the filter's init() method
-     * @throws NamingException
-     * @throws InvocationTargetException
-     */
-    Filter getFilter() throws ClassCastException, ClassNotFoundException,
-        IllegalAccessException, InstantiationException, ServletException,
-        InvocationTargetException, NamingException {
+		return (this.filterDef);
 
-        // Return the existing filter instance, if any
-        if (this.filter != null)
-            return (this.filter);
+	}
 
-        // Identify the class loader we will be using
-        String filterClass = filterDef.getFilterClass();
-        this.filter = (Filter) getInstanceManager().newInstance(filterClass);
-        
-        initFilter();
-        
-        return (this.filter);
+	/**
+	 * Release the Filter instance associated with this FilterConfig, if there
+	 * is one.
+	 */
+	void release() {
 
-    }
+		unregisterJMX();
 
-    private void initFilter() throws ServletException {
-        if (context instanceof StandardContext &&
-                context.getSwallowOutput()) {
-            try {
-                SystemLogHandler.startCapture();
-                filter.init(this);
-            } finally {
-                String capturedlog = SystemLogHandler.stopCapture();
-                if (capturedlog != null && capturedlog.length() > 0) {
-                    getServletContext().log(capturedlog);
-                }
-            }
-        } else {
-            filter.init(this);
-        }
-        
-        // Expose filter via JMX
-        registerJMX();
-    }
+		if (this.filter != null) {
+			try {
+				if (Globals.IS_SECURITY_ENABLED) {
+					try {
+						SecurityUtil.doAsPrivilege("destroy", filter);
+					} finally {
+						SecurityUtil.remove(filter);
+					}
+				} else {
+					filter.destroy();
+				}
+			} catch (Throwable t) {
+				ExceptionUtils.handleThrowable(t);
+				context.getLogger().error(sm.getString("applicationFilterConfig.release", filterDef.getFilterName(),
+						filterDef.getFilterClass()), t);
+			}
+			if (!context.getIgnoreAnnotations()) {
+				try {
+					((StandardContext) context).getInstanceManager().destroyInstance(this.filter);
+				} catch (Exception e) {
+					Throwable t = ExceptionUtils.unwrapInvocationTargetException(e);
+					ExceptionUtils.handleThrowable(t);
+					context.getLogger().error(sm.getString("applicationFilterConfig.preDestroy",
+							filterDef.getFilterName(), filterDef.getFilterClass()), t);
+				}
+			}
+		}
+		this.filter = null;
 
-    /**
-     * Return the filter definition we are configured for.
-     */
-    FilterDef getFilterDef() {
+	}
 
-        return (this.filterDef);
+	// -------------------------------------------------------- Private Methods
 
-    }
+	private InstanceManager getInstanceManager() {
+		if (instanceManager == null) {
+			if (context instanceof StandardContext) {
+				instanceManager = ((StandardContext) context).getInstanceManager();
+			} else {
+				instanceManager = new DefaultInstanceManager(null, new HashMap<String, Map<String, String>>(), context,
+						getClass().getClassLoader());
+			}
+		}
+		return instanceManager;
+	}
 
-    /**
-     * Release the Filter instance associated with this FilterConfig,
-     * if there is one.
-     */
-    void release() {
+	private void registerJMX() {
+		String parentName = context.getName();
+		if (!parentName.startsWith("/")) {
+			parentName = "/" + parentName;
+		}
 
-        unregisterJMX();
-        
-        if (this.filter != null) {
-            try {
-                if (Globals.IS_SECURITY_ENABLED) {
-                    try {
-                        SecurityUtil.doAsPrivilege("destroy", filter);
-                    } finally {
-                        SecurityUtil.remove(filter);
-                    }
-                } else {
-                    filter.destroy();
-                }
-            } catch (Throwable t) {
-                ExceptionUtils.handleThrowable(t);
-                context.getLogger().error(sm.getString(
-                        "applicationFilterConfig.release",
-                        filterDef.getFilterName(),
-                        filterDef.getFilterClass()), t);
-            }
-            if (!context.getIgnoreAnnotations()) {
-                try {
-                    ((StandardContext) context).getInstanceManager().destroyInstance(this.filter);
-                } catch (Exception e) {
-                    Throwable t = ExceptionUtils
-                            .unwrapInvocationTargetException(e);
-                    ExceptionUtils.handleThrowable(t);
-                    context.getLogger().error(
-                            sm.getString("applicationFilterConfig.preDestroy",
-                                    filterDef.getFilterName(), filterDef.getFilterClass()), t);
-                }
-            }
-        }
-        this.filter = null;
+		String hostName = context.getParent().getName();
+		hostName = (hostName == null) ? "DEFAULT" : hostName;
 
-     }
+		// domain == engine name
+		String domain = context.getParent().getParent().getName();
 
+		String webMod = "//" + hostName + parentName;
+		String onameStr = null;
+		String filterName = filterDef.getFilterName();
+		if (Util.objectNameValueNeedsQuote(filterName)) {
+			filterName = ObjectName.quote(filterName);
+		}
+		if (context instanceof StandardContext) {
+			StandardContext standardContext = (StandardContext) context;
+			onameStr = domain + ":j2eeType=Filter,name=" + filterName + ",WebModule=" + webMod + ",J2EEApplication="
+					+ standardContext.getJ2EEApplication() + ",J2EEServer=" + standardContext.getJ2EEServer();
+		} else {
+			onameStr = domain + ":j2eeType=Filter,name=" + filterName + ",WebModule=" + webMod;
+		}
+		try {
+			oname = new ObjectName(onameStr);
+			Registry.getRegistry(null, null).registerComponent(this, oname, null);
+		} catch (Exception ex) {
+			log.info(sm.getString("applicationFilterConfig.jmxRegisterFail", getFilterClass(), getFilterName()), ex);
+		}
+	}
 
-    // -------------------------------------------------------- Private Methods
+	private void unregisterJMX() {
+		// unregister this component
+		if (oname != null) {
+			try {
+				Registry.getRegistry(null, null).unregisterComponent(oname);
+				if (log.isDebugEnabled())
+					log.debug(sm.getString("applicationFilterConfig.jmxUnregister", getFilterClass(), getFilterName()));
+			} catch (Exception ex) {
+				log.error(sm.getString("applicationFilterConfig.jmxUnregisterFail", getFilterClass(), getFilterName()),
+						ex);
+			}
+		}
 
-    private InstanceManager getInstanceManager() {
-        if (instanceManager == null) {
-            if (context instanceof StandardContext) {
-                instanceManager = ((StandardContext)context).getInstanceManager();
-            } else {
-                instanceManager = new DefaultInstanceManager(null,
-                        new HashMap<String, Map<String, String>>(),
-                        context,
-                        getClass().getClassLoader()); 
-            }
-        }
-        return instanceManager;
-    }
-
-    private void registerJMX() {
-        String parentName = context.getName();
-        if (!parentName.startsWith("/")) {
-            parentName = "/" + parentName;
-        }
-
-        String hostName = context.getParent().getName();
-        hostName = (hostName == null) ? "DEFAULT" : hostName;
-
-        // domain == engine name
-        String domain = context.getParent().getParent().getName();
-
-        String webMod = "//" + hostName + parentName;
-        String onameStr = null;
-        String filterName = filterDef.getFilterName();
-        if (Util.objectNameValueNeedsQuote(filterName)) {
-            filterName = ObjectName.quote(filterName);
-        }
-        if (context instanceof StandardContext) {
-            StandardContext standardContext = (StandardContext) context;
-            onameStr = domain + ":j2eeType=Filter,name=" + filterName +
-                 ",WebModule=" + webMod + ",J2EEApplication=" +
-                 standardContext.getJ2EEApplication() + ",J2EEServer=" +
-                 standardContext.getJ2EEServer();
-        } else {
-            onameStr = domain + ":j2eeType=Filter,name=" + filterName +
-                 ",WebModule=" + webMod;
-        }
-        try {
-            oname = new ObjectName(onameStr);
-            Registry.getRegistry(null, null).registerComponent(this, oname,
-                    null);
-        } catch (Exception ex) {
-            log.info(sm.getString("applicationFilterConfig.jmxRegisterFail",
-                    getFilterClass(), getFilterName()), ex);
-        }
-    }
-    
-    private void unregisterJMX() {
-        // unregister this component
-        if (oname != null) {
-            try {
-                Registry.getRegistry(null, null).unregisterComponent(oname);
-                if (log.isDebugEnabled())
-                    log.debug(sm.getString(
-                            "applicationFilterConfig.jmxUnregister",
-                            getFilterClass(), getFilterName()));
-            } catch(Exception ex) {
-                log.error(sm.getString(
-                        "applicationFilterConfig.jmxUnregisterFail",
-                        getFilterClass(), getFilterName()), ex);
-            }
-        }
-
-    }
+	}
 }

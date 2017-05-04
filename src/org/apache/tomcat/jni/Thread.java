@@ -17,15 +17,16 @@
 
 package org.apache.tomcat.jni;
 
-/** Thread
+/**
+ * Thread
  *
  * @author Mladen Turk
  */
 public class Thread {
 
-    /**
-     * Get the current thread ID handle.
-     */
-    public static native long current();
+	/**
+	 * Get the current thread ID handle.
+	 */
+	public static native long current();
 
 }

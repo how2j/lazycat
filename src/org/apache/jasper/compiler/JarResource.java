@@ -22,24 +22,24 @@ import java.net.URL;
 import java.util.jar.JarFile;
 
 public interface JarResource {
-       
-    /**     
-     * @return The JarFile for this resource. A new instance of JarFile
-     *         should be returned on each call.
-     * @throws IOException
-     */
-    JarFile getJarFile() throws IOException;
-       
-    /**     
-     * @return The URL of this resource. May or may not point 
-     *         to the actual Jar file.    
-     */
-    String getUrl();
-    
-    /**     
-     * @param name
-     * @return The URL for the entry within this resource.
-     */
-    URL getEntry(String name);
+
+	/**
+	 * @return The JarFile for this resource. A new instance of JarFile should
+	 *         be returned on each call.
+	 * @throws IOException
+	 */
+	JarFile getJarFile() throws IOException;
+
+	/**
+	 * @return The URL of this resource. May or may not point to the actual Jar
+	 *         file.
+	 */
+	String getUrl();
+
+	/**
+	 * @param name
+	 * @return The URL for the entry within this resource.
+	 */
+	URL getEntry(String name);
 
 }

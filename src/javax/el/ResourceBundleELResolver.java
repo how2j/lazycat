@@ -27,116 +27,110 @@ import java.util.ResourceBundle;
 
 public class ResourceBundleELResolver extends ELResolver {
 
-    public ResourceBundleELResolver() {
-        super();
-    }
+	public ResourceBundleELResolver() {
+		super();
+	}
 
-    @Override
-    public Object getValue(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException,
-            ELException {
+	@Override
+	public Object getValue(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
 
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        
-        if (base instanceof ResourceBundle) {
-            context.setPropertyResolved(true);
+		if (context == null) {
+			throw new NullPointerException();
+		}
 
-            if (property != null) {
-                try {
-                    return ((ResourceBundle) base).getObject(property
-                            .toString());
-                } catch (MissingResourceException mre) {
-                    return "???" + property.toString() + "???";
-                }
-            }
-        }
+		if (base instanceof ResourceBundle) {
+			context.setPropertyResolved(true);
 
-        return null;
-    }
+			if (property != null) {
+				try {
+					return ((ResourceBundle) base).getObject(property.toString());
+				} catch (MissingResourceException mre) {
+					return "???" + property.toString() + "???";
+				}
+			}
+		}
 
-    @Override
-    public Class<?> getType(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        
-        if (base instanceof ResourceBundle) {
-            context.setPropertyResolved(true);
-        }
-        
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public void setValue(ELContext context, Object base, Object property,
-            Object value) throws NullPointerException,
-            PropertyNotFoundException, PropertyNotWritableException,
-            ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        
-        if (base instanceof ResourceBundle) {
-            context.setPropertyResolved(true);
-            throw new PropertyNotWritableException(Util.message(context,
-                    "resolverNotWriteable", new Object[] { base.getClass()
-                            .getName() }));
-        }
-    }
+	@Override
+	public Class<?> getType(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
 
-    @Override
-    public boolean isReadOnly(ELContext context, Object base, Object property)
-            throws NullPointerException, PropertyNotFoundException, ELException {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        
-        if (base instanceof ResourceBundle) {
-            context.setPropertyResolved(true);
-            return true;
-        }
-        
-        return false;
-    }
+		if (base instanceof ResourceBundle) {
+			context.setPropertyResolved(true);
+		}
 
-    @Override
-    // Can't use Iterator<FeatureDescriptor> because API needs to match
-    // specification
-    @SuppressWarnings({ "unchecked", "rawtypes" }) 
-    public Iterator getFeatureDescriptors(
-            ELContext context, Object base) {
-        if (base instanceof ResourceBundle) {
-            List<FeatureDescriptor> feats = new ArrayList<FeatureDescriptor>();
-            Enumeration<String> e = ((ResourceBundle) base).getKeys();
-            FeatureDescriptor feat;
-            String key;
-            while (e.hasMoreElements()) {
-                key = e.nextElement();
-                feat = new FeatureDescriptor();
-                feat.setDisplayName(key);
-                feat.setShortDescription("");
-                feat.setExpert(false);
-                feat.setHidden(false);
-                feat.setName(key);
-                feat.setPreferred(true);
-                feat.setValue(RESOLVABLE_AT_DESIGN_TIME, Boolean.TRUE);
-                feat.setValue(TYPE, String.class);
-                feats.add(feat);
-            }
-            return feats.iterator();
-        }
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Class<?> getCommonPropertyType(ELContext context, Object base) {
-        if (base instanceof ResourceBundle) {
-            return String.class;
-        }
-        return null;
-    }
+	@Override
+	public void setValue(ELContext context, Object base, Object property, Object value)
+			throws NullPointerException, PropertyNotFoundException, PropertyNotWritableException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+
+		if (base instanceof ResourceBundle) {
+			context.setPropertyResolved(true);
+			throw new PropertyNotWritableException(
+					Util.message(context, "resolverNotWriteable", new Object[] { base.getClass().getName() }));
+		}
+	}
+
+	@Override
+	public boolean isReadOnly(ELContext context, Object base, Object property)
+			throws NullPointerException, PropertyNotFoundException, ELException {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+
+		if (base instanceof ResourceBundle) {
+			context.setPropertyResolved(true);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	// Can't use Iterator<FeatureDescriptor> because API needs to match
+	// specification
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Iterator getFeatureDescriptors(ELContext context, Object base) {
+		if (base instanceof ResourceBundle) {
+			List<FeatureDescriptor> feats = new ArrayList<FeatureDescriptor>();
+			Enumeration<String> e = ((ResourceBundle) base).getKeys();
+			FeatureDescriptor feat;
+			String key;
+			while (e.hasMoreElements()) {
+				key = e.nextElement();
+				feat = new FeatureDescriptor();
+				feat.setDisplayName(key);
+				feat.setShortDescription("");
+				feat.setExpert(false);
+				feat.setHidden(false);
+				feat.setName(key);
+				feat.setPreferred(true);
+				feat.setValue(RESOLVABLE_AT_DESIGN_TIME, Boolean.TRUE);
+				feat.setValue(TYPE, String.class);
+				feats.add(feat);
+			}
+			return feats.iterator();
+		}
+		return null;
+	}
+
+	@Override
+	public Class<?> getCommonPropertyType(ELContext context, Object base) {
+		if (base instanceof ResourceBundle) {
+			return String.class;
+		}
+		return null;
+	}
 
 }

@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.ant.jmx;
-
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.apache.tools.ant.BuildException;
 
-
 /**
- * Access <em>JMX</em> JSR 160 MBeans Server. 
+ * Access <em>JMX</em> JSR 160 MBeans Server.
  * <ul>
  * <li>Get Mbeans attributes</li>
  * <li>Show Get result as Ant console log</li>
  * <li>Bind Get result as Ant properties</li>
  * </ul>
  * <p>
- * Examples:
- * <br/>
- * Get a Mbean IDataSender attribute nrOfRequests and create a new ant property <em>IDataSender.9025.nrOfRequests</em> 
+ * Examples: <br/>
+ * Get a Mbean IDataSender attribute nrOfRequests and create a new ant property
+ * <em>IDataSender.9025.nrOfRequests</em>
+ * 
  * <pre>
  *   &lt;jmx:get
  *           ref="jmx.server"
@@ -47,7 +45,8 @@ import org.apache.tools.ant.BuildException;
  * </pre>
  * </p>
  * <p>
- * First call to a remote MBeanserver save the JMXConnection a referenz <em>jmx.server</em>
+ * First call to a remote MBeanserver save the JMXConnection a referenz
+ * <em>jmx.server</em>
  * </p>
  * These tasks require Ant 1.6 or later interface.
  *
@@ -56,90 +55,85 @@ import org.apache.tools.ant.BuildException;
  */
 public class JMXAccessorGetTask extends JMXAccessorTask {
 
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	private String attribute;
 
-    private String attribute;
+	// ----------------------------------------------------- Instance Info
 
-    // ----------------------------------------------------- Instance Info
+	/**
+	 * Descriptive information describing this implementation.
+	 */
+	private static final String info = "org.apache.catalina.ant.JMXAccessorGetTask/1.0";
 
-    /**
-     * Descriptive information describing this implementation.
-     */
-    private static final String info = "org.apache.catalina.ant.JMXAccessorGetTask/1.0";
+	/**
+	 * Return descriptive information about this implementation and the
+	 * corresponding version number, in the format
+	 * <code>&lt;description&gt;/&lt;version&gt;</code>.
+	 */
+	@Override
+	public String getInfo() {
 
-    /**
-     * Return descriptive information about this implementation and the
-     * corresponding version number, in the format
-     * <code>&lt;description&gt;/&lt;version&gt;</code>.
-     */
-    @Override
-    public String getInfo() {
+		return (info);
 
-        return (info);
+	}
 
-    }
+	// ------------------------------------------------------------- Properties
 
-    // ------------------------------------------------------------- Properties
-    
-    /**
-     * @return Returns the attribute.
-     */
-    public String getAttribute() {
-        return attribute;
-    }
-    
-    /**
-     * @param attribute The attribute to set.
-     */
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
-    }
-    
-  
-    // ------------------------------------------------------ protected Methods
-    
-    /**
-     * Execute the specified command, based on the configured properties. The
-     * input stream will be closed upon completion of this task, whether it was
-     * executed successfully or not.
-     * 
-     * @exception BuildException
-     *                if an error occurs
-     */
-    @Override
-    public String jmxExecute(MBeanServerConnection jmxServerConnection)
-        throws Exception {
+	/**
+	 * @return Returns the attribute.
+	 */
+	public String getAttribute() {
+		return attribute;
+	}
 
-        if (getName() == null) {
-            throw new BuildException("Must specify a 'name'");
-        }
-        if ((attribute == null)) {
-            throw new BuildException(
-                    "Must specify a 'attribute' for get");
-        }
-        return  jmxGet(jmxServerConnection, getName());
-     }
+	/**
+	 * @param attribute
+	 *            The attribute to set.
+	 */
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
+	}
 
+	// ------------------------------------------------------ protected Methods
 
-    /**
-     * @param jmxServerConnection
-     * @param name
-     * @return The value of the given named attribute
-     * @throws Exception
-     */
-    protected String jmxGet(MBeanServerConnection jmxServerConnection,String name) throws Exception {
-        String error = null;
-        if(isEcho()) {
-            handleOutput("MBean " + name + " get attribute " + attribute );
-        }
-        Object result = jmxServerConnection.getAttribute(
-                new ObjectName(name), attribute);
-        if (result != null) {
-            echoResult(attribute,result);
-            createProperty(result);
-        } else
-            error = "Attribute " + attribute + " is empty";
-        return error;
-    }
+	/**
+	 * Execute the specified command, based on the configured properties. The
+	 * input stream will be closed upon completion of this task, whether it was
+	 * executed successfully or not.
+	 * 
+	 * @exception BuildException
+	 *                if an error occurs
+	 */
+	@Override
+	public String jmxExecute(MBeanServerConnection jmxServerConnection) throws Exception {
+
+		if (getName() == null) {
+			throw new BuildException("Must specify a 'name'");
+		}
+		if ((attribute == null)) {
+			throw new BuildException("Must specify a 'attribute' for get");
+		}
+		return jmxGet(jmxServerConnection, getName());
+	}
+
+	/**
+	 * @param jmxServerConnection
+	 * @param name
+	 * @return The value of the given named attribute
+	 * @throws Exception
+	 */
+	protected String jmxGet(MBeanServerConnection jmxServerConnection, String name) throws Exception {
+		String error = null;
+		if (isEcho()) {
+			handleOutput("MBean " + name + " get attribute " + attribute);
+		}
+		Object result = jmxServerConnection.getAttribute(new ObjectName(name), attribute);
+		if (result != null) {
+			echoResult(attribute, result);
+			createProperty(result);
+		} else
+			error = "Attribute " + attribute + " is empty";
+		return error;
+	}
 }

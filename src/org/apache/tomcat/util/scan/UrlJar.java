@@ -29,90 +29,90 @@ import java.util.jar.JarEntry;
  */
 public class UrlJar implements Jar {
 
-    private NonClosingJarInputStream jarInputStream = null;
-    private URL url = null;
-    private JarEntry entry = null;
+	private NonClosingJarInputStream jarInputStream = null;
+	private URL url = null;
+	private JarEntry entry = null;
 
-    public UrlJar(URL url) throws IOException {
-        this.url = url;
-        this.jarInputStream = createJarInputStream();
-    }
+	public UrlJar(URL url) throws IOException {
+		this.url = url;
+		this.jarInputStream = createJarInputStream();
+	}
 
-    @Override
-    public boolean entryExists(String name) throws IOException {
-        JarEntry entry = jarInputStream.getNextJarEntry();
-        while (entry != null) {
-            if (name.equals(entry.getName())) {
-                break;
-            }
-            entry = jarInputStream.getNextJarEntry();
-        }
+	@Override
+	public boolean entryExists(String name) throws IOException {
+		JarEntry entry = jarInputStream.getNextJarEntry();
+		while (entry != null) {
+			if (name.equals(entry.getName())) {
+				break;
+			}
+			entry = jarInputStream.getNextJarEntry();
+		}
 
-        return entry != null;
-    }
+		return entry != null;
+	}
 
-    @Override
-    public InputStream getInputStream(String name) throws IOException {
-        JarEntry entry = jarInputStream.getNextJarEntry();
-        while (entry != null) {
-            if (name.equals(entry.getName())) {
-                break;
-            }
-            entry = jarInputStream.getNextJarEntry();
-        }
+	@Override
+	public InputStream getInputStream(String name) throws IOException {
+		JarEntry entry = jarInputStream.getNextJarEntry();
+		while (entry != null) {
+			if (name.equals(entry.getName())) {
+				break;
+			}
+			entry = jarInputStream.getNextJarEntry();
+		}
 
-        if (entry == null) {
-            return null;
-        } else {
-            return jarInputStream;
-        }
-    }
+		if (entry == null) {
+			return null;
+		} else {
+			return jarInputStream;
+		}
+	}
 
-    @Override
-    public void close() {
-        if (jarInputStream != null) {
-            try {
-                jarInputStream.reallyClose();
-            } catch (IOException ioe) {
-                // Ignore
-            }
-        }
-    }
+	@Override
+	public void close() {
+		if (jarInputStream != null) {
+			try {
+				jarInputStream.reallyClose();
+			} catch (IOException ioe) {
+				// Ignore
+			}
+		}
+	}
 
-    private NonClosingJarInputStream createJarInputStream() throws IOException {
-        JarURLConnection jarConn = (JarURLConnection) url.openConnection();
-        URL resourceURL = jarConn.getJarFileURL();
-        URLConnection resourceConn = resourceURL.openConnection();
-        resourceConn.setUseCaches(false);
-        return new NonClosingJarInputStream(resourceConn.getInputStream());
-    }
+	private NonClosingJarInputStream createJarInputStream() throws IOException {
+		JarURLConnection jarConn = (JarURLConnection) url.openConnection();
+		URL resourceURL = jarConn.getJarFileURL();
+		URLConnection resourceConn = resourceURL.openConnection();
+		resourceConn.setUseCaches(false);
+		return new NonClosingJarInputStream(resourceConn.getInputStream());
+	}
 
-    @Override
-    public void nextEntry() {
-        try {
-            entry = jarInputStream.getNextJarEntry();
-        } catch (IOException ioe) {
-            entry = null;
-        }
-    }
+	@Override
+	public void nextEntry() {
+		try {
+			entry = jarInputStream.getNextJarEntry();
+		} catch (IOException ioe) {
+			entry = null;
+		}
+	}
 
-    @Override
-    public String getEntryName() {
-        if (entry == null) {
-            return null;
-        } else {
-            return entry.getName();
-        }
-    }
+	@Override
+	public String getEntryName() {
+		if (entry == null) {
+			return null;
+		} else {
+			return entry.getName();
+		}
+	}
 
-    @Override
-    public InputStream getEntryInputStream() throws IOException {
-        return jarInputStream;
-    }
+	@Override
+	public InputStream getEntryInputStream() throws IOException {
+		return jarInputStream;
+	}
 
-    @Override
-    public void reset() throws IOException {
-        close();
-        jarInputStream = createJarInputStream();
-    }
+	@Override
+	public void reset() throws IOException {
+		close();
+		jarInputStream = createJarInputStream();
+	}
 }

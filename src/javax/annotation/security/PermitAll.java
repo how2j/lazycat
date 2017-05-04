@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 /**
  * @since Common Annotations 1.0
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PermitAll {
-    // No attributes
+	// No attributes
 }

@@ -27,29 +27,25 @@ import org.apache.tomcat.util.bcel.Const;
  *
  * @since 6.0
  */
-public class ElementValuePair
-{
-    private final ElementValue elementValue;
+public class ElementValuePair {
+	private final ElementValue elementValue;
 
-    private final ConstantPool constantPool;
+	private final ConstantPool constantPool;
 
-    private final int elementNameIndex;
+	private final int elementNameIndex;
 
-    ElementValuePair(final DataInput file, final ConstantPool constantPool) throws IOException {
-        this.constantPool = constantPool;
-        this.elementNameIndex = file.readUnsignedShort();
-        this.elementValue = ElementValue.readElementValue(file, constantPool);
-    }
+	ElementValuePair(final DataInput file, final ConstantPool constantPool) throws IOException {
+		this.constantPool = constantPool;
+		this.elementNameIndex = file.readUnsignedShort();
+		this.elementValue = ElementValue.readElementValue(file, constantPool);
+	}
 
-    public String getNameString()
-    {
-        final ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(
-                elementNameIndex, Const.CONSTANT_Utf8);
-        return c.getBytes();
-    }
+	public String getNameString() {
+		final ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(elementNameIndex, Const.CONSTANT_Utf8);
+		return c.getBytes();
+	}
 
-    public final ElementValue getValue()
-    {
-        return elementValue;
-    }
+	public final ElementValue getValue() {
+		return elementValue;
+	}
 }

@@ -30,9 +30,9 @@ import org.apache.catalina.tribes.util.TcclThreadFactory;
 
 /**
  * 
- * Same implementation as the MessageDispatchInterceptor
- * except it uses an atomic long for the currentSize calculation
- * and uses a thread pool for message sending.
+ * Same implementation as the MessageDispatchInterceptor except it uses an
+ * atomic long for the currentSize calculation and uses a thread pool for
+ * message sending.
  * 
  * @author Filip Hanik
  * @version 1.0
@@ -40,89 +40,88 @@ import org.apache.catalina.tribes.util.TcclThreadFactory;
 
 public class MessageDispatch15Interceptor extends MessageDispatchInterceptor {
 
-    protected AtomicLong currentSize = new AtomicLong(0);
-    protected ExecutorService executor = null;
-    protected int maxThreads = 10;
-    protected int maxSpareThreads = 2;
-    protected long keepAliveTime = 5000;
+	protected AtomicLong currentSize = new AtomicLong(0);
+	protected ExecutorService executor = null;
+	protected int maxThreads = 10;
+	protected int maxSpareThreads = 2;
+	protected long keepAliveTime = 5000;
 
-    @Override
-    public long getCurrentSize() {
-        return currentSize.get();
-    }
+	@Override
+	public long getCurrentSize() {
+		return currentSize.get();
+	}
 
-    @Override
-    public long addAndGetCurrentSize(long inc) {
-        return currentSize.addAndGet(inc);
-    }
+	@Override
+	public long addAndGetCurrentSize(long inc) {
+		return currentSize.addAndGet(inc);
+	}
 
-    @Override
-    public long setAndGetCurrentSize(long value) {
-        currentSize.set(value);
-        return value;
-    }
-    
-    @Override
-    public boolean addToQueue(ChannelMessage msg, Member[] destination, InterceptorPayload payload) {
-        final LinkObject obj = new LinkObject(msg,destination,payload);
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                sendAsyncData(obj);
-            }
-        };
-        executor.execute(r);
-        return true;
-    }
+	@Override
+	public long setAndGetCurrentSize(long value) {
+		currentSize.set(value);
+		return value;
+	}
 
-    @Override
-    public LinkObject removeFromQueue() {
-        return null; //not used, thread pool contains its own queue.
-    }
+	@Override
+	public boolean addToQueue(ChannelMessage msg, Member[] destination, InterceptorPayload payload) {
+		final LinkObject obj = new LinkObject(msg, destination, payload);
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				sendAsyncData(obj);
+			}
+		};
+		executor.execute(r);
+		return true;
+	}
 
-    @Override
-    public void startQueue() {
-        if ( run ) return;
-        String channelName = "";
-        if (getChannel() instanceof GroupChannel
-                && ((GroupChannel)getChannel()).getName() != null) {
-            channelName = "[" + ((GroupChannel)getChannel()).getName() + "]";
-        }
-        executor = ExecutorFactory.newThreadPool(maxSpareThreads, maxThreads,
-                keepAliveTime, TimeUnit.MILLISECONDS,
-                new TcclThreadFactory("MessageDispatch15Interceptor.MessageDispatchThread" + channelName));
-        run = true;
-    }
+	@Override
+	public LinkObject removeFromQueue() {
+		return null; // not used, thread pool contains its own queue.
+	}
 
-    @Override
-    public void stopQueue() {
-        run = false;
-        executor.shutdownNow();
-        setAndGetCurrentSize(0);
-    }
+	@Override
+	public void startQueue() {
+		if (run)
+			return;
+		String channelName = "";
+		if (getChannel() instanceof GroupChannel && ((GroupChannel) getChannel()).getName() != null) {
+			channelName = "[" + ((GroupChannel) getChannel()).getName() + "]";
+		}
+		executor = ExecutorFactory.newThreadPool(maxSpareThreads, maxThreads, keepAliveTime, TimeUnit.MILLISECONDS,
+				new TcclThreadFactory("MessageDispatch15Interceptor.MessageDispatchThread" + channelName));
+		run = true;
+	}
 
-    public long getKeepAliveTime() {
-        return keepAliveTime;
-    }
+	@Override
+	public void stopQueue() {
+		run = false;
+		executor.shutdownNow();
+		setAndGetCurrentSize(0);
+	}
 
-    public int getMaxSpareThreads() {
-        return maxSpareThreads;
-    }
+	public long getKeepAliveTime() {
+		return keepAliveTime;
+	}
 
-    public int getMaxThreads() {
-        return maxThreads;
-    }
+	public int getMaxSpareThreads() {
+		return maxSpareThreads;
+	}
 
-    public void setKeepAliveTime(long keepAliveTime) {
-        this.keepAliveTime = keepAliveTime;
-    }
+	public int getMaxThreads() {
+		return maxThreads;
+	}
 
-    public void setMaxSpareThreads(int maxSpareThreads) {
-        this.maxSpareThreads = maxSpareThreads;
-    }
+	public void setKeepAliveTime(long keepAliveTime) {
+		this.keepAliveTime = keepAliveTime;
+	}
 
-    public void setMaxThreads(int maxThreads) {
-        this.maxThreads = maxThreads;
-    }
+	public void setMaxSpareThreads(int maxSpareThreads) {
+		this.maxSpareThreads = maxSpareThreads;
+	}
+
+	public void setMaxThreads(int maxThreads) {
+		this.maxThreads = maxThreads;
+	}
 
 }

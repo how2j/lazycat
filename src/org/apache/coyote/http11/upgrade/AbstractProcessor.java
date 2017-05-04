@@ -30,177 +30,166 @@ import org.apache.tomcat.util.net.SocketStatus;
 import org.apache.tomcat.util.net.SocketWrapper;
 import org.apache.tomcat.util.res.StringManager;
 
-public abstract class AbstractProcessor<S>
-        implements Processor<S>, WebConnection {
+public abstract class AbstractProcessor<S> implements Processor<S>, WebConnection {
 
-    protected static final StringManager sm =
-            StringManager.getManager(Constants.Package);
-    protected abstract Log getLog();
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    private final HttpUpgradeHandler httpUpgradeHandler;
-    private final AbstractServletInputStream upgradeServletInputStream;
-    private final AbstractServletOutputStream upgradeServletOutputStream;
+	protected abstract Log getLog();
 
-    protected AbstractProcessor (HttpUpgradeHandler httpUpgradeHandler,
-            AbstractServletInputStream upgradeServletInputStream,
-            AbstractServletOutputStream upgradeServletOutputStream) {
-        this.httpUpgradeHandler = httpUpgradeHandler;
-        this.upgradeServletInputStream = upgradeServletInputStream;
-        this.upgradeServletOutputStream = upgradeServletOutputStream;
-    }
+	private final HttpUpgradeHandler httpUpgradeHandler;
+	private final AbstractServletInputStream upgradeServletInputStream;
+	private final AbstractServletOutputStream upgradeServletOutputStream;
 
+	protected AbstractProcessor(HttpUpgradeHandler httpUpgradeHandler,
+			AbstractServletInputStream upgradeServletInputStream,
+			AbstractServletOutputStream upgradeServletOutputStream) {
+		this.httpUpgradeHandler = httpUpgradeHandler;
+		this.upgradeServletInputStream = upgradeServletInputStream;
+		this.upgradeServletOutputStream = upgradeServletOutputStream;
+	}
 
-    // --------------------------------------------------- AutoCloseable methods
+	// --------------------------------------------------- AutoCloseable methods
 
-    @Override
-    public void close() throws Exception {
-        upgradeServletInputStream.close();
-        upgradeServletOutputStream.close();
-    }
+	@Override
+	public void close() throws Exception {
+		upgradeServletInputStream.close();
+		upgradeServletOutputStream.close();
+	}
 
+	// --------------------------------------------------- WebConnection methods
 
-    // --------------------------------------------------- WebConnection methods
+	@Override
+	public AbstractServletInputStream getInputStream() throws IOException {
+		return upgradeServletInputStream;
+	}
 
-    @Override
-    public AbstractServletInputStream getInputStream() throws IOException {
-        return upgradeServletInputStream;
-    }
+	@Override
+	public AbstractServletOutputStream getOutputStream() throws IOException {
+		return upgradeServletOutputStream;
+	}
 
-    @Override
-    public AbstractServletOutputStream getOutputStream() throws IOException {
-        return upgradeServletOutputStream;
-    }
+	// ------------------------------------------- Implemented Processor methods
 
+	@Override
+	public final boolean isUpgrade() {
+		return true;
+	}
 
-    // ------------------------------------------- Implemented Processor methods
+	@Override
+	public HttpUpgradeHandler getHttpUpgradeHandler() {
+		return httpUpgradeHandler;
+	}
 
-    @Override
-    public final boolean isUpgrade() {
-        return true;
-    }
+	@Override
+	public final SocketState upgradeDispatch(SocketStatus status) throws IOException {
 
-    @Override
-    public HttpUpgradeHandler getHttpUpgradeHandler() {
-        return httpUpgradeHandler;
-    }
+		if (status == SocketStatus.OPEN_READ) {
+			try {
+				upgradeServletInputStream.onDataAvailable();
+			} catch (IOException ioe) {
+				// The error handling within the ServletInputStream should have
+				// marked the stream for closure which will get picked up below,
+				// triggering the clean-up of this processor.
+				getLog().debug(sm.getString("abstractProcessor.onDataAvailableFail"), ioe);
+			}
+		} else if (status == SocketStatus.OPEN_WRITE) {
+			try {
+				upgradeServletOutputStream.onWritePossible();
+			} catch (IOException ioe) {
+				// The error handling within the ServletOutputStream should have
+				// marked the stream for closure which will get picked up below,
+				// triggering the clean-up of this processor.
+				getLog().debug(sm.getString("abstractProcessor.onWritePossibleFail"), ioe);
+			}
+		} else if (status == SocketStatus.STOP) {
+			try {
+				upgradeServletInputStream.close();
+			} catch (IOException ioe) {
+				getLog().debug(sm.getString("abstractProcessor.isCloseFail", ioe));
+			}
+			try {
+				upgradeServletOutputStream.close();
+			} catch (IOException ioe) {
+				getLog().debug(sm.getString("abstractProcessor.osCloseFail", ioe));
+			}
+			return SocketState.CLOSED;
+		} else {
+			// Unexpected state
+			return SocketState.CLOSED;
+		}
+		if (upgradeServletInputStream.isCloseRequired() || upgradeServletOutputStream.isCloseRequired()) {
+			return SocketState.CLOSED;
+		}
+		return SocketState.UPGRADED;
+	}
 
-    @Override
-    public final SocketState upgradeDispatch(SocketStatus status)
-            throws IOException {
+	@Override
+	public final void recycle(boolean socketClosing) {
+		// Currently a NO-OP as upgrade processors are not recycled.
+	}
 
-        if (status == SocketStatus.OPEN_READ) {
-            try {
-                upgradeServletInputStream.onDataAvailable();
-            } catch (IOException ioe) {
-                // The error handling within the ServletInputStream should have
-                // marked the stream for closure which will get picked up below,
-                // triggering the clean-up of this processor.
-                getLog().debug(sm.getString("abstractProcessor.onDataAvailableFail"), ioe);
-            }
-        } else if (status == SocketStatus.OPEN_WRITE) {
-            try {
-                upgradeServletOutputStream.onWritePossible();
-            } catch (IOException ioe) {
-                // The error handling within the ServletOutputStream should have
-                // marked the stream for closure which will get picked up below,
-                // triggering the clean-up of this processor.
-                getLog().debug(sm.getString("abstractProcessor.onWritePossibleFail"), ioe);
-            }
-        } else if (status == SocketStatus.STOP) {
-            try {
-                upgradeServletInputStream.close();
-            } catch (IOException ioe) {
-                getLog().debug(sm.getString(
-                        "abstractProcessor.isCloseFail", ioe));
-            }
-            try {
-                upgradeServletOutputStream.close();
-            } catch (IOException ioe) {
-                getLog().debug(sm.getString(
-                        "abstractProcessor.osCloseFail", ioe));
-            }
-            return SocketState.CLOSED;
-        } else {
-            // Unexpected state
-            return SocketState.CLOSED;
-        }
-        if (upgradeServletInputStream.isCloseRequired() ||
-                upgradeServletOutputStream.isCloseRequired()) {
-            return SocketState.CLOSED;
-        }
-        return SocketState.UPGRADED;
-    }
+	// ------------------ Processor methods for Inbound/Outbound based mechanism
 
-    @Override
-    public final void recycle(boolean socketClosing) {
-        // Currently a NO-OP as upgrade processors are not recycled.
-    }
+	@Override
+	@Deprecated
+	public UpgradeInbound getUpgradeInbound() {
+		return null;
+	}
 
-    
-    // ------------------ Processor methods for Inbound/Outbound based mechanism
-    
-    @Override
-    @Deprecated
-    public UpgradeInbound getUpgradeInbound() {
-        return null;
-    }
+	@Override
+	public SocketState upgradeDispatch() throws IOException {
+		return null;
+	}
 
-    @Override
-    public SocketState upgradeDispatch() throws IOException {
-        return null;
-    }
+	// ---------------------------- Processor methods that are NO-OP for upgrade
 
+	@Override
+	public final Executor getExecutor() {
+		return null;
+	}
 
-    // ---------------------------- Processor methods that are NO-OP for upgrade
+	@Override
+	public final SocketState process(SocketWrapper<S> socketWrapper) throws IOException {
+		return null;
+	}
 
-    @Override
-    public final Executor getExecutor() {
-        return null;
-    }
+	@Override
+	public final SocketState event(SocketStatus status) throws IOException {
+		return null;
+	}
 
-    @Override
-    public final SocketState process(SocketWrapper<S> socketWrapper)
-            throws IOException {
-        return null;
-    }
+	@Override
+	public final SocketState asyncDispatch(SocketStatus status) {
+		return null;
+	}
 
-    @Override
-    public final SocketState event(SocketStatus status) throws IOException {
-        return null;
-    }
+	@Override
+	public void errorDispatch() {
+		// NO-OP
+	}
 
-    @Override
-    public final SocketState asyncDispatch(SocketStatus status) {
-        return null;
-    }
+	@Override
+	public final SocketState asyncPostProcess() {
+		return null;
+	}
 
-    @Override
-    public void errorDispatch() {
-        // NO-OP
-    }
+	@Override
+	public final boolean isComet() {
+		return false;
+	}
 
-    @Override
-    public final SocketState asyncPostProcess() {
-        return null;
-    }
+	@Override
+	public final boolean isAsync() {
+		return false;
+	}
 
-    @Override
-    public final boolean isComet() {
-        return false;
-    }
+	@Override
+	public final Request getRequest() {
+		return null;
+	}
 
-    @Override
-    public final boolean isAsync() {
-        return false;
-    }
-
-    @Override
-    public final Request getRequest() {
-        return null;
-    }
-
-    @Override
-    public final void setSslSupport(SSLSupport sslSupport) {
-        // NOOP
-    }
+	@Override
+	public final void setSslSupport(SSLSupport sslSupport) {
+		// NOOP
+	}
 }

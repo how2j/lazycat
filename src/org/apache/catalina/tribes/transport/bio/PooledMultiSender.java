@@ -25,52 +25,60 @@ import org.apache.catalina.tribes.transport.MultiPointSender;
 import org.apache.catalina.tribes.transport.PooledSender;
 
 /**
- * <p>Title: </p>
+ * <p>
+ * Title:
+ * </p>
  *
- * <p>Description: </p>
+ * <p>
+ * Description:
+ * </p>
  *
- * <p>Company: </p>
+ * <p>
+ * Company:
+ * </p>
  *
  * @author not attributable
  * @version 1.0
  */
 public class PooledMultiSender extends PooledSender {
-    
 
-    public PooledMultiSender() {
-        // NO-OP
-    }
-    
-    @Override
-    public void sendMessage(Member[] destination, ChannelMessage msg) throws ChannelException {
-        MultiPointSender sender = null;
-        try {
-            sender = (MultiPointSender)getSender();
-            if (sender == null) {
-                ChannelException cx = new ChannelException("Unable to retrieve a data sender, time out("+getMaxWait()+" ms) error.");
-                for (int i = 0; i < destination.length; i++) cx.addFaultyMember(destination[i], new NullPointerException("Unable to retrieve a sender from the sender pool"));
-                throw cx;
-            } else {
-                sender.sendMessage(destination, msg);
-            }
-            sender.keepalive();
-        }finally {
-            if ( sender != null ) returnSender(sender);
-        }
-    }
+	public PooledMultiSender() {
+		// NO-OP
+	}
 
-    /**
-     * getNewDataSender
-     *
-     * @return DataSender
-     * TODO Implement this org.apache.catalina.tribes.transport.PooledSender
-     *   method
-     */
-    @Override
-    public DataSender getNewDataSender() {
-        MultipointBioSender sender = new MultipointBioSender();
-        AbstractSender.transferProperties(this,sender);
-        return sender;
-    }
+	@Override
+	public void sendMessage(Member[] destination, ChannelMessage msg) throws ChannelException {
+		MultiPointSender sender = null;
+		try {
+			sender = (MultiPointSender) getSender();
+			if (sender == null) {
+				ChannelException cx = new ChannelException(
+						"Unable to retrieve a data sender, time out(" + getMaxWait() + " ms) error.");
+				for (int i = 0; i < destination.length; i++)
+					cx.addFaultyMember(destination[i],
+							new NullPointerException("Unable to retrieve a sender from the sender pool"));
+				throw cx;
+			} else {
+				sender.sendMessage(destination, msg);
+			}
+			sender.keepalive();
+		} finally {
+			if (sender != null)
+				returnSender(sender);
+		}
+	}
+
+	/**
+	 * getNewDataSender
+	 *
+	 * @return DataSender TODO Implement this
+	 *         org.apache.catalina.tribes.transport.PooledSender method
+	 */
+	@Override
+	public DataSender getNewDataSender() {
+		MultipointBioSender sender = new MultipointBioSender();
+		AbstractSender.transferProperties(this, sender);
+		return sender;
+	}
 
 }

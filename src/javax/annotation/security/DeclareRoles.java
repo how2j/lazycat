@@ -27,5 +27,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DeclareRoles {
-    public String[] value();
+	public String[] value();
 }

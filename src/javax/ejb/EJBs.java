@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package javax.ejb;
 
 import java.lang.annotation.ElementType;
@@ -27,5 +26,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 
 public @interface EJBs {
-   EJB[] value();
+	EJB[] value();
 }

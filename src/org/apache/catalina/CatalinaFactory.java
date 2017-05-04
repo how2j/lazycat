@@ -22,7 +22,7 @@ import org.apache.catalina.core.StandardPipeline;
 /**
  * Factory class used whenever a default implementation of a component is
  * required. It provides both class names (for the digester) and objects for
- * other components.  The current implementation is as simple as possible. If
+ * other components. The current implementation is as simple as possible. If
  * there is demand it can be extended to support alternative factories and/or
  * alternative defaults.
  *
@@ -32,27 +32,27 @@ import org.apache.catalina.core.StandardPipeline;
 @Deprecated
 public class CatalinaFactory {
 
-    private static CatalinaFactory factory = new CatalinaFactory();
+	private static CatalinaFactory factory = new CatalinaFactory();
 
-    public static CatalinaFactory getFactory() {
-        return factory;
-    }
+	public static CatalinaFactory getFactory() {
+		return factory;
+	}
 
-    private CatalinaFactory() {
-        // Hide the default constructor
-    }
+	private CatalinaFactory() {
+		// Hide the default constructor
+	}
 
-    /**
-     * @deprecated Unused. Will be removed in Tomcat 8.0.x.
-     */
-    @Deprecated
-    public String getDefaultPipelineClassName() {
-        return StandardPipeline.class.getName();
-    }
+	/**
+	 * @deprecated Unused. Will be removed in Tomcat 8.0.x.
+	 */
+	@Deprecated
+	public String getDefaultPipelineClassName() {
+		return StandardPipeline.class.getName();
+	}
 
-    public Pipeline createPipeline(Container container) {
-        Pipeline pipeline = new StandardPipeline();
-        pipeline.setContainer(container);
-        return pipeline;
-    }
+	public Pipeline createPipeline(Container container) {
+		Pipeline pipeline = new StandardPipeline();
+		pipeline.setContainer(container);
+		return pipeline;
+	}
 }

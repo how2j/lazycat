@@ -25,24 +25,24 @@ package javax.servlet;
  */
 public class ServletContextEvent extends java.util.EventObject {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Construct a ServletContextEvent from the given context.
-     * 
-     * @param source
-     *            - the ServletContext that is sending the event.
-     */
-    public ServletContextEvent(ServletContext source) {
-        super(source);
-    }
+	/**
+	 * Construct a ServletContextEvent from the given context.
+	 * 
+	 * @param source
+	 *            - the ServletContext that is sending the event.
+	 */
+	public ServletContextEvent(ServletContext source) {
+		super(source);
+	}
 
-    /**
-     * Return the ServletContext that changed.
-     * 
-     * @return the ServletContext that sent the event.
-     */
-    public ServletContext getServletContext() {
-        return (ServletContext) super.getSource();
-    }
+	/**
+	 * Return the ServletContext that changed.
+	 * 
+	 * @return the ServletContext that sent the event.
+	 */
+	public ServletContext getServletContext() {
+		return (ServletContext) super.getSource();
+	}
 }

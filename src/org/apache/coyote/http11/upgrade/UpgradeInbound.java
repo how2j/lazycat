@@ -24,24 +24,24 @@ import org.apache.tomcat.util.net.AbstractEndpoint.Handler.SocketState;
  * Receives notification that there is data to be read on the upgraded
  * connection and processes it.
  * 
- * @deprecated  Will be removed in Tomcat 8.0.x.
+ * @deprecated Will be removed in Tomcat 8.0.x.
  */
 @Deprecated
 public interface UpgradeInbound {
 
-    void setUpgradeProcessor(UpgradeProcessor<?> processor);
+	void setUpgradeProcessor(UpgradeProcessor<?> processor);
 
-    void onUpgradeComplete();
+	void onUpgradeComplete();
 
-    SocketState onData() throws IOException;
+	SocketState onData() throws IOException;
 
-    void setUpgradeOutbound(UpgradeOutbound upgradeOutbound);
+	void setUpgradeOutbound(UpgradeOutbound upgradeOutbound);
 
-    /**
-     * Allow the upgraded protocol to define the read timeout to be used with
-     * the upgraded connection.
-     *
-     * @return  The read timeout in milliseconds or -1 for infinite
-     */
-    int getReadTimeout();
+	/**
+	 * Allow the upgraded protocol to define the read timeout to be used with
+	 * the upgraded connection.
+	 *
+	 * @return The read timeout in milliseconds or -1 for infinite
+	 */
+	int getReadTimeout();
 }

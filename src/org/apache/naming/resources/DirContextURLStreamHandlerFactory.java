@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
+ */
 
 package org.apache.naming.resources;
 
@@ -23,61 +23,55 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Factory for Stream handlers to a JNDI directory context,
- * or for Stream handlers to a classpath url,
- * which also supports users specifying additional stream handler.
+ * Factory for Stream handlers to a JNDI directory context, or for Stream
+ * handlers to a classpath url, which also supports users specifying additional
+ * stream handler.
  * 
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  */
-public class DirContextURLStreamHandlerFactory
-        implements URLStreamHandlerFactory {
-    
-    // Singleton
-    private static DirContextURLStreamHandlerFactory instance =
-        new DirContextURLStreamHandlerFactory();
+public class DirContextURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
-    public static DirContextURLStreamHandlerFactory getInstance() {
-        return instance;
-    }
+	// Singleton
+	private static DirContextURLStreamHandlerFactory instance = new DirContextURLStreamHandlerFactory();
 
-    public static void addUserFactory(URLStreamHandlerFactory factory) {
-        instance.userFactories.add(factory);
-    }
+	public static DirContextURLStreamHandlerFactory getInstance() {
+		return instance;
+	}
 
+	public static void addUserFactory(URLStreamHandlerFactory factory) {
+		instance.userFactories.add(factory);
+	}
 
-    private List<URLStreamHandlerFactory> userFactories =
-        new CopyOnWriteArrayList<URLStreamHandlerFactory>();
+	private List<URLStreamHandlerFactory> userFactories = new CopyOnWriteArrayList<URLStreamHandlerFactory>();
 
-    private DirContextURLStreamHandlerFactory() {
-        // Hide the default constructor
-    }
-    
-    
-    /**
-     * Creates a new URLStreamHandler instance with the specified protocol.
-     * Will return null if the protocol is not <code>jndi</code>.
-     * 
-     * @param protocol the protocol (must be "jndi" here)
-     * @return a URLStreamHandler for the jndi protocol, or null if the 
-     * protocol is not JNDI
-     */
-    @Override
-    public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (protocol.equals("jndi")) {
-            return new DirContextURLStreamHandler();
-        } else if (protocol.equals("classpath")) {
-            return new ClasspathURLStreamHandler();
-        } else {
-            for (URLStreamHandlerFactory factory : userFactories) {
-                URLStreamHandler handler =
-                    factory.createURLStreamHandler(protocol);
-                if (handler != null) {
-                    return handler;
-                }
-            }
-            return null;
-        }
-    }
-    
-    
+	private DirContextURLStreamHandlerFactory() {
+		// Hide the default constructor
+	}
+
+	/**
+	 * Creates a new URLStreamHandler instance with the specified protocol. Will
+	 * return null if the protocol is not <code>jndi</code>.
+	 * 
+	 * @param protocol
+	 *            the protocol (must be "jndi" here)
+	 * @return a URLStreamHandler for the jndi protocol, or null if the protocol
+	 *         is not JNDI
+	 */
+	@Override
+	public URLStreamHandler createURLStreamHandler(String protocol) {
+		if (protocol.equals("jndi")) {
+			return new DirContextURLStreamHandler();
+		} else if (protocol.equals("classpath")) {
+			return new ClasspathURLStreamHandler();
+		} else {
+			for (URLStreamHandlerFactory factory : userFactories) {
+				URLStreamHandler handler = factory.createURLStreamHandler(protocol);
+				if (handler != null) {
+					return handler;
+				}
+			}
+			return null;
+		}
+	}
+
 }

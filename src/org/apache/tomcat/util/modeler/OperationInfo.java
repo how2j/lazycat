@@ -25,146 +25,140 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
 /**
- * <p>Internal configuration information for an <code>Operation</code>
- * descriptor.</p>
+ * <p>
+ * Internal configuration information for an <code>Operation</code> descriptor.
+ * </p>
  *
  * @author Craig R. McClanahan
  */
 public class OperationInfo extends FeatureInfo {
 
-    static final long serialVersionUID = 4418342922072614875L;
+	static final long serialVersionUID = 4418342922072614875L;
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
-    /**
-     * Standard zero-arguments constructor.
-     */
-    public OperationInfo() {
-        super();
-    }
-   
+	/**
+	 * Standard zero-arguments constructor.
+	 */
+	public OperationInfo() {
+		super();
+	}
 
-    // ----------------------------------------------------- Instance Variables
+	// ----------------------------------------------------- Instance Variables
 
-    protected String impact = "UNKNOWN";
-    protected String role = "operation";
-    protected final ReadWriteLock parametersLock = new ReentrantReadWriteLock();
-    protected ParameterInfo parameters[] = new ParameterInfo[0];
+	protected String impact = "UNKNOWN";
+	protected String role = "operation";
+	protected final ReadWriteLock parametersLock = new ReentrantReadWriteLock();
+	protected ParameterInfo parameters[] = new ParameterInfo[0];
 
+	// ------------------------------------------------------------- Properties
 
-    // ------------------------------------------------------------- Properties
+	/**
+	 * The "impact" of this operation, which should be a (case-insensitive)
+	 * string value "ACTION", "ACTION_INFO", "INFO", or "UNKNOWN".
+	 */
+	public String getImpact() {
+		return this.impact;
+	}
 
-    /**
-     * The "impact" of this operation, which should be a (case-insensitive)
-     * string value "ACTION", "ACTION_INFO", "INFO", or "UNKNOWN".
-     */
-    public String getImpact() {
-        return this.impact;
-    }
+	public void setImpact(String impact) {
+		if (impact == null)
+			this.impact = null;
+		else
+			this.impact = impact.toUpperCase(Locale.ENGLISH);
+	}
 
-    public void setImpact(String impact) {
-        if (impact == null)
-            this.impact = null;
-        else
-            this.impact = impact.toUpperCase(Locale.ENGLISH);
-    }
+	/**
+	 * The role of this operation ("getter", "setter", "operation", or
+	 * "constructor").
+	 */
+	public String getRole() {
+		return this.role;
+	}
 
+	public void setRole(String role) {
+		this.role = role;
+	}
 
-    /**
-     * The role of this operation ("getter", "setter", "operation", or
-     * "constructor").
-     */
-    public String getRole() {
-        return this.role;
-    }
+	/**
+	 * The fully qualified Java class name of the return type for this
+	 * operation.
+	 */
+	public String getReturnType() {
+		if (type == null) {
+			type = "void";
+		}
+		return type;
+	}
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+	public void setReturnType(String returnType) {
+		this.type = returnType;
+	}
 
+	/**
+	 * The set of parameters for this operation.
+	 */
+	public ParameterInfo[] getSignature() {
+		Lock readLock = parametersLock.readLock();
+		try {
+			readLock.lock();
+			return this.parameters;
+		} finally {
+			readLock.unlock();
+		}
+	}
 
-    /**
-     * The fully qualified Java class name of the return type for this
-     * operation.
-     */
-    public String getReturnType() {
-        if(type == null) {
-            type = "void";
-        }
-        return type;
-    }
+	// --------------------------------------------------------- Public Methods
 
-    public void setReturnType(String returnType) {
-        this.type = returnType;
-    }
+	/**
+	 * Add a new parameter to the set of arguments for this operation.
+	 *
+	 * @param parameter
+	 *            The new parameter descriptor
+	 */
+	public void addParameter(ParameterInfo parameter) {
 
-    /**
-     * The set of parameters for this operation.
-     */
-    public ParameterInfo[] getSignature() {
-        Lock readLock = parametersLock.readLock();
-        try {
-            readLock.lock();
-            return this.parameters;
-        } finally {
-            readLock.unlock();
-        }
-    }
+		Lock writeLock = parametersLock.writeLock();
+		try {
+			writeLock.lock();
+			ParameterInfo results[] = new ParameterInfo[parameters.length + 1];
+			System.arraycopy(parameters, 0, results, 0, parameters.length);
+			results[parameters.length] = parameter;
+			parameters = results;
+			this.info = null;
+		} finally {
+			writeLock.unlock();
+		}
+	}
 
-    // --------------------------------------------------------- Public Methods
+	/**
+	 * Create and return a <code>ModelMBeanOperationInfo</code> object that
+	 * corresponds to the attribute described by this instance.
+	 */
+	MBeanOperationInfo createOperationInfo() {
 
+		// Return our cached information (if any)
+		if (info == null) {
+			// Create and return a new information object
+			int impact = MBeanOperationInfo.UNKNOWN;
+			if ("ACTION".equals(getImpact()))
+				impact = MBeanOperationInfo.ACTION;
+			else if ("ACTION_INFO".equals(getImpact()))
+				impact = MBeanOperationInfo.ACTION_INFO;
+			else if ("INFO".equals(getImpact()))
+				impact = MBeanOperationInfo.INFO;
 
-    /**
-     * Add a new parameter to the set of arguments for this operation.
-     *
-     * @param parameter The new parameter descriptor
-     */
-    public void addParameter(ParameterInfo parameter) {
+			info = new MBeanOperationInfo(getName(), getDescription(), getMBeanParameterInfo(), getReturnType(),
+					impact);
+		}
+		return (MBeanOperationInfo) info;
+	}
 
-        Lock writeLock = parametersLock.writeLock();
-        try {
-            writeLock.lock();
-            ParameterInfo results[] = new ParameterInfo[parameters.length + 1];
-            System.arraycopy(parameters, 0, results, 0, parameters.length);
-            results[parameters.length] = parameter;
-            parameters = results;
-            this.info = null;
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-
-    /**
-     * Create and return a <code>ModelMBeanOperationInfo</code> object that
-     * corresponds to the attribute described by this instance.
-     */
-    MBeanOperationInfo createOperationInfo() {
-
-        // Return our cached information (if any)
-        if (info == null) {
-            // Create and return a new information object
-            int impact = MBeanOperationInfo.UNKNOWN;
-            if ("ACTION".equals(getImpact()))
-                impact = MBeanOperationInfo.ACTION;
-            else if ("ACTION_INFO".equals(getImpact()))
-                impact = MBeanOperationInfo.ACTION_INFO;
-            else if ("INFO".equals(getImpact()))
-                impact = MBeanOperationInfo.INFO;
-    
-            info = new MBeanOperationInfo(getName(), getDescription(), 
-                                          getMBeanParameterInfo(),
-                                          getReturnType(), impact);
-        }
-        return (MBeanOperationInfo)info;
-    }
-
-    protected MBeanParameterInfo[] getMBeanParameterInfo() {
-        ParameterInfo params[] = getSignature();
-        MBeanParameterInfo parameters[] =
-            new MBeanParameterInfo[params.length];
-        for (int i = 0; i < params.length; i++)
-            parameters[i] = params[i].createParameterInfo();
-        return parameters;
-    }
+	protected MBeanParameterInfo[] getMBeanParameterInfo() {
+		ParameterInfo params[] = getSignature();
+		MBeanParameterInfo parameters[] = new MBeanParameterInfo[params.length];
+		for (int i = 0; i < params.length; i++)
+			parameters[i] = params[i].createParameterInfo();
+		return parameters;
+	}
 }

@@ -18,5 +18,5 @@ package org.apache.coyote.http11.upgrade;
 
 public class Constants {
 
-    public static final String Package = "org.apache.coyote.http11.upgrade";
+	public static final String Package = "org.apache.coyote.http11.upgrade";
 }

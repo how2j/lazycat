@@ -1,8 +1,16 @@
 <?xml version= "1.0"?>
 <project name= "TEST_Android" default="main" basedir="." >
     <target name="main">
-
-    		
+    	
+    	<delete includeemptydirs="true" verbose="true" failonerror="false">
+    	      <fileset dir="E:\project\lazycat\build\lib">
+    	      </fileset>
+    	    </delete>
+    	
+    	<copy todir="E:\project\lazycat\build\lib">
+    			 <fileset dir="E:\project\lazycat\lib"/>
+    		</copy>
+    	
     	<jar jarfile="E:\project\lazycat\build\lib\lazycat.jar"  
     	            basedir="E:\project\lazycat\bin"/>      	
           

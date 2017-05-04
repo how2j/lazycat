@@ -28,113 +28,106 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class NioServletInputStream extends AbstractServletInputStream {
 
-    private final NioChannel channel;
-    private final NioSelectorPool pool;
+	private final NioChannel channel;
+	private final NioSelectorPool pool;
 
-    public NioServletInputStream(SocketWrapper<NioChannel> wrapper,
-            NioSelectorPool pool) {
-        this.channel = wrapper.getSocket();
-        this.pool = pool;
-    }
+	public NioServletInputStream(SocketWrapper<NioChannel> wrapper, NioSelectorPool pool) {
+		this.channel = wrapper.getSocket();
+		this.pool = pool;
+	}
 
-    @Override
-    protected boolean doIsReady() throws IOException {
-        ByteBuffer readBuffer = channel.getBufHandler().getReadBuffer();
+	@Override
+	protected boolean doIsReady() throws IOException {
+		ByteBuffer readBuffer = channel.getBufHandler().getReadBuffer();
 
-        if (readBuffer.remaining() > 0) {
-            return true;
-        }
+		if (readBuffer.remaining() > 0) {
+			return true;
+		}
 
-        readBuffer.clear();
-        fillReadBuffer(false);
+		readBuffer.clear();
+		fillReadBuffer(false);
 
-        boolean isReady = readBuffer.position() > 0;
-        readBuffer.flip();
-        return isReady;
-    }
+		boolean isReady = readBuffer.position() > 0;
+		readBuffer.flip();
+		return isReady;
+	}
 
-    @Override
-    protected int doRead(boolean block, byte[] b, int off, int len)
-            throws IOException {
+	@Override
+	protected int doRead(boolean block, byte[] b, int off, int len) throws IOException {
 
-        ByteBuffer readBuffer = channel.getBufHandler().getReadBuffer();
-        int remaining = readBuffer.remaining();
+		ByteBuffer readBuffer = channel.getBufHandler().getReadBuffer();
+		int remaining = readBuffer.remaining();
 
-        // Is there enough data in the read buffer to satisfy this request?
-        if (remaining >= len) {
-            readBuffer.get(b, off, len);
-            return len;
-        }
+		// Is there enough data in the read buffer to satisfy this request?
+		if (remaining >= len) {
+			readBuffer.get(b, off, len);
+			return len;
+		}
 
-        // Copy what data there is in the read buffer to the byte array
-        int leftToWrite = len;
-        int newOffset = off;
-        if (remaining > 0) {
-            readBuffer.get(b, off, remaining);
-            leftToWrite -= remaining;
-            newOffset += remaining;
-        }
+		// Copy what data there is in the read buffer to the byte array
+		int leftToWrite = len;
+		int newOffset = off;
+		if (remaining > 0) {
+			readBuffer.get(b, off, remaining);
+			leftToWrite -= remaining;
+			newOffset += remaining;
+		}
 
-        // Fill the read buffer as best we can
-        readBuffer.clear();
-        int nRead = fillReadBuffer(block);
+		// Fill the read buffer as best we can
+		readBuffer.clear();
+		int nRead = fillReadBuffer(block);
 
-        // Full as much of the remaining byte array as possible with the data
-        // that was just read
-        if (nRead > 0) {
-            readBuffer.flip();
-            if (nRead > leftToWrite) {
-                readBuffer.get(b, newOffset, leftToWrite);
-                leftToWrite = 0;
-            } else {
-                readBuffer.get(b, newOffset, nRead);
-                leftToWrite -= nRead;
-            }
-        } else if (nRead == 0) {
-            readBuffer.flip();
-        } else if (nRead == -1) {
-            // TODO i18n
-            throw new EOFException();
-        }
+		// Full as much of the remaining byte array as possible with the data
+		// that was just read
+		if (nRead > 0) {
+			readBuffer.flip();
+			if (nRead > leftToWrite) {
+				readBuffer.get(b, newOffset, leftToWrite);
+				leftToWrite = 0;
+			} else {
+				readBuffer.get(b, newOffset, nRead);
+				leftToWrite -= nRead;
+			}
+		} else if (nRead == 0) {
+			readBuffer.flip();
+		} else if (nRead == -1) {
+			// TODO i18n
+			throw new EOFException();
+		}
 
-        return len - leftToWrite;
-    }
+		return len - leftToWrite;
+	}
 
+	@Override
+	protected void doClose() throws IOException {
+		channel.close();
+	}
 
-
-    @Override
-    protected void doClose() throws IOException {
-        channel.close();
-    }
-
-
-    private int fillReadBuffer(boolean block) throws IOException {
-        int nRead;
-        if (block) {
-            Selector selector = null;
-            try {
-                selector = pool.get();
-            } catch ( IOException x ) {
-                // Ignore
-            }
-            try {
-                NioEndpoint.KeyAttachment att =
-                        (NioEndpoint.KeyAttachment) channel.getAttachment();
-                if (att == null) {
-                    throw new IOException("Key must be cancelled.");
-                }
-                nRead = pool.read(channel.getBufHandler().getReadBuffer(),
-                        channel, selector, att.getTimeout());
-            } catch (EOFException eof) {
-                nRead = -1;
-            } finally {
-                if (selector != null) {
-                    pool.put(selector);
-                }
-            }
-        } else {
-            nRead = channel.read(channel.getBufHandler().getReadBuffer());
-        }
-        return nRead;
-    }
+	private int fillReadBuffer(boolean block) throws IOException {
+		int nRead;
+		if (block) {
+			Selector selector = null;
+			try {
+				selector = pool.get();
+			} catch (IOException x) {
+				// Ignore
+			}
+			try {
+				NioEndpoint.KeyAttachment att = (NioEndpoint.KeyAttachment) channel.getAttachment();
+				if (att == null) {
+					throw new IOException("Key must be cancelled.");
+				}
+				nRead = pool.read(channel.getBufHandler().getReadBuffer(), channel, selector, att.getTimeout());
+			} catch (EOFException eof) {
+				nRead = -1;
+			} finally {
+				if (selector != null) {
+					pool.put(selector);
+				}
+			}
+		} else {
+			nRead = channel.read(channel.getBufHandler().getReadBuffer());
+		}
+		return nRead;
+	}
 }

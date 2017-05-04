@@ -26,18 +26,20 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class BioProcessor extends AbstractProcessor<Socket> {
 
-    private static final Log log = LogFactory.getLog(BioProcessor.class);
-    @Override
-    protected Log getLog() {return log;}
+	private static final Log log = LogFactory.getLog(BioProcessor.class);
 
-    private static final int INFINITE_TIMEOUT = 0;
+	@Override
+	protected Log getLog() {
+		return log;
+	}
 
-    public BioProcessor(SocketWrapper<Socket> wrapper,
-            HttpUpgradeHandler httpUpgradeProcessor,
-            int asyncWriteBufferSize) throws IOException {
-        super(httpUpgradeProcessor, new BioServletInputStream(wrapper),
-                new BioServletOutputStream(wrapper, asyncWriteBufferSize));
+	private static final int INFINITE_TIMEOUT = 0;
 
-        wrapper.getSocket().setSoTimeout(INFINITE_TIMEOUT);
-    }
+	public BioProcessor(SocketWrapper<Socket> wrapper, HttpUpgradeHandler httpUpgradeProcessor,
+			int asyncWriteBufferSize) throws IOException {
+		super(httpUpgradeProcessor, new BioServletInputStream(wrapper),
+				new BioServletOutputStream(wrapper, asyncWriteBufferSize));
+
+		wrapper.getSocket().setSoTimeout(INFINITE_TIMEOUT);
+	}
 }

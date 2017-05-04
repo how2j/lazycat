@@ -23,200 +23,196 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.how2java.lazycat.gui.panel.ConsolePanel;
-import com.how2java.lazycat.gui.panel.ErrorLogPanel;
-import com.how2java.lazycat.gui.util.GUIUtil;
-import com.how2java.lazycat.util.Where;
+import cn.how2j.lazycat.gui.panel.ConsolePanel;
+import cn.how2j.lazycat.gui.panel.ErrorLogPanel;
+import cn.how2j.lazycat.gui.util.GUIUtil;
+import cn.how2j.lazycat.util.Where;
 
-/** 
+/**
  * Hardcoded java.util.logging commons-logging implementation.
  * 
- * In addition, it curr 
+ * In addition, it curr
  * 
  */
 class DirectJDKLog implements Log {
-    // no reason to hide this - but good reasons to not hide
-    public Logger logger;
-    
-    /** Alternate config reader and console format 
-     */
-    private static final String SIMPLE_FMT="java.util.logging.SimpleFormatter";
-    private static final String SIMPLE_CFG="org.apache.juli.JdkLoggerConfig"; //doesn't exist
-    private static final String FORMATTER="org.apache.juli.formatter";
+	// no reason to hide this - but good reasons to not hide
+	public Logger logger;
 
-    static {
-        if( System.getProperty("java.util.logging.config.class") ==null  &&
-                System.getProperty("java.util.logging.config.file") ==null ) {
-            // default configuration - it sucks. Let's override at least the 
-            // formatter for the console
-            try {
-                Class.forName(SIMPLE_CFG).newInstance();                
-            } catch( Throwable t ) {                
-            }
-            try {
-                Formatter fmt=(Formatter)Class.forName(System.getProperty(FORMATTER, SIMPLE_FMT)).newInstance(); 
-                // it is also possible that the user modified jre/lib/logging.properties - 
-                // but that's really stupid in most cases
-                Logger root=Logger.getLogger("");
-                Handler handlers[]=root.getHandlers();
-                for( int i=0; i< handlers.length; i++ ) {
-                    // I only care about console - that's what's used in default config anyway
-                    if( handlers[i] instanceof  ConsoleHandler ) {
-                        handlers[i].setFormatter(fmt);
-                    }
-                }
-            } catch( Throwable t ) {
-                // maybe it wasn't included - the ugly default will be used.
-            }
-            
-        }
-    }
-    
-    public DirectJDKLog(String name ) {
-        logger=Logger.getLogger(name);        
-    }
-    
-    @Override
-    public final boolean isErrorEnabled() {
-        return logger.isLoggable(Level.SEVERE);
-    }
-    
-    @Override
-    public final boolean isWarnEnabled() {
-        return logger.isLoggable(Level.WARNING); 
-    }
-    
-    @Override
-    public final boolean isInfoEnabled() {
-        return logger.isLoggable(Level.INFO);
-    }
-    
-    @Override
-    public final boolean isDebugEnabled() {
-        return logger.isLoggable(Level.FINE);
-    }
-    
-    @Override
-    public final boolean isFatalEnabled() {
-        return logger.isLoggable(Level.SEVERE);
-    }
-    
-    @Override
-    public final boolean isTraceEnabled() {
-        return logger.isLoggable(Level.FINER);
-    }
-    
-    @Override
-    public final void debug(Object message) {
-        log(Level.FINE, String.valueOf(message), null);
-    }
-    
-    @Override
-    public final void debug(Object message, Throwable t) {
-        log(Level.FINE, String.valueOf(message), t);
-    }
-    
-    @Override
-    public final void trace(Object message) {
-        log(Level.FINER, String.valueOf(message), null);
-    }
-    
-    @Override
-    public final void trace(Object message, Throwable t) {
-        log(Level.FINER, String.valueOf(message), t);
-    }
-    
-    @Override
-    public final void info(Object message) {
-        log(Level.INFO, String.valueOf(message), null);
-    }
-    
-    @Override
-    public final void info(Object message, Throwable t) {        
-        log(Level.INFO, String.valueOf(message), t);
-    }
-    
-    @Override
-    public final void warn(Object message) {
-        log(Level.WARNING, String.valueOf(message), null);
-    }
-    
-    @Override
-    public final void warn(Object message, Throwable t) {
-        log(Level.WARNING, String.valueOf(message), t);
-    }
-    
-    @Override
-    public final void error(Object message) {
-        log(Level.SEVERE, String.valueOf(message), null);
-    }
-    
-    @Override
-    public final void error(Object message, Throwable t) {
-        log(Level.SEVERE, String.valueOf(message), t);
-    }
-    
-    @Override
-    public final void fatal(Object message) {
-        log(Level.SEVERE, String.valueOf(message), null);
-    }
-    
-    @Override
-    public final void fatal(Object message, Throwable t) {
-        log(Level.SEVERE, String.valueOf(message), t);
-    }    
+	/**
+	 * Alternate config reader and console format
+	 */
+	private static final String SIMPLE_FMT = "java.util.logging.SimpleFormatter";
+	private static final String SIMPLE_CFG = "org.apache.juli.JdkLoggerConfig"; // doesn't
+																				// exist
+	private static final String FORMATTER = "org.apache.juli.formatter";
 
-    // from commons logging. This would be my number one reason why java.util.logging
-    // is bad - design by committee can be really bad ! The impact on performance of 
-    // using java.util.logging - and the ugliness if you need to wrap it - is far
-    // worse than the unfriendly and uncommon default format for logs. 
-    
-    private void log(Level level, String msg, Throwable ex) {
-    	
-        if (logger.isLoggable(level)) {
-            // Hack (?) to get the stack trace.
-            Throwable dummyException=new Throwable();
-            StackTraceElement locations[]=dummyException.getStackTrace();
-            // Caller will be the third element
-            String cname = "unknown";
-            String method = "unknown";
-            if (locations != null && locations.length >2) {
-                StackTraceElement caller = locations[2];
-                cname = caller.getClassName();
-                method = caller.getMethodName();
-            }
-//            if (ex==null) {
-//                logger.logp(level, cname, method, msg);
-//            } else {
-//                logger.logp(level, cname, method, msg, ex);
-//            }
-            if(null!=ex){
-//            	Where.amI();
-            	System.out.println(ex.getMessage());
-//                System.err.println(ex);
-            	//put into error textarea
-//            	System.out.println("111111");
+	static {
+		if (System.getProperty("java.util.logging.config.class") == null
+				&& System.getProperty("java.util.logging.config.file") == null) {
+			// default configuration - it sucks. Let's override at least the
+			// formatter for the console
+			try {
+				Class.forName(SIMPLE_CFG).newInstance();
+			} catch (Throwable t) {
+			}
+			try {
+				Formatter fmt = (Formatter) Class.forName(System.getProperty(FORMATTER, SIMPLE_FMT)).newInstance();
+				// it is also possible that the user modified
+				// jre/lib/logging.properties -
+				// but that's really stupid in most cases
+				Logger root = Logger.getLogger("");
+				Handler handlers[] = root.getHandlers();
+				for (int i = 0; i < handlers.length; i++) {
+					// I only care about console - that's what's used in default
+					// config anyway
+					if (handlers[i] instanceof ConsoleHandler) {
+						handlers[i].setFormatter(fmt);
+					}
+				}
+			} catch (Throwable t) {
+				// maybe it wasn't included - the ugly default will be used.
+			}
 
-            	ErrorLogPanel.instance.ta.append(ex.getMessage()+"\n");
-//            	System.out.println("222222");
-            	GUIUtil.setCaretPosition(ErrorLogPanel.instance.ta);
-            }
-            else{
-            	System.out.println(msg);
-            	ErrorLogPanel.instance.ta.append(msg+"\n");
-            	GUIUtil.setCaretPosition(ErrorLogPanel.instance.ta);
-            }
-        }
-    }        
+		}
+	}
 
-    // for LogFactory
-    static void release() {
-        
-    }
-    
-    static Log getInstance(String name) {
-        return new DirectJDKLog( name );
-    }
+	public DirectJDKLog(String name) {
+		logger = Logger.getLogger(name);
+	}
+
+	@Override
+	public final boolean isErrorEnabled() {
+		return logger.isLoggable(Level.SEVERE);
+	}
+
+	@Override
+	public final boolean isWarnEnabled() {
+		return logger.isLoggable(Level.WARNING);
+	}
+
+	@Override
+	public final boolean isInfoEnabled() {
+		return logger.isLoggable(Level.INFO);
+	}
+
+	@Override
+	public final boolean isDebugEnabled() {
+		return logger.isLoggable(Level.FINE);
+	}
+
+	@Override
+	public final boolean isFatalEnabled() {
+		return logger.isLoggable(Level.SEVERE);
+	}
+
+	@Override
+	public final boolean isTraceEnabled() {
+		return logger.isLoggable(Level.FINER);
+	}
+
+	@Override
+	public final void debug(Object message) {
+		log(Level.FINE, String.valueOf(message), null);
+	}
+
+	@Override
+	public final void debug(Object message, Throwable t) {
+		log(Level.FINE, String.valueOf(message), t);
+	}
+
+	@Override
+	public final void trace(Object message) {
+		log(Level.FINER, String.valueOf(message), null);
+	}
+
+	@Override
+	public final void trace(Object message, Throwable t) {
+		log(Level.FINER, String.valueOf(message), t);
+	}
+
+	@Override
+	public final void info(Object message) {
+		log(Level.INFO, String.valueOf(message), null);
+	}
+
+	@Override
+	public final void info(Object message, Throwable t) {
+		log(Level.INFO, String.valueOf(message), t);
+	}
+
+	@Override
+	public final void warn(Object message) {
+		log(Level.WARNING, String.valueOf(message), null);
+	}
+
+	@Override
+	public final void warn(Object message, Throwable t) {
+		log(Level.WARNING, String.valueOf(message), t);
+	}
+
+	@Override
+	public final void error(Object message) {
+		log(Level.SEVERE, String.valueOf(message), null);
+	}
+
+	@Override
+	public final void error(Object message, Throwable t) {
+		log(Level.SEVERE, String.valueOf(message), t);
+	}
+
+	@Override
+	public final void fatal(Object message) {
+		log(Level.SEVERE, String.valueOf(message), null);
+	}
+
+	@Override
+	public final void fatal(Object message, Throwable t) {
+		log(Level.SEVERE, String.valueOf(message), t);
+	}
+
+	// from commons logging. This would be my number one reason why
+	// java.util.logging
+	// is bad - design by committee can be really bad ! The impact on
+	// performance of
+	// using java.util.logging - and the ugliness if you need to wrap it - is
+	// far
+	// worse than the unfriendly and uncommon default format for logs.
+
+	private void log(Level level, String msg, Throwable ex) {
+
+		if (logger.isLoggable(level)) {
+			// Hack (?) to get the stack trace.
+			Throwable dummyException = new Throwable();
+			StackTraceElement locations[] = dummyException.getStackTrace();
+			// Caller will be the third element
+			String cname = "unknown";
+			String method = "unknown";
+			if (locations != null && locations.length > 2) {
+				StackTraceElement caller = locations[2];
+				cname = caller.getClassName();
+				method = caller.getMethodName();
+			}
+			// if (ex==null) {
+			// logger.logp(level, cname, method, msg);
+			// } else {
+			// logger.logp(level, cname, method, msg, ex);
+			// }
+			if (null != ex) {
+				ErrorLogPanel.instance.ta.append(ex.getMessage() + "\n");
+				GUIUtil.setCaretPosition(ErrorLogPanel.instance.ta);
+			} else {
+				ErrorLogPanel.instance.ta.append(msg + "\n");
+				GUIUtil.setCaretPosition(ErrorLogPanel.instance.ta);
+			}
+		}
+	}
+
+	// for LogFactory
+	static void release() {
+
+	}
+
+	static Log getInstance(String name) {
+		return new DirectJDKLog(name);
+	}
 }
-
-

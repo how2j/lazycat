@@ -24,28 +24,26 @@ import org.apache.tomcat.util.net.SocketWrapper;
 
 public class BioServletOutputStream extends AbstractServletOutputStream {
 
-    private final OutputStream os;
+	private final OutputStream os;
 
-    public BioServletOutputStream(SocketWrapper<Socket> socketWrapper,
-            int asyncWriteBufferSize) throws IOException {
-        super(asyncWriteBufferSize);
-        os = socketWrapper.getSocket().getOutputStream();
-    }
+	public BioServletOutputStream(SocketWrapper<Socket> socketWrapper, int asyncWriteBufferSize) throws IOException {
+		super(asyncWriteBufferSize);
+		os = socketWrapper.getSocket().getOutputStream();
+	}
 
-    @Override
-    protected int doWrite(boolean block, byte[] b, int off, int len)
-            throws IOException {
-        os.write(b, off, len);
-        return len;
-    }
+	@Override
+	protected int doWrite(boolean block, byte[] b, int off, int len) throws IOException {
+		os.write(b, off, len);
+		return len;
+	}
 
-    @Override
-    protected void doFlush() throws IOException {
-        os.flush();
-    }
+	@Override
+	protected void doFlush() throws IOException {
+		os.flush();
+	}
 
-    @Override
-    protected void doClose() throws IOException {
-        os.close();
-    }
+	@Override
+	protected void doClose() throws IOException {
+		os.close();
+	}
 }

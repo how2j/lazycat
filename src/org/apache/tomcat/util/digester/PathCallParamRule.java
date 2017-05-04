@@ -13,83 +13,86 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
-
+ */
 
 package org.apache.tomcat.util.digester;
-
 
 import org.xml.sax.Attributes;
 
 /**
- * <p>Rule implementation that saves a parameter containing the 
- * <code>Digester</code> matching path for use by a surrounding 
- * <code>CallMethodRule</code>. This Rule is most useful when making 
- * extensive use of wildcards in rule patterns.</p>
+ * <p>
+ * Rule implementation that saves a parameter containing the
+ * <code>Digester</code> matching path for use by a surrounding
+ * <code>CallMethodRule</code>. This Rule is most useful when making extensive
+ * use of wildcards in rule patterns.
+ * </p>
  *
  * @since 1.6
  */
 
 public class PathCallParamRule extends Rule {
 
-    // ----------------------------------------------------------- Constructors
+	// ----------------------------------------------------------- Constructors
 
-    /**
-     * Construct a "call parameter" rule that will save the body text of this
-     * element as the parameter value.
-     *
-     * @param paramIndex The zero-relative parameter number
-     */
-    public PathCallParamRule(int paramIndex) {
+	/**
+	 * Construct a "call parameter" rule that will save the body text of this
+	 * element as the parameter value.
+	 *
+	 * @param paramIndex
+	 *            The zero-relative parameter number
+	 */
+	public PathCallParamRule(int paramIndex) {
 
-        this.paramIndex = paramIndex;
+		this.paramIndex = paramIndex;
 
-    }
- 
-    // ----------------------------------------------------- Instance Variables
+	}
 
-    /**
-     * The zero-relative index of the parameter we are saving.
-     */
-    protected int paramIndex = 0;
+	// ----------------------------------------------------- Instance Variables
 
-    // --------------------------------------------------------- Public Methods
+	/**
+	 * The zero-relative index of the parameter we are saving.
+	 */
+	protected int paramIndex = 0;
 
+	// --------------------------------------------------------- Public Methods
 
-    /**
-     * Process the start of this element.
-     *
-     * @param namespace the namespace URI of the matching element, or an 
-     *   empty string if the parser is not namespace aware or the element has
-     *   no namespace
-     * @param name the local name if the parser is namespace aware, or just 
-     *   the element name otherwise
-     * @param attributes The attribute list for this element
+	/**
+	 * Process the start of this element.
+	 *
+	 * @param namespace
+	 *            the namespace URI of the matching element, or an empty string
+	 *            if the parser is not namespace aware or the element has no
+	 *            namespace
+	 * @param name
+	 *            the local name if the parser is namespace aware, or just the
+	 *            element name otherwise
+	 * @param attributes
+	 *            The attribute list for this element
+	 * 
+	 */
+	@Override
+	public void begin(String namespace, String name, Attributes attributes) throws Exception {
 
-     */
-    @Override
-    public void begin(String namespace, String name, Attributes attributes) throws Exception {
+		String param = getDigester().getMatch();
 
-        String param = getDigester().getMatch();
-        
-        if(param != null) {
-            Object parameters[] = (Object[]) digester.peekParams();
-            parameters[paramIndex] = param;
-        }
-        
-    }
+		if (param != null) {
+			Object parameters[] = (Object[]) digester.peekParams();
+			parameters[paramIndex] = param;
+		}
 
-    /**
-     * Render a printable version of this Rule.
-     */
-    @Override
-    public String toString() {
+	}
 
-        StringBuilder sb = new StringBuilder("PathCallParamRule[");
-        sb.append("paramIndex=");
-        sb.append(paramIndex);
-        sb.append("]");
-        return (sb.toString());
+	/**
+	 * Render a printable version of this Rule.
+	 */
+	@Override
+	public String toString() {
 
-    }
+		StringBuilder sb = new StringBuilder("PathCallParamRule[");
+		sb.append("paramIndex=");
+		sb.append(paramIndex);
+		sb.append("]");
+		return (sb.toString());
+
+	}
 }

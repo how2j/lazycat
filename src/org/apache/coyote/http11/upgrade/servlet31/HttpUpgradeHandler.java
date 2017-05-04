@@ -21,18 +21,18 @@ package org.apache.coyote.http11.upgrade.servlet31;
  */
 public interface HttpUpgradeHandler {
 
-    /**
-     * This method is called once the request/response pair where the upgrade
-     * is initiated has completed processing and is the point where control of
-     * the connection passes from the container to the
-     * {@link HttpUpgradeHandler}.
-     *
-     * @param connection    The connection that has been upgraded
-     */
-    void init(WebConnection connection);
+	/**
+	 * This method is called once the request/response pair where the upgrade is
+	 * initiated has completed processing and is the point where control of the
+	 * connection passes from the container to the {@link HttpUpgradeHandler}.
+	 *
+	 * @param connection
+	 *            The connection that has been upgraded
+	 */
+	void init(WebConnection connection);
 
-    /**
-     * This method is called after the upgraded connection has been closed.
-     */
-    void destroy();
+	/**
+	 * This method is called after the upgraded connection has been closed.
+	 */
+	void destroy();
 }

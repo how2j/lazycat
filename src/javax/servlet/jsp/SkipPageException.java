@@ -34,44 +34,44 @@ package javax.servlet.jsp;
  */
 public class SkipPageException extends JspException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Creates a SkipPageException with no message.
-     */
-    public SkipPageException() {
-        super();
-    }
+	/**
+	 * Creates a SkipPageException with no message.
+	 */
+	public SkipPageException() {
+		super();
+	}
 
-    /**
-     * Creates a SkipPageException with the provided message.
-     * 
-     * @param message
-     *            the detail message
-     */
-    public SkipPageException(String message) {
-        super(message);
-    }
+	/**
+	 * Creates a SkipPageException with the provided message.
+	 * 
+	 * @param message
+	 *            the detail message
+	 */
+	public SkipPageException(String message) {
+		super(message);
+	}
 
-    /**
-     * Creates a SkipPageException with the provided message and root cause.
-     * 
-     * @param message
-     *            the detail message
-     * @param rootCause
-     *            the originating cause of this exception
-     */
-    public SkipPageException(String message, Throwable rootCause) {
-        super(message, rootCause);
-    }
+	/**
+	 * Creates a SkipPageException with the provided message and root cause.
+	 * 
+	 * @param message
+	 *            the detail message
+	 * @param rootCause
+	 *            the originating cause of this exception
+	 */
+	public SkipPageException(String message, Throwable rootCause) {
+		super(message, rootCause);
+	}
 
-    /**
-     * Creates a SkipPageException with the provided root cause.
-     * 
-     * @param rootCause
-     *            the originating cause of this exception
-     */
-    public SkipPageException(Throwable rootCause) {
-        super(rootCause);
-    }
+	/**
+	 * Creates a SkipPageException with the provided root cause.
+	 * 
+	 * @param rootCause
+	 *            the originating cause of this exception
+	 */
+	public SkipPageException(Throwable rootCause) {
+		super(rootCause);
+	}
 }

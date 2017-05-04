@@ -33,186 +33,178 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.ParameterMap;
 import org.apache.tomcat.util.res.StringManager;
 
-public class ApplicationServletRegistration
-        implements ServletRegistration.Dynamic {
+public class ApplicationServletRegistration implements ServletRegistration.Dynamic {
 
-    /**
-     * The string manager for this package.
-     */
-    private static final StringManager sm =
-      StringManager.getManager(Constants.Package);
-    
-    private Wrapper wrapper;
-    private Context context;
-    
-    public ApplicationServletRegistration(Wrapper wrapper,
-            Context context) {
-        this.wrapper = wrapper;
-        this.context = context;
-        
-    }
+	/**
+	 * The string manager for this package.
+	 */
+	private static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    @Override
-    public String getClassName() {
-        return wrapper.getServletClass();
-   }
+	private Wrapper wrapper;
+	private Context context;
 
-    @Override
-    public String getInitParameter(String name) {
-        return wrapper.findInitParameter(name);
-    }
+	public ApplicationServletRegistration(Wrapper wrapper, Context context) {
+		this.wrapper = wrapper;
+		this.context = context;
 
-    @Override
-    public Map<String, String> getInitParameters() {
-        ParameterMap<String,String> result = new ParameterMap<String,String>();
-        
-        String[] parameterNames = wrapper.findInitParameters();
-        
-        for (String parameterName : parameterNames) {
-            result.put(parameterName, wrapper.findInitParameter(parameterName));
-        }
+	}
 
-        result.setLocked(true);
-        return result;
-    }
+	@Override
+	public String getClassName() {
+		return wrapper.getServletClass();
+	}
 
-    @Override
-    public String getName() {
-        return wrapper.getName();
-    }
+	@Override
+	public String getInitParameter(String name) {
+		return wrapper.findInitParameter(name);
+	}
 
-    @Override
-    public boolean setInitParameter(String name, String value) {
-        if (name == null || value == null) {
-            throw new IllegalArgumentException(
-                    sm.getString("applicationFilterRegistration.nullInitParam",
-                            name, value));
-        }
-        if (getInitParameter(name) != null) {
-            return false;
-        }
-        
-        wrapper.addInitParameter(name, value);
+	@Override
+	public Map<String, String> getInitParameters() {
+		ParameterMap<String, String> result = new ParameterMap<String, String>();
 
-        return true;
-    }
+		String[] parameterNames = wrapper.findInitParameters();
 
-    @Override
-    public Set<String> setInitParameters(Map<String, String> initParameters) {
-        
-        Set<String> conflicts = new HashSet<String>();
-        
-        for (Map.Entry<String, String> entry : initParameters.entrySet()) {
-            if (entry.getKey() == null || entry.getValue() == null) {
-                throw new IllegalArgumentException(sm.getString(
-                        "applicationFilterRegistration.nullInitParams",
-                                entry.getKey(), entry.getValue()));
-            }
-            if (getInitParameter(entry.getKey()) != null) {
-                conflicts.add(entry.getKey());
-            }
-        }
+		for (String parameterName : parameterNames) {
+			result.put(parameterName, wrapper.findInitParameter(parameterName));
+		}
 
-        // Have to add in a separate loop since spec requires no updates at all
-        // if there is an issue
-        if (conflicts.isEmpty()) {
-            for (Map.Entry<String, String> entry : initParameters.entrySet()) {
-                setInitParameter(entry.getKey(), entry.getValue());
-            }
-        }
+		result.setLocked(true);
+		return result;
+	}
 
-        return conflicts;
-    }
+	@Override
+	public String getName() {
+		return wrapper.getName();
+	}
 
-    @Override
-    public void setAsyncSupported(boolean asyncSupported) {
-        wrapper.setAsyncSupported(asyncSupported);
-    }
+	@Override
+	public boolean setInitParameter(String name, String value) {
+		if (name == null || value == null) {
+			throw new IllegalArgumentException(
+					sm.getString("applicationFilterRegistration.nullInitParam", name, value));
+		}
+		if (getInitParameter(name) != null) {
+			return false;
+		}
 
-    @Override
-    public void setLoadOnStartup(int loadOnStartup) {
-        wrapper.setLoadOnStartup(loadOnStartup);
-    }
+		wrapper.addInitParameter(name, value);
 
-    @Override
-    public void setMultipartConfig(MultipartConfigElement multipartConfig) {
-        wrapper.setMultipartConfigElement(multipartConfig);
-    }
+		return true;
+	}
 
-    @Override
-    public void setRunAsRole(String roleName) {
-        wrapper.setRunAs(roleName);
-    }
+	@Override
+	public Set<String> setInitParameters(Map<String, String> initParameters) {
 
-    @Override
-    public Set<String> setServletSecurity(ServletSecurityElement constraint) {
-        if (constraint == null) {
-            throw new IllegalArgumentException(sm.getString(
-                    "applicationServletRegistration.setServletSecurity.iae",
-                    getName(), context.getName()));
-        }
-        
-        if (!context.getState().equals(LifecycleState.STARTING_PREP)) {
-            throw new IllegalStateException(sm.getString(
-                    "applicationServletRegistration.setServletSecurity.ise",
-                    getName(), context.getName()));
-        }
+		Set<String> conflicts = new HashSet<String>();
 
-        return context.addServletSecurity(this, constraint);
-    }
+		for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+			if (entry.getKey() == null || entry.getValue() == null) {
+				throw new IllegalArgumentException(
+						sm.getString("applicationFilterRegistration.nullInitParams", entry.getKey(), entry.getValue()));
+			}
+			if (getInitParameter(entry.getKey()) != null) {
+				conflicts.add(entry.getKey());
+			}
+		}
 
+		// Have to add in a separate loop since spec requires no updates at all
+		// if there is an issue
+		if (conflicts.isEmpty()) {
+			for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+				setInitParameter(entry.getKey(), entry.getValue());
+			}
+		}
 
-    @Override
-    public Set<String> addMapping(String... urlPatterns) {
-        if (urlPatterns == null) {
-            return Collections.emptySet();
-        }
-        
-        Set<String> conflicts = new HashSet<String>();
-        
-        for (String urlPattern : urlPatterns) {
-            String wrapperName = context.findServletMapping(urlPattern);
-            if (wrapperName != null) {
-                Wrapper wrapper = (Wrapper) context.findChild(wrapperName);
-                if (wrapper.isOverridable()) {
-                    // Some Wrappers (from global and host web.xml) may be
-                    // overridden rather than generating a conflict
-                    context.removeServletMapping(urlPattern);
-                } else {
-                    conflicts.add(urlPattern);
-                }
-            }
-        }
+		return conflicts;
+	}
 
-        if (!conflicts.isEmpty()) {
-            return conflicts;
-        }
-        
-        for (String urlPattern : urlPatterns) {
-            context.addServletMapping(urlPattern, wrapper.getName());
-        }
-        return Collections.emptySet();
-    }
+	@Override
+	public void setAsyncSupported(boolean asyncSupported) {
+		wrapper.setAsyncSupported(asyncSupported);
+	}
 
-    @Override
-    public Collection<String> getMappings() {
+	@Override
+	public void setLoadOnStartup(int loadOnStartup) {
+		wrapper.setLoadOnStartup(loadOnStartup);
+	}
 
-        Set<String> result = new HashSet<String>();
-        String servletName = wrapper.getName();
-        
-        String[] urlPatterns = context.findServletMappings();
-        for (String urlPattern : urlPatterns) {
-            String name = context.findServletMapping(urlPattern);
-            if (name.equals(servletName)) {
-                result.add(urlPattern);
-            }
-        }
-        return result;
-    }
+	@Override
+	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
+		wrapper.setMultipartConfigElement(multipartConfig);
+	}
 
-    @Override
-    public String getRunAsRole() {
-        return wrapper.getRunAs();
-    }
-    
+	@Override
+	public void setRunAsRole(String roleName) {
+		wrapper.setRunAs(roleName);
+	}
+
+	@Override
+	public Set<String> setServletSecurity(ServletSecurityElement constraint) {
+		if (constraint == null) {
+			throw new IllegalArgumentException(sm.getString("applicationServletRegistration.setServletSecurity.iae",
+					getName(), context.getName()));
+		}
+
+		if (!context.getState().equals(LifecycleState.STARTING_PREP)) {
+			throw new IllegalStateException(sm.getString("applicationServletRegistration.setServletSecurity.ise",
+					getName(), context.getName()));
+		}
+
+		return context.addServletSecurity(this, constraint);
+	}
+
+	@Override
+	public Set<String> addMapping(String... urlPatterns) {
+		if (urlPatterns == null) {
+			return Collections.emptySet();
+		}
+
+		Set<String> conflicts = new HashSet<String>();
+
+		for (String urlPattern : urlPatterns) {
+			String wrapperName = context.findServletMapping(urlPattern);
+			if (wrapperName != null) {
+				Wrapper wrapper = (Wrapper) context.findChild(wrapperName);
+				if (wrapper.isOverridable()) {
+					// Some Wrappers (from global and host web.xml) may be
+					// overridden rather than generating a conflict
+					context.removeServletMapping(urlPattern);
+				} else {
+					conflicts.add(urlPattern);
+				}
+			}
+		}
+
+		if (!conflicts.isEmpty()) {
+			return conflicts;
+		}
+
+		for (String urlPattern : urlPatterns) {
+			context.addServletMapping(urlPattern, wrapper.getName());
+		}
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Collection<String> getMappings() {
+
+		Set<String> result = new HashSet<String>();
+		String servletName = wrapper.getName();
+
+		String[] urlPatterns = context.findServletMappings();
+		for (String urlPattern : urlPatterns) {
+			String name = context.findServletMapping(urlPattern);
+			if (name.equals(servletName)) {
+				result.add(urlPattern);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public String getRunAsRole() {
+		return wrapper.getRunAs();
+	}
+
 }

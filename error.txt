@@ -1,0 +1,2 @@
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".

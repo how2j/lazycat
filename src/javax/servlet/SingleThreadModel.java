@@ -41,5 +41,5 @@ package javax.servlet;
 @SuppressWarnings("dep-ann")
 // Spec API does not use @Deprecated
 public interface SingleThreadModel {
-    // No methods
+	// No methods
 }

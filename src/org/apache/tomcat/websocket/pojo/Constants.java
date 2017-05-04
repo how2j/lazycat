@@ -21,10 +21,9 @@ package org.apache.tomcat.websocket.pojo;
  */
 public class Constants {
 
-    protected static final String PACKAGE_NAME =
-            Constants.class.getPackage().getName();
+	protected static final String PACKAGE_NAME = Constants.class.getPackage().getName();
 
-    private Constants() {
-        // Hide default constructor
-    }
+	private Constants() {
+		// Hide default constructor
+	}
 }

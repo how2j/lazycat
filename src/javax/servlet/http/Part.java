@@ -29,79 +29,81 @@ import java.util.Collection;
  */
 public interface Part {
 
-    /**
-     * Obtain an <code>InputStream</code> that can be used to retrieve the
-     * contents of the file.
-     */
-    public InputStream getInputStream() throws IOException;
+	/**
+	 * Obtain an <code>InputStream</code> that can be used to retrieve the
+	 * contents of the file.
+	 */
+	public InputStream getInputStream() throws IOException;
 
-    /**
-     * Obtain the content type passed by the browser or <code>null</code> if not
-     * defined.
-     */
-    public String getContentType();
+	/**
+	 * Obtain the content type passed by the browser or <code>null</code> if not
+	 * defined.
+	 */
+	public String getContentType();
 
-    /**
-     * Obtain the name of the field in the multipart form corresponding to this
-     * part.
-     */
-    public String getName();
+	/**
+	 * Obtain the name of the field in the multipart form corresponding to this
+	 * part.
+	 */
+	public String getName();
 
-    /**
-     * Obtain the size of this part.
-     */
-    public long getSize();
+	/**
+	 * Obtain the size of this part.
+	 */
+	public long getSize();
 
-    /**
-     * A convenience method to write an uploaded part to disk. The client code
-     * is not concerned with whether or not the part is stored in memory, or on
-     * disk in a temporary location. They just want to write the uploaded part
-     * to a file.
-     *
-     *  This method is not guaranteed to succeed if called more than once for
-     *  the same part. This allows a particular implementation to use, for
-     *  example, file renaming, where possible, rather than copying all of the
-     *  underlying data, thus gaining a significant performance benefit.
-     *
-     * @param fileName  The location into which the uploaded part should be
-     *                  stored. Relative locations are relative to {@link
-     *                  javax.servlet.MultipartConfigElement#getLocation()}
-     */
-    public void write(String fileName) throws IOException;
+	/**
+	 * A convenience method to write an uploaded part to disk. The client code
+	 * is not concerned with whether or not the part is stored in memory, or on
+	 * disk in a temporary location. They just want to write the uploaded part
+	 * to a file.
+	 *
+	 * This method is not guaranteed to succeed if called more than once for the
+	 * same part. This allows a particular implementation to use, for example,
+	 * file renaming, where possible, rather than copying all of the underlying
+	 * data, thus gaining a significant performance benefit.
+	 *
+	 * @param fileName
+	 *            The location into which the uploaded part should be stored.
+	 *            Relative locations are relative to
+	 *            {@link javax.servlet.MultipartConfigElement#getLocation()}
+	 */
+	public void write(String fileName) throws IOException;
 
-    /**
-     * Deletes the underlying storage for a part, including deleting any
-     * associated temporary disk file. Although the container will delete this
-     * storage automatically this method can be used to ensure that this is done
-     * at an earlier time, thus preserving system resources.
-     * <p>
-     * Containers are only required to delete the associated storage when the
-     * Part instance is garbage collected. Apache Tomcat will delete the
-     * associated storage when the associated request has finished processing.
-     * Behaviour of other containers may be different.
-     */
-    public void delete() throws IOException;
-    
-    /**
-     * Obtains the value of the specified part header as a String. If there are
-     * multiple headers with the same name, this method returns the first header
-     * in the part. The header name is case insensitive.
-     *
-     * @param name  Header name
-     * @return      The header value or <code>null</code> if the header is not
-     *              present
-     */
-    public String getHeader(String name);
+	/**
+	 * Deletes the underlying storage for a part, including deleting any
+	 * associated temporary disk file. Although the container will delete this
+	 * storage automatically this method can be used to ensure that this is done
+	 * at an earlier time, thus preserving system resources.
+	 * <p>
+	 * Containers are only required to delete the associated storage when the
+	 * Part instance is garbage collected. Apache Tomcat will delete the
+	 * associated storage when the associated request has finished processing.
+	 * Behaviour of other containers may be different.
+	 */
+	public void delete() throws IOException;
 
-    /**
-     * Obtain all the values of the specified part header. If the part did not
-     * include any headers of the specified name, this method returns an empty
-     * Collection. The header name is case insensitive.
-     */
-    public Collection<String> getHeaders(String name);
+	/**
+	 * Obtains the value of the specified part header as a String. If there are
+	 * multiple headers with the same name, this method returns the first header
+	 * in the part. The header name is case insensitive.
+	 *
+	 * @param name
+	 *            Header name
+	 * @return The header value or <code>null</code> if the header is not
+	 *         present
+	 */
+	public String getHeader(String name);
 
-    /**
-     * Returns a Collection of all the header names provided for this part.
-     */
-    public Collection<String> getHeaderNames();
+	/**
+	 * Obtain all the values of the specified part header. If the part did not
+	 * include any headers of the specified name, this method returns an empty
+	 * Collection. The header name is case insensitive.
+	 */
+	public Collection<String> getHeaders(String name);
+
+	/**
+	 * Returns a Collection of all the header names provided for this part.
+	 */
+	public Collection<String> getHeaderNames();
 }

@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.deploy;
-
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,198 +25,190 @@ import javax.servlet.DispatcherType;
 
 import org.apache.catalina.util.RequestUtil;
 
-
 /**
- * Representation of a filter mapping for a web application, as represented
- * in a <code>&lt;filter-mapping&gt;</code> element in the deployment
- * descriptor.  Each filter mapping must contain a filter name plus either
- * a URL pattern or a servlet name.
+ * Representation of a filter mapping for a web application, as represented in a
+ * <code>&lt;filter-mapping&gt;</code> element in the deployment descriptor.
+ * Each filter mapping must contain a filter name plus either a URL pattern or a
+ * servlet name.
  *
  * @author Craig R. McClanahan
  */
 public class FilterMap implements Serializable {
 
+	// ------------------------------------------------------------- Properties
 
-    // ------------------------------------------------------------- Properties
+	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The name of this filter to be executed when this mapping matches a
+	 * particular request.
+	 */
 
-    private static final long serialVersionUID = 1L;
-    
-    /**
-     * The name of this filter to be executed when this mapping matches
-     * a particular request.
-     */
-    
-    public static final int ERROR = 1;
-    public static final int FORWARD = 2;
-    public static final int INCLUDE = 4;
-    public static final int REQUEST = 8;
-    public static final int ASYNC = 16;
-    
-    // represents nothing having been set. This will be seen 
-    // as equal to a REQUEST
-    private static final int NOT_SET = 0;
-    
-    private int dispatcherMapping = NOT_SET;
-    
-    private String filterName = null;    
+	public static final int ERROR = 1;
+	public static final int FORWARD = 2;
+	public static final int INCLUDE = 4;
+	public static final int REQUEST = 8;
+	public static final int ASYNC = 16;
 
-    public String getFilterName() {
-        return (this.filterName);
-    }
+	// represents nothing having been set. This will be seen
+	// as equal to a REQUEST
+	private static final int NOT_SET = 0;
 
-    public void setFilterName(String filterName) {
-        this.filterName = filterName;
-    }
+	private int dispatcherMapping = NOT_SET;
 
+	private String filterName = null;
 
-    /**
-     * The servlet name this mapping matches.
-     */
-    private String[] servletNames = new String[0];
+	public String getFilterName() {
+		return (this.filterName);
+	}
 
-    public String[] getServletNames() {
-        if (matchAllServletNames) {
-            return new String[] {};
-        } else {
-            return (this.servletNames);
-        }
-    }
+	public void setFilterName(String filterName) {
+		this.filterName = filterName;
+	}
 
-    public void addServletName(String servletName) {
-        if ("*".equals(servletName)) {
-            this.matchAllServletNames = true;
-        } else {
-            String[] results = new String[servletNames.length + 1];
-            System.arraycopy(servletNames, 0, results, 0, servletNames.length);
-            results[servletNames.length] = servletName;
-            servletNames = results;
-        }
-    }
+	/**
+	 * The servlet name this mapping matches.
+	 */
+	private String[] servletNames = new String[0];
 
-    
-    /**
-     * The flag that indicates this mapping will match all url-patterns
-     */
-    private boolean matchAllUrlPatterns = false;
-    
-    public boolean getMatchAllUrlPatterns() {
-        return matchAllUrlPatterns;
-    }
-    
+	public String[] getServletNames() {
+		if (matchAllServletNames) {
+			return new String[] {};
+		} else {
+			return (this.servletNames);
+		}
+	}
 
-    /**
-     * The flag that indicates this mapping will match all servlet-names
-     */
-    private boolean matchAllServletNames = false;
-    
-    public boolean getMatchAllServletNames() {
-        return matchAllServletNames;
-    }
+	public void addServletName(String servletName) {
+		if ("*".equals(servletName)) {
+			this.matchAllServletNames = true;
+		} else {
+			String[] results = new String[servletNames.length + 1];
+			System.arraycopy(servletNames, 0, results, 0, servletNames.length);
+			results[servletNames.length] = servletName;
+			servletNames = results;
+		}
+	}
 
-    
-    /**
-     * The URL pattern this mapping matches.
-     */
-    private String[] urlPatterns = new String[0];
+	/**
+	 * The flag that indicates this mapping will match all url-patterns
+	 */
+	private boolean matchAllUrlPatterns = false;
 
-    public String[] getURLPatterns() {
-        if (matchAllUrlPatterns) {
-            return new String[] {};
-        } else {
-            return (this.urlPatterns);
-        }
-    }
+	public boolean getMatchAllUrlPatterns() {
+		return matchAllUrlPatterns;
+	}
 
-    public void addURLPattern(String urlPattern) {
-        if ("*".equals(urlPattern)) {
-            this.matchAllUrlPatterns = true;
-        } else {
-            String[] results = new String[urlPatterns.length + 1];
-            System.arraycopy(urlPatterns, 0, results, 0, urlPatterns.length);
-            results[urlPatterns.length] = RequestUtil.URLDecode(urlPattern);
-            urlPatterns = results;
-        }
-    }
-    
-    /**
-     *
-     * This method will be used to set the current state of the FilterMap
-     * representing the state of when filters should be applied.
-     */
-    public void setDispatcher(String dispatcherString) {
-        String dispatcher = dispatcherString.toUpperCase(Locale.ENGLISH);
-        
-        if (dispatcher.equals(DispatcherType.FORWARD.name())) {
-            // apply FORWARD to the global dispatcherMapping.
-            dispatcherMapping |= FORWARD;
-        } else if (dispatcher.equals(DispatcherType.INCLUDE.name())) {
-            // apply INCLUDE to the global dispatcherMapping.
-            dispatcherMapping |= INCLUDE;
-        } else if (dispatcher.equals(DispatcherType.REQUEST.name())) {
-            // apply REQUEST to the global dispatcherMapping.
-            dispatcherMapping |= REQUEST;
-        }  else if (dispatcher.equals(DispatcherType.ERROR.name())) {
-            // apply ERROR to the global dispatcherMapping.
-            dispatcherMapping |= ERROR;
-        }  else if (dispatcher.equals(DispatcherType.ASYNC.name())) {
-            // apply ERROR to the global dispatcherMapping.
-            dispatcherMapping |= ASYNC;
-        }
-    }
-    
-    public int getDispatcherMapping() {
-        // per the SRV.6.2.5 absence of any dispatcher elements is
-        // equivalent to a REQUEST value
-        if (dispatcherMapping == NOT_SET) return REQUEST;
-        
-        return dispatcherMapping; 
-    }
+	/**
+	 * The flag that indicates this mapping will match all servlet-names
+	 */
+	private boolean matchAllServletNames = false;
 
-    public String[] getDispatcherNames() {
-        ArrayList<String> result = new ArrayList<String>();
-        if ((dispatcherMapping & FORWARD) > 0) {
-            result.add(DispatcherType.FORWARD.name());
-        }
-        if ((dispatcherMapping & INCLUDE) > 0) {
-            result.add(DispatcherType.INCLUDE.name());
-        }
-        if ((dispatcherMapping & REQUEST) > 0) {
-            result.add(DispatcherType.REQUEST.name());
-        }
-        if ((dispatcherMapping & ERROR) > 0) {
-            result.add(DispatcherType.ERROR.name());
-        }
-        if ((dispatcherMapping & ASYNC) > 0) {
-            result.add(DispatcherType.ASYNC.name());
-        }
-        return result.toArray(new String[result.size()]);
-    }
+	public boolean getMatchAllServletNames() {
+		return matchAllServletNames;
+	}
 
-    // --------------------------------------------------------- Public Methods
+	/**
+	 * The URL pattern this mapping matches.
+	 */
+	private String[] urlPatterns = new String[0];
 
+	public String[] getURLPatterns() {
+		if (matchAllUrlPatterns) {
+			return new String[] {};
+		} else {
+			return (this.urlPatterns);
+		}
+	}
 
-    /**
-     * Render a String representation of this object.
-     */
-    @Override
-    public String toString() {
+	public void addURLPattern(String urlPattern) {
+		if ("*".equals(urlPattern)) {
+			this.matchAllUrlPatterns = true;
+		} else {
+			String[] results = new String[urlPatterns.length + 1];
+			System.arraycopy(urlPatterns, 0, results, 0, urlPatterns.length);
+			results[urlPatterns.length] = RequestUtil.URLDecode(urlPattern);
+			urlPatterns = results;
+		}
+	}
 
-        StringBuilder sb = new StringBuilder("FilterMap[");
-        sb.append("filterName=");
-        sb.append(this.filterName);
-        for (int i = 0; i < servletNames.length; i++) {
-            sb.append(", servletName=");
-            sb.append(servletNames[i]);
-        }
-        for (int i = 0; i < urlPatterns.length; i++) {
-            sb.append(", urlPattern=");
-            sb.append(urlPatterns[i]);
-        }
-        sb.append("]");
-        return (sb.toString());
+	/**
+	 *
+	 * This method will be used to set the current state of the FilterMap
+	 * representing the state of when filters should be applied.
+	 */
+	public void setDispatcher(String dispatcherString) {
+		String dispatcher = dispatcherString.toUpperCase(Locale.ENGLISH);
 
-    }
+		if (dispatcher.equals(DispatcherType.FORWARD.name())) {
+			// apply FORWARD to the global dispatcherMapping.
+			dispatcherMapping |= FORWARD;
+		} else if (dispatcher.equals(DispatcherType.INCLUDE.name())) {
+			// apply INCLUDE to the global dispatcherMapping.
+			dispatcherMapping |= INCLUDE;
+		} else if (dispatcher.equals(DispatcherType.REQUEST.name())) {
+			// apply REQUEST to the global dispatcherMapping.
+			dispatcherMapping |= REQUEST;
+		} else if (dispatcher.equals(DispatcherType.ERROR.name())) {
+			// apply ERROR to the global dispatcherMapping.
+			dispatcherMapping |= ERROR;
+		} else if (dispatcher.equals(DispatcherType.ASYNC.name())) {
+			// apply ERROR to the global dispatcherMapping.
+			dispatcherMapping |= ASYNC;
+		}
+	}
 
+	public int getDispatcherMapping() {
+		// per the SRV.6.2.5 absence of any dispatcher elements is
+		// equivalent to a REQUEST value
+		if (dispatcherMapping == NOT_SET)
+			return REQUEST;
+
+		return dispatcherMapping;
+	}
+
+	public String[] getDispatcherNames() {
+		ArrayList<String> result = new ArrayList<String>();
+		if ((dispatcherMapping & FORWARD) > 0) {
+			result.add(DispatcherType.FORWARD.name());
+		}
+		if ((dispatcherMapping & INCLUDE) > 0) {
+			result.add(DispatcherType.INCLUDE.name());
+		}
+		if ((dispatcherMapping & REQUEST) > 0) {
+			result.add(DispatcherType.REQUEST.name());
+		}
+		if ((dispatcherMapping & ERROR) > 0) {
+			result.add(DispatcherType.ERROR.name());
+		}
+		if ((dispatcherMapping & ASYNC) > 0) {
+			result.add(DispatcherType.ASYNC.name());
+		}
+		return result.toArray(new String[result.size()]);
+	}
+
+	// --------------------------------------------------------- Public Methods
+
+	/**
+	 * Render a String representation of this object.
+	 */
+	@Override
+	public String toString() {
+
+		StringBuilder sb = new StringBuilder("FilterMap[");
+		sb.append("filterName=");
+		sb.append(this.filterName);
+		for (int i = 0; i < servletNames.length; i++) {
+			sb.append(", servletName=");
+			sb.append(servletNames[i]);
+		}
+		for (int i = 0; i < urlPatterns.length; i++) {
+			sb.append(", urlPattern=");
+			sb.append(urlPatterns[i]);
+		}
+		sb.append("]");
+		return (sb.toString());
+
+	}
 
 }

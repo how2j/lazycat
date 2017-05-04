@@ -17,56 +17,51 @@
 package org.apache.catalina.deploy;
 
 /**
- * Enables additional attributes other than just the name to be recorded for
- * an application listener.
+ * Enables additional attributes other than just the name to be recorded for an
+ * application listener.
  */
 public class ApplicationListener {
 
-    private final String className;
-    private final boolean pluggabilityBlocked;
+	private final String className;
+	private final boolean pluggabilityBlocked;
 
-    public ApplicationListener(String className,
-            boolean pluggabilityBlocked) {
-        this.className = className;
-        this.pluggabilityBlocked = pluggabilityBlocked;
-    }
+	public ApplicationListener(String className, boolean pluggabilityBlocked) {
+		this.className = className;
+		this.pluggabilityBlocked = pluggabilityBlocked;
+	}
 
+	public String getClassName() {
+		return className;
+	}
 
-    public String getClassName() {
-        return className;
-    }
+	public boolean isPluggabilityBlocked() {
+		return pluggabilityBlocked;
+	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((className == null) ? 0 : className.hashCode());
+		return result;
+	}
 
-    public boolean isPluggabilityBlocked() {
-        return pluggabilityBlocked;
-    }
-
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((className == null) ? 0 : className.hashCode());
-        return result;
-    }
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof ApplicationListener)) {
-            return false;
-        }
-        ApplicationListener other = (ApplicationListener) obj;
-        if (className == null) {
-            if (other.className != null) {
-                return false;
-            }
-        } else if (!className.equals(other.className)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof ApplicationListener)) {
+			return false;
+		}
+		ApplicationListener other = (ApplicationListener) obj;
+		if (className == null) {
+			if (other.className != null) {
+				return false;
+			}
+		} else if (!className.equals(other.className)) {
+			return false;
+		}
+		return true;
+	}
 }

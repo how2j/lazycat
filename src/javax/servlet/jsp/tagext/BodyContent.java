@@ -46,80 +46,80 @@ import javax.servlet.jsp.JspWriter;
  */
 public abstract class BodyContent extends JspWriter {
 
-    /**
-     * Protected constructor. Unbounded buffer, no autoflushing.
-     * 
-     * @param e
-     *            the enclosing JspWriter
-     */
-    protected BodyContent(JspWriter e) {
-        super(UNBOUNDED_BUFFER, false);
-        this.enclosingWriter = e;
-    }
+	/**
+	 * Protected constructor. Unbounded buffer, no autoflushing.
+	 * 
+	 * @param e
+	 *            the enclosing JspWriter
+	 */
+	protected BodyContent(JspWriter e) {
+		super(UNBOUNDED_BUFFER, false);
+		this.enclosingWriter = e;
+	}
 
-    /**
-     * Redefined flush() so it is not legal.
-     * <p>
-     * It is not valid to flush a BodyContent because there is no backing stream
-     * behind it.
-     * 
-     * @throws IOException
-     *             always thrown
-     */
-    @Override
-    public void flush() throws IOException {
-        throw new IOException("Illegal to flush within a custom tag");
-    }
+	/**
+	 * Redefined flush() so it is not legal.
+	 * <p>
+	 * It is not valid to flush a BodyContent because there is no backing stream
+	 * behind it.
+	 * 
+	 * @throws IOException
+	 *             always thrown
+	 */
+	@Override
+	public void flush() throws IOException {
+		throw new IOException("Illegal to flush within a custom tag");
+	}
 
-    /**
-     * Clear the body without throwing any exceptions.
-     */
-    public void clearBody() {
-        try {
-            this.clear();
-        } catch (IOException ex) {
-            // TODO -- clean this one up.
-            throw new Error("internal error!;");
-        }
-    }
+	/**
+	 * Clear the body without throwing any exceptions.
+	 */
+	public void clearBody() {
+		try {
+			this.clear();
+		} catch (IOException ex) {
+			// TODO -- clean this one up.
+			throw new Error("internal error!;");
+		}
+	}
 
-    /**
-     * Return the value of this BodyContent as a Reader.
-     * 
-     * @return the value of this BodyContent as a Reader
-     */
-    public abstract Reader getReader();
+	/**
+	 * Return the value of this BodyContent as a Reader.
+	 * 
+	 * @return the value of this BodyContent as a Reader
+	 */
+	public abstract Reader getReader();
 
-    /**
-     * Return the value of the BodyContent as a String.
-     * 
-     * @return the value of the BodyContent as a String
-     */
-    public abstract String getString();
+	/**
+	 * Return the value of the BodyContent as a String.
+	 * 
+	 * @return the value of the BodyContent as a String
+	 */
+	public abstract String getString();
 
-    /**
-     * Write the contents of this BodyContent into a Writer. Subclasses may
-     * optimize common invocation patterns.
-     * 
-     * @param out
-     *            The writer into which to place the contents of this body
-     *            evaluation
-     * @throws IOException
-     *             if an I/O error occurred while writing the contents of this
-     *             BodyContent to the given Writer
-     */
-    public abstract void writeOut(Writer out) throws IOException;
+	/**
+	 * Write the contents of this BodyContent into a Writer. Subclasses may
+	 * optimize common invocation patterns.
+	 * 
+	 * @param out
+	 *            The writer into which to place the contents of this body
+	 *            evaluation
+	 * @throws IOException
+	 *             if an I/O error occurred while writing the contents of this
+	 *             BodyContent to the given Writer
+	 */
+	public abstract void writeOut(Writer out) throws IOException;
 
-    /**
-     * Get the enclosing JspWriter.
-     * 
-     * @return the enclosing JspWriter passed at construction time
-     */
-    public JspWriter getEnclosingWriter() {
-        return enclosingWriter;
-    }
+	/**
+	 * Get the enclosing JspWriter.
+	 * 
+	 * @return the enclosing JspWriter passed at construction time
+	 */
+	public JspWriter getEnclosingWriter() {
+		return enclosingWriter;
+	}
 
-    // private fields
+	// private fields
 
-    private final JspWriter enclosingWriter;
+	private final JspWriter enclosingWriter;
 }

@@ -36,116 +36,103 @@ import org.apache.tomcat.util.threads.ThreadPoolExecutor;
  */
 public class AsyncChannelGroupUtil {
 
-    private static final StringManager sm =
-            StringManager.getManager(Constants.PACKAGE_NAME);
+	private static final StringManager sm = StringManager.getManager(Constants.PACKAGE_NAME);
 
-    private static AsynchronousChannelGroup group = null;
-    private static int usageCount = 0;
-    private static final Object lock = new Object();
+	private static AsynchronousChannelGroup group = null;
+	private static int usageCount = 0;
+	private static final Object lock = new Object();
 
+	private AsyncChannelGroupUtil() {
+		// Hide the default constructor
+	}
 
-    private AsyncChannelGroupUtil() {
-        // Hide the default constructor
-    }
+	public static AsynchronousChannelGroup register() {
+		synchronized (lock) {
+			if (usageCount == 0) {
+				group = createAsynchronousChannelGroup();
+			}
+			usageCount++;
+			return group;
+		}
+	}
 
+	public static void unregister() {
+		synchronized (lock) {
+			usageCount--;
+			if (usageCount == 0) {
+				group.shutdown();
+				group = null;
+			}
+		}
+	}
 
-    public static AsynchronousChannelGroup register() {
-        synchronized (lock) {
-            if (usageCount == 0) {
-                group = createAsynchronousChannelGroup();
-            }
-            usageCount++;
-            return group;
-        }
-    }
+	private static AsynchronousChannelGroup createAsynchronousChannelGroup() {
+		// Need to do this with the right thread context class loader else the
+		// first web app to call this will trigger a leak
+		ClassLoader original = Thread.currentThread().getContextClassLoader();
 
+		try {
+			Thread.currentThread().setContextClassLoader(AsyncIOThreadFactory.class.getClassLoader());
 
-    public static void unregister() {
-        synchronized (lock) {
-            usageCount--;
-            if (usageCount == 0) {
-                group.shutdown();
-                group = null;
-            }
-        }
-    }
+			// These are the same settings as the default
+			// AsynchronousChannelGroup
+			int initialSize = Runtime.getRuntime().availableProcessors();
+			ExecutorService executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, Long.MAX_VALUE,
+					TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(), new AsyncIOThreadFactory());
 
+			try {
+				return AsynchronousChannelGroup.withCachedThreadPool(executorService, initialSize);
+			} catch (IOException e) {
+				// No good reason for this to happen.
+				throw new IllegalStateException(sm.getString("asyncChannelGroup.createFail"));
+			}
+		} finally {
+			Thread.currentThread().setContextClassLoader(original);
+		}
+	}
 
-    private static AsynchronousChannelGroup createAsynchronousChannelGroup() {
-        // Need to do this with the right thread context class loader else the
-        // first web app to call this will trigger a leak
-        ClassLoader original = Thread.currentThread().getContextClassLoader();
+	private static class AsyncIOThreadFactory implements ThreadFactory {
 
-        try {
-            Thread.currentThread().setContextClassLoader(
-                    AsyncIOThreadFactory.class.getClassLoader());
+		static {
+			// Load NewThreadPrivilegedAction since newThread() will not be able
+			// to if called from an InnocuousThread.
+			// See https://bz.apache.org/bugzilla/show_bug.cgi?id=57490
+			NewThreadPrivilegedAction.load();
+		}
 
-            // These are the same settings as the default
-            // AsynchronousChannelGroup
-            int initialSize = Runtime.getRuntime().availableProcessors();
-            ExecutorService executorService = new ThreadPoolExecutor(
-                    0,
-                    Integer.MAX_VALUE,
-                    Long.MAX_VALUE, TimeUnit.MILLISECONDS,
-                    new SynchronousQueue<Runnable>(),
-                    new AsyncIOThreadFactory());
+		@Override
+		public Thread newThread(final Runnable r) {
+			// Create the new Thread within a doPrivileged block to ensure that
+			// the thread inherits the current ProtectionDomain which is
+			// essential to be able to use this with a Java Applet. See
+			// https://bz.apache.org/bugzilla/show_bug.cgi?id=57091
+			return AccessController.doPrivileged(new NewThreadPrivilegedAction(r));
+		}
 
-            try {
-                return AsynchronousChannelGroup.withCachedThreadPool(
-                        executorService, initialSize);
-            } catch (IOException e) {
-                // No good reason for this to happen.
-                throw new IllegalStateException(sm.getString("asyncChannelGroup.createFail"));
-            }
-        } finally {
-            Thread.currentThread().setContextClassLoader(original);
-        }
-    }
+		// Non-anonymous class so that AsyncIOThreadFactory can load it
+		// explicitly
+		private static class NewThreadPrivilegedAction implements PrivilegedAction<Thread> {
 
+			private static AtomicInteger count = new AtomicInteger(0);
 
-    private static class AsyncIOThreadFactory implements ThreadFactory {
+			private final Runnable r;
 
-        static {
-            // Load NewThreadPrivilegedAction since newThread() will not be able
-            // to if called from an InnocuousThread.
-            // See https://bz.apache.org/bugzilla/show_bug.cgi?id=57490
-            NewThreadPrivilegedAction.load();
-        }
+			public NewThreadPrivilegedAction(Runnable r) {
+				this.r = r;
+			}
 
+			@Override
+			public Thread run() {
+				Thread t = new Thread(r);
+				t.setName("WebSocketClient-AsyncIO-" + count.incrementAndGet());
+				t.setContextClassLoader(this.getClass().getClassLoader());
+				t.setDaemon(true);
+				return t;
+			}
 
-        @Override
-        public Thread newThread(final Runnable r) {
-            // Create the new Thread within a doPrivileged block to ensure that
-            // the thread inherits the current ProtectionDomain which is
-            // essential to be able to use this with a Java Applet. See
-            // https://bz.apache.org/bugzilla/show_bug.cgi?id=57091
-            return AccessController.doPrivileged(new NewThreadPrivilegedAction(r));
-        }
-
-        // Non-anonymous class so that AsyncIOThreadFactory can load it
-        // explicitly
-        private static class NewThreadPrivilegedAction implements PrivilegedAction<Thread> {
-
-            private static AtomicInteger count = new AtomicInteger(0);
-
-            private final Runnable r;
-
-            public NewThreadPrivilegedAction(Runnable r) {
-                this.r = r;
-            }
-
-            @Override
-            public Thread run() {
-                Thread t = new Thread(r);
-                t.setName("WebSocketClient-AsyncIO-" + count.incrementAndGet());
-                t.setContextClassLoader(this.getClass().getClassLoader());
-                t.setDaemon(true);
-                return t;
-            }
-
-            private static void load() {
-                // NO-OP. Just provides a hook to enable the class to be loaded
-            }
-        }
-    }
+			private static void load() {
+				// NO-OP. Just provides a hook to enable the class to be loaded
+			}
+		}
+	}
 }

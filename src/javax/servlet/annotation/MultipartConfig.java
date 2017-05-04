@@ -45,24 +45,24 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MultipartConfig {
 
-    /**
-     * @return location in which the Container stores temporary files
-     */
-    String location() default "";
+	/**
+	 * @return location in which the Container stores temporary files
+	 */
+	String location() default "";
 
-    /**
-     * @return the maximum size allowed for uploaded files (in bytes)
-     */
-    long maxFileSize() default -1L;
+	/**
+	 * @return the maximum size allowed for uploaded files (in bytes)
+	 */
+	long maxFileSize() default -1L;
 
-    /**
-     * @return the maximum size of the request allowed for {@code
-     *         multipart/form-data}
-     */
-    long maxRequestSize() default -1L;
+	/**
+	 * @return the maximum size of the request allowed for {@code
+	 *         multipart/form-data}
+	 */
+	long maxRequestSize() default -1L;
 
-    /**
-     * @return the size threshold at which the file will be written to the disk
-     */
-    int fileSizeThreshold() default 0;
+	/**
+	 * @return the size threshold at which the file will be written to the disk
+	 */
+	int fileSizeThreshold() default 0;
 }

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.loader;
 
 import java.net.URL;
@@ -27,20 +26,17 @@ import java.net.URLClassLoader;
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
- * @deprecated  Unused. Will be removed in Tomcat 8.0.x.
+ * @deprecated Unused. Will be removed in Tomcat 8.0.x.
  */
 @Deprecated
-public class StandardClassLoader
-    extends URLClassLoader
-    implements StandardClassLoaderMBean {
+public class StandardClassLoader extends URLClassLoader implements StandardClassLoaderMBean {
 
-    public StandardClassLoader(URL repositories[]) {
-        super(repositories);
-    }
+	public StandardClassLoader(URL repositories[]) {
+		super(repositories);
+	}
 
-    public StandardClassLoader(URL repositories[], ClassLoader parent) {
-        super(repositories, parent);
-    }
+	public StandardClassLoader(URL repositories[], ClassLoader parent) {
+		super(repositories, parent);
+	}
 
 }
-

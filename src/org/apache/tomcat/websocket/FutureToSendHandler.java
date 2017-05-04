@@ -27,101 +27,90 @@ import javax.websocket.SendResult;
 
 import org.apache.tomcat.util.res.StringManager;
 
-
 /**
  * Converts a Future to a SendHandler.
  */
 class FutureToSendHandler implements Future<Void>, SendHandler {
 
-    private static final StringManager sm = StringManager.getManager(Constants.PACKAGE_NAME);
+	private static final StringManager sm = StringManager.getManager(Constants.PACKAGE_NAME);
 
-    private final CountDownLatch latch = new CountDownLatch(1);
-    private final WsSession wsSession;
-    private final boolean closeMessage;
-    private volatile SendResult result = null;
+	private final CountDownLatch latch = new CountDownLatch(1);
+	private final WsSession wsSession;
+	private final boolean closeMessage;
+	private volatile SendResult result = null;
 
-    public FutureToSendHandler(WsSession wsSession) {
-        this(wsSession, false);
-    }
+	public FutureToSendHandler(WsSession wsSession) {
+		this(wsSession, false);
+	}
 
+	public FutureToSendHandler(WsSession wsSession, boolean closeMessage) {
+		this.wsSession = wsSession;
+		this.closeMessage = closeMessage;
+	}
 
-    public FutureToSendHandler(WsSession wsSession, boolean closeMessage) {
-        this.wsSession = wsSession;
-        this.closeMessage = closeMessage;
-    }
+	public boolean isCloseMessage() {
+		return closeMessage;
+	}
 
+	// --------------------------------------------------------- SendHandler
 
-    public boolean isCloseMessage() {
-        return closeMessage;
-    }
+	@Override
+	public void onResult(SendResult result) {
 
+		this.result = result;
+		latch.countDown();
+	}
 
-    // --------------------------------------------------------- SendHandler
+	// -------------------------------------------------------------- Future
 
-    @Override
-    public void onResult(SendResult result) {
+	@Override
+	public boolean cancel(boolean mayInterruptIfRunning) {
+		// Cancelling the task is not supported
+		return false;
+	}
 
-        this.result = result;
-        latch.countDown();
-    }
+	@Override
+	public boolean isCancelled() {
+		// Cancelling the task is not supported
+		return false;
+	}
 
+	@Override
+	public boolean isDone() {
+		return latch.getCount() == 0;
+	}
 
-    // -------------------------------------------------------------- Future
+	@Override
+	public Void get() throws InterruptedException, ExecutionException {
+		try {
+			wsSession.registerFuture(this);
+			latch.await();
+		} finally {
+			wsSession.unregisterFuture(this);
+		}
+		if (result.getException() != null) {
+			throw new ExecutionException(result.getException());
+		}
+		return null;
+	}
 
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        // Cancelling the task is not supported
-        return false;
-    }
+	@Override
+	public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+		boolean retval = false;
+		try {
+			wsSession.registerFuture(this);
+			retval = latch.await(timeout, unit);
+		} finally {
+			wsSession.unregisterFuture(this);
 
-    @Override
-    public boolean isCancelled() {
-        // Cancelling the task is not supported
-        return false;
-    }
-
-    @Override
-    public boolean isDone() {
-        return latch.getCount() == 0;
-    }
-
-    @Override
-    public Void get() throws InterruptedException,
-            ExecutionException {
-        try {
-            wsSession.registerFuture(this);
-            latch.await();
-        } finally {
-            wsSession.unregisterFuture(this);
-        }
-        if (result.getException() != null) {
-            throw new ExecutionException(result.getException());
-        }
-        return null;
-    }
-
-    @Override
-    public Void get(long timeout, TimeUnit unit)
-            throws InterruptedException, ExecutionException,
-            TimeoutException {
-        boolean retval = false;
-        try {
-            wsSession.registerFuture(this);
-            retval = latch.await(timeout, unit);
-        } finally {
-            wsSession.unregisterFuture(this);
-
-        }
-        if (retval == false) {
-            throw new TimeoutException(sm.getString("futureToSendHandler.timeout",
-                    Long.valueOf(timeout), unit.toString().toLowerCase()));
-        }
-        if (result.getException() != null) {
-            throw new ExecutionException(result.getException());
-        }
-        return null;
-    }
+		}
+		if (retval == false) {
+			throw new TimeoutException(
+					sm.getString("futureToSendHandler.timeout", Long.valueOf(timeout), unit.toString().toLowerCase()));
+		}
+		if (result.getException() != null) {
+			throw new ExecutionException(result.getException());
+		}
+		return null;
+	}
 }
-
-
-

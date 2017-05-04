@@ -37,47 +37,47 @@ import java.io.InputStream;
  */
 public abstract class ServletInputStream extends InputStream {
 
-    /**
-     * Does nothing, because this is an abstract class.
-     */
-    protected ServletInputStream() {
-        // NOOP
-    }
+	/**
+	 * Does nothing, because this is an abstract class.
+	 */
+	protected ServletInputStream() {
+		// NOOP
+	}
 
-    /**
-     * Reads the input stream, one line at a time. Starting at an offset, reads
-     * bytes into an array, until it reads a certain number of bytes or reaches
-     * a newline character, which it reads into the array as well.
-     * <p>
-     * This method returns -1 if it reaches the end of the input stream before
-     * reading the maximum number of bytes.
-     * 
-     * @param b
-     *            an array of bytes into which data is read
-     * @param off
-     *            an integer specifying the character at which this method
-     *            begins reading
-     * @param len
-     *            an integer specifying the maximum number of bytes to read
-     * @return an integer specifying the actual number of bytes read, or -1 if
-     *         the end of the stream is reached
-     * @exception IOException
-     *                if an input or output exception has occurred
-     */
-    public int readLine(byte[] b, int off, int len) throws IOException {
+	/**
+	 * Reads the input stream, one line at a time. Starting at an offset, reads
+	 * bytes into an array, until it reads a certain number of bytes or reaches
+	 * a newline character, which it reads into the array as well.
+	 * <p>
+	 * This method returns -1 if it reaches the end of the input stream before
+	 * reading the maximum number of bytes.
+	 * 
+	 * @param b
+	 *            an array of bytes into which data is read
+	 * @param off
+	 *            an integer specifying the character at which this method
+	 *            begins reading
+	 * @param len
+	 *            an integer specifying the maximum number of bytes to read
+	 * @return an integer specifying the actual number of bytes read, or -1 if
+	 *         the end of the stream is reached
+	 * @exception IOException
+	 *                if an input or output exception has occurred
+	 */
+	public int readLine(byte[] b, int off, int len) throws IOException {
 
-        if (len <= 0) {
-            return 0;
-        }
-        int count = 0, c;
+		if (len <= 0) {
+			return 0;
+		}
+		int count = 0, c;
 
-        while ((c = read()) != -1) {
-            b[off++] = (byte) c;
-            count++;
-            if (c == '\n' || count == len) {
-                break;
-            }
-        }
-        return count > 0 ? count : -1;
-    }
+		while ((c = read()) != -1) {
+			b[off++] = (byte) c;
+			count++;
+			if (c == '\n' || count == len) {
+				break;
+			}
+		}
+		return count > 0 ? count : -1;
+	}
 }

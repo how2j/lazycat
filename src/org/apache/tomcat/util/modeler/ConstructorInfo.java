@@ -17,37 +17,34 @@
 
 package org.apache.tomcat.util.modeler;
 
-
 import javax.management.MBeanConstructorInfo;
 
-
 /**
- * <p>Internal configuration information for a <code>Constructor</code>
- * descriptor.</p>
+ * <p>
+ * Internal configuration information for a <code>Constructor</code> descriptor.
+ * </p>
  *
  * @author Craig R. McClanahan
  */
 public class ConstructorInfo extends OperationInfo {
-    static final long serialVersionUID = -5735336213417238238L;
-    // ------------------------------------------------------------- Properties
+	static final long serialVersionUID = -5735336213417238238L;
+	// ------------------------------------------------------------- Properties
 
-    public ConstructorInfo() {
-    }
+	public ConstructorInfo() {
+	}
 
-    // --------------------------------------------------------- Public Methods
+	// --------------------------------------------------------- Public Methods
 
-
-    /**
-     * Create and return a <code>ModelMBeanConstructorInfo</code> object that
-     * corresponds to the attribute described by this instance.
-     */
-    public MBeanConstructorInfo createConstructorInfo() {
-        // Return our cached information (if any)
-        if (info == null) {
-            info = new MBeanConstructorInfo(getName(), getDescription(), 
-                    getMBeanParameterInfo());
-        }
-        return (MBeanConstructorInfo)info;
-    }
+	/**
+	 * Create and return a <code>ModelMBeanConstructorInfo</code> object that
+	 * corresponds to the attribute described by this instance.
+	 */
+	public MBeanConstructorInfo createConstructorInfo() {
+		// Return our cached information (if any)
+		if (info == null) {
+			info = new MBeanConstructorInfo(getName(), getDescription(), getMBeanParameterInfo());
+		}
+		return (MBeanConstructorInfo) info;
+	}
 
 }

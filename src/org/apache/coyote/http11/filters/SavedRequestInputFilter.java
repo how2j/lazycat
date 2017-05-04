@@ -29,90 +29,90 @@ import org.apache.tomcat.util.buf.ByteChunk;
  */
 public class SavedRequestInputFilter implements InputFilter {
 
-    /**
-     * The original request body.
-     */
-    protected ByteChunk input = null;
+	/**
+	 * The original request body.
+	 */
+	protected ByteChunk input = null;
 
-    /**
-     * Create a new SavedRequestInputFilter.
-     * 
-     * @param input The saved request body to be replayed.
-     */
-    public SavedRequestInputFilter(ByteChunk input) {
-        this.input = input;
-    }
+	/**
+	 * Create a new SavedRequestInputFilter.
+	 * 
+	 * @param input
+	 *            The saved request body to be replayed.
+	 */
+	public SavedRequestInputFilter(ByteChunk input) {
+		this.input = input;
+	}
 
-    /**
-     * Read bytes.
-     */
-    @Override
-    public int doRead(ByteChunk chunk, org.apache.coyote.Request request)
-            throws IOException {
-        int writeLength = 0;
-        
-        if (chunk.getLimit() > 0 && chunk.getLimit() < input.getLength()) {
-            writeLength = chunk.getLimit();
-        } else {
-            writeLength = input.getLength();
-        }
-        
-        if(input.getOffset()>= input.getEnd())
-            return -1;
-        
-        input.substract(chunk.getBuffer(), 0, writeLength);
-        chunk.setOffset(0);
-        chunk.setEnd(writeLength);
-        
-        return writeLength;
-    }
+	/**
+	 * Read bytes.
+	 */
+	@Override
+	public int doRead(ByteChunk chunk, org.apache.coyote.Request request) throws IOException {
+		int writeLength = 0;
 
-    /**
-     * Set the content length on the request.
-     */
-    @Override
-    public void setRequest(org.apache.coyote.Request request) {
-        request.setContentLength(input.getLength());
-    }
+		if (chunk.getLimit() > 0 && chunk.getLimit() < input.getLength()) {
+			writeLength = chunk.getLimit();
+		} else {
+			writeLength = input.getLength();
+		}
 
-    /**
-     * Make the filter ready to process the next request.
-     */
-    @Override
-    public void recycle() {
-        input = null;
-    }
+		if (input.getOffset() >= input.getEnd())
+			return -1;
 
-    /**
-     * Return the name of the associated encoding; here, the value is null.
-     */
-    @Override
-    public ByteChunk getEncodingName() {
-        return null;
-    }
+		input.substract(chunk.getBuffer(), 0, writeLength);
+		chunk.setOffset(0);
+		chunk.setEnd(writeLength);
 
-    /**
-     * Set the next buffer in the filter pipeline (has no effect).
-     */
-    @Override
-    public void setBuffer(InputBuffer buffer) {
-        // NOOP since this filter will be providing the request body
-    }
+		return writeLength;
+	}
 
-    /**
-     * Amount of bytes still available in a buffer.
-     */
-    @Override
-    public int available() {
-        return input.getLength();
-    }
-    
-    /**
-     * End the current request (has no effect).
-     */
-    @Override
-    public long end() throws IOException {
-        return 0;
-    }
+	/**
+	 * Set the content length on the request.
+	 */
+	@Override
+	public void setRequest(org.apache.coyote.Request request) {
+		request.setContentLength(input.getLength());
+	}
+
+	/**
+	 * Make the filter ready to process the next request.
+	 */
+	@Override
+	public void recycle() {
+		input = null;
+	}
+
+	/**
+	 * Return the name of the associated encoding; here, the value is null.
+	 */
+	@Override
+	public ByteChunk getEncodingName() {
+		return null;
+	}
+
+	/**
+	 * Set the next buffer in the filter pipeline (has no effect).
+	 */
+	@Override
+	public void setBuffer(InputBuffer buffer) {
+		// NOOP since this filter will be providing the request body
+	}
+
+	/**
+	 * Amount of bytes still available in a buffer.
+	 */
+	@Override
+	public int available() {
+		return input.getLength();
+	}
+
+	/**
+	 * End the current request (has no effect).
+	 */
+	@Override
+	public long end() throws IOException {
+		return 0;
+	}
 
 }

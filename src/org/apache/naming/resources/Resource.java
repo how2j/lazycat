@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
+ */
 
 package org.apache.naming.resources;
 
@@ -27,86 +27,75 @@ import java.io.InputStream;
  * @author <a href="mailto:remm@apache.org">Remy Maucherat</a>
  */
 public class Resource {
-    
-    
-    // ----------------------------------------------------------- Constructors
-    
-    
-    public Resource() {
-        // NO-OP
-    }
-    
-    
-    public Resource(InputStream inputStream) {
-        setContent(inputStream);
-    }
-    
-    
-    public Resource(byte[] binaryContent) {
-        setContent(binaryContent);
-    }
-    
-    
-    // ----------------------------------------------------- Instance Variables
-    
-    
-    /**
-     * Binary content.
-     */
-    protected byte[] binaryContent = null;
-    
-    
-    /**
-     * Input stream.
-     */
-    protected InputStream inputStream = null;
-    
-    
-    // ------------------------------------------------------------- Properties
-    
-    
-    /**
-     * Content accessor.
-     * 
-     * @return InputStream
-     * @throws IOException
-     */
-    public InputStream streamContent() throws IOException {
-        if (binaryContent != null) {
-            return new ByteArrayInputStream(binaryContent);
-        }
-        return inputStream;
-    }
-    
-    
-    /**
-     * Content accessor.
-     * 
-     * @return binary content
-     */
-    public byte[] getContent() {
-        return binaryContent;
-    }
-    
-    
-    /**
-     * Content mutator.
-     * 
-     * @param inputStream New input stream
-     */
-    public void setContent(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-    
-    
-    /**
-     * Content mutator.
-     * 
-     * @param binaryContent New bin content
-     */
-    public void setContent(byte[] binaryContent) {
-        this.binaryContent = binaryContent;
-    }
-    
-    
+
+	// ----------------------------------------------------------- Constructors
+
+	public Resource() {
+		// NO-OP
+	}
+
+	public Resource(InputStream inputStream) {
+		setContent(inputStream);
+	}
+
+	public Resource(byte[] binaryContent) {
+		setContent(binaryContent);
+	}
+
+	// ----------------------------------------------------- Instance Variables
+
+	/**
+	 * Binary content.
+	 */
+	protected byte[] binaryContent = null;
+
+	/**
+	 * Input stream.
+	 */
+	protected InputStream inputStream = null;
+
+	// ------------------------------------------------------------- Properties
+
+	/**
+	 * Content accessor.
+	 * 
+	 * @return InputStream
+	 * @throws IOException
+	 */
+	public InputStream streamContent() throws IOException {
+		if (binaryContent != null) {
+			return new ByteArrayInputStream(binaryContent);
+		}
+		return inputStream;
+	}
+
+	/**
+	 * Content accessor.
+	 * 
+	 * @return binary content
+	 */
+	public byte[] getContent() {
+		return binaryContent;
+	}
+
+	/**
+	 * Content mutator.
+	 * 
+	 * @param inputStream
+	 *            New input stream
+	 */
+	public void setContent(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+
+	/**
+	 * Content mutator.
+	 * 
+	 * @param binaryContent
+	 *            New bin content
+	 */
+	public void setContent(byte[] binaryContent) {
+		this.binaryContent = binaryContent;
+	}
+
 }

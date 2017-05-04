@@ -28,120 +28,111 @@ import org.apache.tomcat.util.net.JIoEndpoint.Handler;
 import org.apache.tomcat.util.net.SSLImplementation;
 import org.apache.tomcat.util.net.SocketWrapper;
 
-
 /**
- * Abstract the protocol implementation, including threading, etc.
- * Processor is single threaded and specific to stream-based protocols,
- * will not fit Jk protocols like JNI.
+ * Abstract the protocol implementation, including threading, etc. Processor is
+ * single threaded and specific to stream-based protocols, will not fit Jk
+ * protocols like JNI.
  *
  * @author Remy Maucherat
  * @author Costin Manolache
  */
 public class AjpProtocol extends AbstractAjpProtocol<Socket> {
-    
-    
-    private static final Log log = LogFactory.getLog(AjpProtocol.class);
 
-    @Override
-    protected Log getLog() { return log; }
+	private static final Log log = LogFactory.getLog(AjpProtocol.class);
 
+	@Override
+	protected Log getLog() {
+		return log;
+	}
 
-    @Override
-    protected AbstractEndpoint.Handler getHandler() {
-        return cHandler;
-    }
+	@Override
+	protected AbstractEndpoint.Handler getHandler() {
+		return cHandler;
+	}
 
+	// ------------------------------------------------------------ Constructor
 
-    // ------------------------------------------------------------ Constructor
+	public AjpProtocol() {
+		endpoint = new JIoEndpoint();
+		cHandler = new AjpConnectionHandler(this);
+		((JIoEndpoint) endpoint).setHandler(cHandler);
+		setSoLinger(Constants.DEFAULT_CONNECTION_LINGER);
+		setSoTimeout(Constants.DEFAULT_CONNECTION_TIMEOUT);
+		setTcpNoDelay(Constants.DEFAULT_TCP_NO_DELAY);
+	}
 
+	// ----------------------------------------------------- Instance Variables
 
-    public AjpProtocol() {
-        endpoint = new JIoEndpoint();
-        cHandler = new AjpConnectionHandler(this);
-        ((JIoEndpoint) endpoint).setHandler(cHandler);
-        setSoLinger(Constants.DEFAULT_CONNECTION_LINGER);
-        setSoTimeout(Constants.DEFAULT_CONNECTION_TIMEOUT);
-        setTcpNoDelay(Constants.DEFAULT_TCP_NO_DELAY);
-    }
+	/**
+	 * Connection handler for AJP.
+	 */
+	private AjpConnectionHandler cHandler;
 
-    
-    // ----------------------------------------------------- Instance Variables
+	// ----------------------------------------------------- JMX related methods
 
-    
-    /**
-     * Connection handler for AJP.
-     */
-    private AjpConnectionHandler cHandler;
+	@Override
+	protected String getNamePrefix() {
+		return ("ajp-bio");
+	}
 
+	// -------------------------------------- AjpConnectionHandler Inner Class
 
-    // ----------------------------------------------------- JMX related methods
+	protected static class AjpConnectionHandler extends AbstractAjpConnectionHandler<Socket, AjpProcessor>
+			implements Handler {
 
-    @Override
-    protected String getNamePrefix() {
-        return ("ajp-bio");
-    }
+		protected AjpProtocol proto;
 
+		public AjpConnectionHandler(AjpProtocol proto) {
+			this.proto = proto;
+		}
 
-    // --------------------------------------  AjpConnectionHandler Inner Class
+		@Override
+		protected AbstractProtocol<Socket> getProtocol() {
+			return proto;
+		}
 
+		@Override
+		protected Log getLog() {
+			return log;
+		}
 
-    protected static class AjpConnectionHandler
-            extends AbstractAjpConnectionHandler<Socket,AjpProcessor>
-            implements Handler {
+		@Override
+		public SSLImplementation getSslImplementation() {
+			// AJP does not support SSL
+			return null;
+		}
 
-        protected AjpProtocol proto;
+		/**
+		 * Expected to be used by the handler once the processor is no longer
+		 * required.
+		 * 
+		 * @param socket
+		 *            Ignored for BIO
+		 * @param processor
+		 * @param isSocketClosing
+		 * @param addToPoller
+		 *            Ignored for BIO
+		 */
+		@Override
+		public void release(SocketWrapper<Socket> socket, Processor<Socket> processor, boolean isSocketClosing,
+				boolean addToPoller) {
+			processor.recycle(isSocketClosing);
+			recycledProcessors.offer(processor);
+		}
 
-        public AjpConnectionHandler(AjpProtocol proto) {
-            this.proto = proto;
-        }
-        
-        @Override
-        protected AbstractProtocol<Socket> getProtocol() {
-            return proto;
-        }
-
-        @Override
-        protected Log getLog() {
-            return log;
-        }
-
-        @Override
-        public SSLImplementation getSslImplementation() {
-            // AJP does not support SSL
-            return null;
-        }
-
-        /**
-         * Expected to be used by the handler once the processor is no longer
-         * required.
-         * 
-         * @param socket            Ignored for BIO
-         * @param processor
-         * @param isSocketClosing
-         * @param addToPoller       Ignored for BIO
-         */
-        @Override
-        public void release(SocketWrapper<Socket> socket,
-                Processor<Socket> processor, boolean isSocketClosing,
-                boolean addToPoller) {
-            processor.recycle(isSocketClosing);
-            recycledProcessors.offer(processor);
-        }
-
-
-        @Override
-        protected AjpProcessor createProcessor() {
-            AjpProcessor processor = new AjpProcessor(proto.packetSize, (JIoEndpoint)proto.endpoint);
-            processor.setAdapter(proto.adapter);
-            processor.setAjpFlush(proto.getAjpFlush());
-            processor.setTomcatAuthentication(proto.tomcatAuthentication);
-            processor.setTomcatAuthorization(proto.getTomcatAuthorization());
-            processor.setRequiredSecret(proto.requiredSecret);
-            processor.setKeepAliveTimeout(proto.getKeepAliveTimeout());
-            processor.setClientCertProvider(proto.getClientCertProvider());
-            processor.setMaxCookieCount(proto.getMaxCookieCount());
-            register(processor);
-            return processor;
-        }
-    }
+		@Override
+		protected AjpProcessor createProcessor() {
+			AjpProcessor processor = new AjpProcessor(proto.packetSize, (JIoEndpoint) proto.endpoint);
+			processor.setAdapter(proto.adapter);
+			processor.setAjpFlush(proto.getAjpFlush());
+			processor.setTomcatAuthentication(proto.tomcatAuthentication);
+			processor.setTomcatAuthorization(proto.getTomcatAuthorization());
+			processor.setRequiredSecret(proto.requiredSecret);
+			processor.setKeepAliveTimeout(proto.getKeepAliveTimeout());
+			processor.setClientCertProvider(proto.getClientCertProvider());
+			processor.setMaxCookieCount(proto.getMaxCookieCount());
+			register(processor);
+			return processor;
+		}
+	}
 }

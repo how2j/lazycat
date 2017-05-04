@@ -27,49 +27,46 @@ import org.xml.sax.SAXParseException;
 
 public class XmlErrorHandler implements ErrorHandler {
 
-    private static final StringManager sm =
-        StringManager.getManager(Constants.PACKAGE_NAME);
+	private static final StringManager sm = StringManager.getManager(Constants.PACKAGE_NAME);
 
-    private final List<SAXParseException> errors = new ArrayList<SAXParseException>();
+	private final List<SAXParseException> errors = new ArrayList<SAXParseException>();
 
-    private final List<SAXParseException> warnings = new ArrayList<SAXParseException>();
+	private final List<SAXParseException> warnings = new ArrayList<SAXParseException>();
 
-    @Override
-    public void error(SAXParseException exception) throws SAXException {
-        // Collect non-fatal errors
-        errors.add(exception);
-    }
+	@Override
+	public void error(SAXParseException exception) throws SAXException {
+		// Collect non-fatal errors
+		errors.add(exception);
+	}
 
-    @Override
-    public void fatalError(SAXParseException exception) throws SAXException {
-        // Re-throw fatal errors
-        throw exception;
-    }
+	@Override
+	public void fatalError(SAXParseException exception) throws SAXException {
+		// Re-throw fatal errors
+		throw exception;
+	}
 
-    @Override
-    public void warning(SAXParseException exception) throws SAXException {
-        // Collect warnings
-        warnings.add(exception);
-    }
+	@Override
+	public void warning(SAXParseException exception) throws SAXException {
+		// Collect warnings
+		warnings.add(exception);
+	}
 
-    public List<SAXParseException> getErrors() {
-        // Internal use only - don't worry about immutability
-        return errors;
-    }
+	public List<SAXParseException> getErrors() {
+		// Internal use only - don't worry about immutability
+		return errors;
+	}
 
-    public List<SAXParseException> getWarnings() {
-        // Internal use only - don't worry about immutability
-        return warnings;
-    }
+	public List<SAXParseException> getWarnings() {
+		// Internal use only - don't worry about immutability
+		return warnings;
+	}
 
-    public void logFindings(Log log, String source) {
-        for (SAXParseException e : getWarnings()) {
-            log.warn(sm.getString(
-                    "xmlErrorHandler.warning", e.getMessage(), source));
-        }
-        for (SAXParseException e : getErrors()) {
-            log.warn(sm.getString(
-                    "xmlErrorHandler.error", e.getMessage(), source));
-        }
-    }
+	public void logFindings(Log log, String source) {
+		for (SAXParseException e : getWarnings()) {
+			log.warn(sm.getString("xmlErrorHandler.warning", e.getMessage(), source));
+		}
+		for (SAXParseException e : getErrors()) {
+			log.warn(sm.getString("xmlErrorHandler.error", e.getMessage(), source));
+		}
+	}
 }

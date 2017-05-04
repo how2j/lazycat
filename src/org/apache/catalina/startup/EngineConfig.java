@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.startup;
-
 
 import org.apache.catalina.Engine;
 import org.apache.catalina.Lifecycle;
@@ -27,86 +25,76 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.apache.tomcat.util.res.StringManager;
 
-
 /**
- * Startup event listener for a <b>Engine</b> that configures the properties
- * of that Engine, and the associated defined contexts.
+ * Startup event listener for a <b>Engine</b> that configures the properties of
+ * that Engine, and the associated defined contexts.
  *
  * @author Craig R. McClanahan
  */
-public class EngineConfig
-    implements LifecycleListener {
+public class EngineConfig implements LifecycleListener {
 
+	private static final Log log = LogFactory.getLog(EngineConfig.class);
 
-    private static final Log log = LogFactory.getLog( EngineConfig.class );
+	// ----------------------------------------------------- Instance Variables
 
-    // ----------------------------------------------------- Instance Variables
+	/**
+	 * The Engine we are associated with.
+	 */
+	protected Engine engine = null;
 
+	/**
+	 * The string resources for this package.
+	 */
+	protected static final StringManager sm = StringManager.getManager(Constants.Package);
 
-    /**
-     * The Engine we are associated with.
-     */
-    protected Engine engine = null;
+	// --------------------------------------------------------- Public Methods
 
+	/**
+	 * Process the START event for an associated Engine.
+	 *
+	 * @param event
+	 *            The lifecycle event that has occurred
+	 */
+	@Override
+	public void lifecycleEvent(LifecycleEvent event) {
 
-    /**
-     * The string resources for this package.
-     */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+		// Identify the engine we are associated with
+		try {
+			engine = (Engine) event.getLifecycle();
+		} catch (ClassCastException e) {
+			log.error(sm.getString("engineConfig.cce", event.getLifecycle()), e);
+			return;
+		}
 
+		// Process the event that has occurred
+		if (event.getType().equals(Lifecycle.START_EVENT))
+			start();
+		else if (event.getType().equals(Lifecycle.STOP_EVENT))
+			stop();
 
-    // --------------------------------------------------------- Public Methods
+	}
 
+	// -------------------------------------------------------- Protected
+	// Methods
 
-    /**
-     * Process the START event for an associated Engine.
-     *
-     * @param event The lifecycle event that has occurred
-     */
-    @Override
-    public void lifecycleEvent(LifecycleEvent event) {
+	/**
+	 * Process a "start" event for this Engine.
+	 */
+	protected void start() {
 
-        // Identify the engine we are associated with
-        try {
-            engine = (Engine) event.getLifecycle();
-        } catch (ClassCastException e) {
-            log.error(sm.getString("engineConfig.cce", event.getLifecycle()), e);
-            return;
-        }
+		if (engine.getLogger().isDebugEnabled())
+			engine.getLogger().debug(sm.getString("engineConfig.start"));
 
-        // Process the event that has occurred
-        if (event.getType().equals(Lifecycle.START_EVENT))
-            start();
-        else if (event.getType().equals(Lifecycle.STOP_EVENT))
-            stop();
+	}
 
-    }
+	/**
+	 * Process a "stop" event for this Engine.
+	 */
+	protected void stop() {
 
+		if (engine.getLogger().isDebugEnabled())
+			engine.getLogger().debug(sm.getString("engineConfig.stop"));
 
-    // -------------------------------------------------------- Protected Methods
-
-
-    /**
-     * Process a "start" event for this Engine.
-     */
-    protected void start() {
-
-        if (engine.getLogger().isDebugEnabled())
-            engine.getLogger().debug(sm.getString("engineConfig.start"));
-
-    }
-
-
-    /**
-     * Process a "stop" event for this Engine.
-     */
-    protected void stop() {
-
-        if (engine.getLogger().isDebugEnabled())
-            engine.getLogger().debug(sm.getString("engineConfig.stop"));
-
-    }
-
+	}
 
 }
