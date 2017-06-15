@@ -1,11 +1,7 @@
 package cn.how2j.lazycat.util;
 
-import com.alibaba.druid.sql.dialect.postgresql.ast.PGOrderBy;
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
-
-import cn.how2j.lazycat.gui.dialog.ProgressDialog;
-import cn.how2j.lazycat.gui.panel.WebAppPanel;
 
 public abstract class HotKey implements HotkeyListener {
 

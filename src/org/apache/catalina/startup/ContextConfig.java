@@ -379,6 +379,9 @@ public class ContextConfig implements LifecycleListener {
 				if(w.nameMatch(context)){
 					new Thread(){
 						public void run(){
+							if(ProgressDialog.instance.isJustStart())
+								return;
+							
 							if(ProgressDialog.instance.progressing){
 								ProgressDialog.instance.pause();
 								ProgressDialog.instance.rest();								
@@ -401,6 +404,9 @@ public class ContextConfig implements LifecycleListener {
 					new Thread(){
 						public void run(){
 							if(ProgressDialog.instance.progressing){
+								
+								if(ProgressDialog.instance.isJustStart())
+									return;
 								ProgressDialog.instance.pause();
 								ProgressDialog.instance.rest();			
 								JOptionPane.showMessageDialog(null, "÷ÿ∆Ù ß∞‹");

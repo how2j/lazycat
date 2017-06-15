@@ -1,2 +1,108 @@
 log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
 log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+log4j:ERROR Could not read configuration file from URL [file:/E:/project/ssh/web/WEB-INF/classes/log4j.properties].(LogLog.java:143) - log4j:ERROR Could not read configuration file from URL [file:/E:/project/ssh/web/WEB-INF/classes/log4j.properties].
+java.io.FileNotFoundException: E:\project\ssh\web\WEB-INF\classes\log4j.properties (系统找不到指定的文件。)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+	at org.apache.log4j.PropertyConfigurator.doConfigure(PropertyConfigurator.java:557)
+	at org.apache.log4j.PropertyConfigurator.configure(PropertyConfigurator.java:415)
+	at org.springframework.util.Log4jConfigurer.initLogging(Log4jConfigurer.java:72)
+	at org.springframework.web.util.Log4jWebConfigurer.initLogging(Log4jWebConfigurer.java:154)
+	at org.springframework.web.util.Log4jConfigListener.contextInitialized(Log4jConfigListener.java:45)
+	at org.apache.catalina.core.StandardContext.listenerStart(StandardContext.java:4760)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5243)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:138)
+	at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:847)
+	at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:827)
+	at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:611)
+	at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:654)
+	at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1843)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+log4j:ERROR Ignoring configuration file [file:/E:/project/ssh/web/WEB-INF/classes/log4j.properties].(LogLog.java:129) - log4j:ERROR Ignoring configuration file [file:/E:/project/ssh/web/WEB-INF/classes/log4j.properties].
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Class path contains multiple SLF4J bindings.(Util.java:43) - SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-jdk14-1.5.3.jar!/org/slf4j/impl/StaticLoggerBinder.class](Util.java:43) - SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-jdk14-1.5.3.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-log4j12-1.7.7.jar!/org/slf4j/impl/StaticLoggerBinder.class](Util.java:43) - SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-log4j12-1.7.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+log4j:WARN No appenders could be found for logger (org.springframework.web.context.ContextLoader).(LogLog.java:171) - log4j:WARN No appenders could be found for logger (org.springframework.web.context.ContextLoader).
+log4j:WARN Please initialize the log4j system properly.(LogLog.java:171) - log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.(LogLog.java:171) - log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+log4j:WARN No appenders could be found for logger (org.springframework.web.context.ContextLoader).(LogLog.java:171) - log4j:WARN No appenders could be found for logger (org.springframework.web.context.ContextLoader).
+log4j:WARN Please initialize the log4j system properly.(LogLog.java:171) - log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.(LogLog.java:171) - log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:WARN No appenders could be found for logger (org.springframework.web.context.ContextLoader).(LogLog.java:171) - log4j:WARN No appenders could be found for logger (org.springframework.web.context.ContextLoader).
+log4j:WARN Please initialize the log4j system properly.(LogLog.java:171) - log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.(LogLog.java:171) - log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".(Util.java:43) - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation(Util.java:43) - SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+log4j:ERROR Could not find value for key log4j.appender.stdout1(LogLog.java:129) - log4j:ERROR Could not find value for key log4j.appender.stdout1
+log4j:ERROR Could not instantiate appender named "stdout1".(LogLog.java:129) - log4j:ERROR Could not instantiate appender named "stdout1".
+SLF4J: Class path contains multiple SLF4J bindings.(Util.java:43) - SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-jdk14-1.5.3.jar!/org/slf4j/impl/StaticLoggerBinder.class](Util.java:43) - SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-jdk14-1.5.3.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-log4j12-1.7.7.jar!/org/slf4j/impl/StaticLoggerBinder.class](Util.java:43) - SLF4J: Found binding in [jar:file:/E:/project/ssh/web/WEB-INF/lib/slf4j-log4j12-1.7.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.(Util.java:43) - SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.

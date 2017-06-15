@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import cn.how2j.lazycat.gui.panel.AboutPanel;
 import cn.how2j.lazycat.gui.panel.ConsolePanel;
 import cn.how2j.lazycat.gui.panel.ErrorLogPanel;
 import cn.how2j.lazycat.gui.panel.MainPanel;
@@ -23,6 +24,8 @@ public class ToolBarListener implements ActionListener {
 			p.workingPanel.show(ErrorLogPanel.instance);
 		if (b == p.bConsole)
 			p.workingPanel.show(ConsolePanel.instance);
+		if (b == p.bAbout)
+			p.workingPanel.show(AboutPanel.instance);
 		if (b == p.bWebApp) {
 			if (TomcatPanel.instance.ctm.cs.isEmpty()) {
 				JOptionPane.showMessageDialog(p, "…–Œ¥≈‰÷√Tomcat");

@@ -70,7 +70,7 @@
     -->
     <Connector port="#80#" protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="8443" />
+               redirectPort="8443" URIEncoding="UTF-8" />
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
@@ -130,7 +130,7 @@
         <!--
         <Valve className="org.apache.catalina.authenticator.SingleSignOn" />
         -->
-
+<Context path='/tmall' docBase='e:\project\tmall_ssh_original\web' debug='0' reloadable='false' />
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html
              Note: The pattern used is equivalent to using pattern="common" -->

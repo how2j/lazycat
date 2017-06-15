@@ -33,7 +33,7 @@ public class ErrorLogPanel extends JPanel {
 		this.setLayout(new GridLayout(1, 2, gap, gap));
 
 		// ta.setText("xxx");
-		ta.setLineWrap(true);
+		ta.setLineWrap(false);
 		this.add(sp);
 	}
 

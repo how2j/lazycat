@@ -585,6 +585,16 @@ public class WebappLoader extends LifecycleMBeanBase implements Loader, Property
 		}
 
 		setState(LifecycleState.STARTING);
+		
+		try {
+//			Class clazz1 = classLoader.findClass("org.aspectj.weaver.tools.PointcutDesignatorHandler");
+//			System.out.println(clazz1);
+//			Class clazz2 = classLoader.findClass("org.aspectj.weaver.reflect.ReflectionWorld$ReflectionWorldException");
+//			System.out.println(clazz2);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -924,7 +934,9 @@ public class WebappLoader extends LifecycleMBeanBase implements Loader, Property
 				}
 
 				try {
+//					System.out.println(destFile);
 					JarFile jarFile = new JarFile(destFile);
+//					System.out.println(jarFile);
 					classLoader.addJar(filename, jarFile, destFile);
 				} catch (Exception ex) {
 					// Catch the exception if there is an empty jar file

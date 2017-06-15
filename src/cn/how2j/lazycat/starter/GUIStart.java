@@ -1,6 +1,7 @@
 package cn.how2j.lazycat.starter;
 
 import java.lang.reflect.InvocationTargetException;
+
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -122,6 +123,7 @@ public class GUIStart {
 				
 				if(!w.getStatus().equals(WebApp.loaded)){
 					JOptionPane.showMessageDialog(null, "只有启动成功的Web应用，才能使用该热键进行重新启动");
+					MainPanel.instance.workingPanel.show(WebAppPanel.instance);
 					return;
 				}
 					

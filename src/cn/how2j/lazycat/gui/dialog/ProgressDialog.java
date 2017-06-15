@@ -18,6 +18,8 @@ public class ProgressDialog extends JDialog implements Runnable {
 	
 	public JProgressBar pb = new JProgressBar();
 	
+	private long startTime;
+	
 	private ProgressDialog(){
 //		super(MainFrame.instance);
 //		this.setModal(true);
@@ -41,9 +43,12 @@ public class ProgressDialog extends JDialog implements Runnable {
 		this.add(pb);
 	}
 	
+	public boolean isJustStart(){
+		return System.currentTimeMillis()-startTime<1000;
+	}
 
 	public void start(){
-		
+		startTime = System.currentTimeMillis();
 		if(progressing)
 			return;
 		progressing = true;

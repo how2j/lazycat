@@ -7,7 +7,7 @@ public class LastVisitManager {
 
 	private static Map<Integer, String> visitURI = new HashMap<>();
 
-	public static String[] excludedExt = new String[]{".jpg",".gif",".ico",".png",".bmp",".js",".css"};
+	public static String[] excludedExt = new String[]{".jpg",".gif",".ico",".png",".map",".bmp",".js",".css"};
 	
 	public static void put(int id, String uri){
 		if(endsWith(uri,excludedExt))
