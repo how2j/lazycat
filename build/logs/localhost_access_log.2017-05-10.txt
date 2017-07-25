@@ -1,0 +1,17 @@
+0:0:0:0:0:0:0:1 - - [10/May/2017:14:34:46 +0800] "GET /tmall/admin/ HTTP/1.1" 302 -
+127.0.0.1 - - [10/May/2017:14:34:47 +0800] "GET /tmall/ HTTP/1.1" 200 30839
+127.0.0.1 - - [10/May/2017:14:34:48 +0800] "GET /tmall/img/productSingle_middle/.jpg HTTP/1.1" 404 1027
+127.0.0.1 - - [10/May/2017:14:34:49 +0800] "GET /tmall/img/productSingle_middle/.jpg HTTP/1.1" 404 1027
+127.0.0.1 - - [10/May/2017:14:34:49 +0800] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [10/May/2017:14:34:55 +0800] "GET /tmall/admin_category_list HTTP/1.1" 200 7979
+127.0.0.1 - - [10/May/2017:14:34:55 +0800] "GET /tmall/img/category/17.jpg HTTP/1.1" 404 1007
+127.0.0.1 - - [10/May/2017:14:34:55 +0800] "GET /tmall/img/category/16.jpg HTTP/1.1" 404 1007
+127.0.0.1 - - [10/May/2017:14:34:55 +0800] "GET /tmall/img/category/18.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [10/May/2017:14:34:55 +0800] "GET /tmall/img/category/19.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [10/May/2017:14:34:56 +0800] "GET /tmall/img/category/17.jpg HTTP/1.1" 404 1007
+127.0.0.1 - - [10/May/2017:14:34:56 +0800] "GET /tmall/img/category/16.jpg HTTP/1.1" 404 1007
+127.0.0.1 - - [10/May/2017:14:35:05 +0800] "GET /tmall/admin_product_list?category.id=20 HTTP/1.1" 200 9468
+127.0.0.1 - - [10/May/2017:14:35:08 +0800] "POST /tmall/admin_product_add HTTP/1.1" 302 -
+127.0.0.1 - - [10/May/2017:14:35:08 +0800] "GET /tmall/admin_product_list?category.id=20 HTTP/1.1" 200 9468
+127.0.0.1 - - [10/May/2017:14:35:12 +0800] "POST /tmall/admin_product_add HTTP/1.1" 302 -
+127.0.0.1 - - [10/May/2017:14:35:13 +0800] "GET /tmall/admin_product_list?category.id=20 HTTP/1.1" 200 9468
